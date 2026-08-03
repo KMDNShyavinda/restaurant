@@ -1,5 +1,6 @@
 package com.restaurant.pos_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class MenuCategory {
 
     @Id
@@ -18,6 +20,7 @@ public class MenuCategory {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id")
+    @JsonIgnoreProperties({"restaurant", "hibernateLazyInitializer", "handler"})
     private Branch branch;
 
     @Column(nullable = false, length = 100)
