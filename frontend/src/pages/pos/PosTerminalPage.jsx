@@ -198,23 +198,37 @@ export const PosTerminalPage = () => {
   const activeCategoryName = categories.find(c => String(c.id) === String(selectedCategory))?.name || 'Pizza & Gourmet';
 
   return (
-    <div className="h-screen bg-[#0d1217] text-slate-100 flex flex-col overflow-hidden font-sans">
+    <div className="h-screen bg-[#07090c] text-slate-100 flex flex-col overflow-hidden font-sans selection:bg-amber-500 selection:text-black">
       {/* Top Header Bar */}
-      <header className="bg-[#131922] border-b border-slate-800/80 px-6 py-3 flex justify-between items-center shrink-0">
+      <header className="bg-[#11161d] border-b border-amber-500/30 px-6 py-3 flex justify-between items-center shrink-0 z-20">
         <div className="flex items-center space-x-4">
           <button
-            onClick={() => navigate('/dashboard')}
-            className="p-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-2xl text-slate-300 transition cursor-pointer"
+            onClick={() => navigate('/welcome')}
+            className="p-2.5 bg-[#07090c] hover:bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 transition cursor-pointer"
+            title="Return to Role Launchpad"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5 text-amber-400" />
           </button>
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-orange-600 to-amber-500 text-white flex items-center justify-center font-bold shadow-lg shadow-orange-500/20">
-              <Utensils className="w-5 h-5" />
+
+          {/* Cashier Staff Avatar Photo & Badge */}
+          <div className="flex items-center space-x-3 pl-2 border-l border-slate-800">
+            <div className="relative">
+              <img 
+                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150" 
+                alt="Active Cashier Staff" 
+                className="w-10 h-10 rounded-2xl object-cover border-2 border-emerald-500 shadow-md"
+              />
+              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-[#11161d] rounded-full"></span>
             </div>
+
             <div>
-              <h1 className="text-base font-extrabold text-white tracking-wide">Maison Ceylon POS</h1>
-              <p className="text-xs text-slate-400">Fine Dining POS • Table & Order Taking</p>
+              <div className="flex items-center space-x-2">
+                <h1 className="text-sm font-extrabold text-white tracking-wide">{user?.name || 'Kasun Perera'}</h1>
+                <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-black rounded-lg uppercase tracking-wider">
+                  💳 Cashier Terminal
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400">Maison Ceylon POS • Session #CSH-2026</p>
             </div>
           </div>
         </div>
@@ -222,21 +236,21 @@ export const PosTerminalPage = () => {
         {/* Header Order Controls */}
         <div className="flex items-center space-x-4">
           {/* Notification Button */}
-          <button className="w-10 h-10 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 flex items-center justify-center relative cursor-pointer transition">
-            <Bell className="w-4 h-4" />
-            <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-orange-500 animate-ping"></span>
-            <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-orange-500"></span>
+          <button className="w-10 h-10 rounded-2xl bg-[#07090c] hover:bg-slate-900 border border-slate-800 text-slate-300 flex items-center justify-center relative cursor-pointer transition">
+            <Bell className="w-4 h-4 text-amber-400" />
+            <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+            <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-amber-500"></span>
           </button>
 
           {/* Order Type Toggle */}
-          <div className="flex bg-[#0a0e12] p-1 rounded-2xl border border-slate-800 text-xs font-bold">
+          <div className="flex bg-[#07090c] p-1 rounded-2xl border border-slate-800 text-xs font-bold">
             {['DINE_IN', 'TAKEAWAY', 'DELIVERY'].map(t => (
               <button
                 key={t}
                 onClick={() => setOrderType(t)}
                 className={`px-3.5 py-2 rounded-xl transition cursor-pointer ${
                   orderType === t 
-                    ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white font-extrabold shadow-md shadow-orange-500/25' 
+                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white font-extrabold shadow-md shadow-amber-500/25 border border-amber-400/30' 
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -250,7 +264,7 @@ export const PosTerminalPage = () => {
             <select
               value={selectedTableId}
               onChange={(e) => setSelectedTableId(e.target.value)}
-              className="bg-[#0a0e12] border border-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-2xl focus:outline-none focus:border-orange-500 shadow-inner"
+              className="bg-[#07090c] border border-slate-800 text-white text-xs font-bold px-4 py-2.5 rounded-2xl focus:outline-none focus:border-amber-500 shadow-inner"
             >
               <option value="">Select Table...</option>
               {tables.map(t => (
@@ -267,16 +281,31 @@ export const PosTerminalPage = () => {
       <div className="flex-1 flex overflow-hidden">
         {/* Left Column: Hero Header, Category Pills & Grid (65%) */}
         <div className="w-7/12 lg:w-2/3 flex flex-col border-r border-slate-800/80 p-5 overflow-hidden">
-          {/* Hero Section Banner (Matching Behance Header) */}
-          <div className="mb-4 shrink-0 flex flex-col md:flex-row md:items-center justify-between gap-3">
-            <div>
-              <h2 className="text-2xl lg:text-3xl font-black text-white tracking-tight leading-tight">
-                Find the world's best <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500">{activeCategoryName}</span> for you
+          
+          {/* Cashier Visual Hero Banner (POS Checkout Image Background) */}
+          <div className="mb-4 shrink-0 bg-[#11161d] border border-amber-500/30 rounded-3xl p-5 shadow-2xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="absolute inset-0 z-0">
+              <img 
+                src="https://images.unsplash.com/photo-1556742049-0a67ef6e885c?w=1200" 
+                alt="Cashier Terminal Checkout"
+                className="w-full h-full object-cover opacity-20 filter brightness-50 scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#11161d] via-[#11161d]/90 to-transparent" />
+            </div>
+
+            <div className="relative z-10 space-y-1">
+              <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[10px] font-black uppercase tracking-wider">
+                <CreditCard className="w-3 h-3" />
+                <span>Express Cashier Session</span>
+              </div>
+              <h2 className="text-xl lg:text-2xl font-black text-white tracking-tight leading-tight">
+                Cashier Billing & Order Catalog: <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500">{activeCategoryName}</span>
               </h2>
+              <p className="text-xs text-slate-400 max-w-md">Select menu items to build cart, customize portion sizes, apply promo codes, and process instant invoices.</p>
             </div>
 
             {/* Search Input Bar */}
-            <div className="relative shrink-0 w-full md:w-64">
+            <div className="relative z-10 shrink-0 w-full md:w-64">
               <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"

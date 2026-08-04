@@ -107,21 +107,35 @@ export const KdsPage = () => {
   return (
     <div className="min-h-screen bg-[#0d1217] text-slate-100 p-6 flex flex-col font-sans">
       {/* Top KDS Navbar */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#141a22]/90 border border-slate-800/80 backdrop-blur-xl p-4 px-6 rounded-3xl mb-6 shadow-2xl shrink-0">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#11161d] border border-amber-500/30 backdrop-blur-2xl p-4 px-6 rounded-3xl mb-6 shadow-2xl shrink-0">
         <div className="flex items-center space-x-4">
           <button
-            onClick={() => navigate('/dashboard')}
-            className="p-2.5 bg-[#0d1217] hover:bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 transition cursor-pointer"
+            onClick={() => navigate('/welcome')}
+            className="p-2.5 bg-[#07090c] hover:bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 transition cursor-pointer"
+            title="Return to Role Launchpad"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5 text-amber-400" />
           </button>
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-600 text-white flex items-center justify-center font-bold shadow-lg shadow-orange-500/20">
-              <Tv className="w-5 h-5" />
+          
+          {/* Executive Chef Photo Avatar */}
+          <div className="flex items-center space-x-3 pl-2 border-l border-slate-800">
+            <div className="relative">
+              <img 
+                src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=150" 
+                alt="Executive Kitchen Chef" 
+                className="w-10 h-10 rounded-2xl object-cover border-2 border-rose-500 shadow-md"
+              />
+              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-rose-500 border-2 border-[#11161d] rounded-full"></span>
             </div>
+
             <div>
-              <h1 className="text-xl font-extrabold text-white tracking-tight">Kitchen Display System (KDS)</h1>
-              <p className="text-xs text-slate-400">Maison Ceylon • Live order tickets & prep queue</p>
+              <div className="flex items-center space-x-2">
+                <h1 className="text-sm font-extrabold text-white tracking-tight">Executive Chef Station</h1>
+                <span className="px-2 py-0.5 bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[10px] font-black rounded-lg uppercase tracking-wider">
+                  👨‍🍳 KDS Dispatch
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400">Maison Ceylon • Live Ticket Queue & Cooking Timers</p>
             </div>
           </div>
         </div>
