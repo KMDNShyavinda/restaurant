@@ -14,11 +14,7 @@ export const LoginPage = () => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      if (user.role === 'KITCHEN') {
-        navigate('/kds');
-      } else {
-        navigate('/dashboard');
-      }
+      navigate('/dashboard');
     }
   }, [isAuthenticated, user, navigate]);
 
@@ -27,12 +23,8 @@ export const LoginPage = () => {
     setLoading(true);
 
     try {
-      const data = await login(targetEmail, targetPassword);
-      if (data.role === 'KITCHEN') {
-        navigate('/kds');
-      } else {
-        navigate('/dashboard');
-      }
+      await login(targetEmail, targetPassword);
+      navigate('/dashboard');
     } catch (err) {
       console.error("Login failed", err);
       setError(err.response?.data?.message || 'Invalid email or password. Please check your credentials.');

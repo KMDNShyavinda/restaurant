@@ -1,98 +1,375 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { LogOut, LayoutGrid, ShoppingCart, Tv, Package, ShieldCheck, Utensils } from 'lucide-react';
+import { 
+  LogOut, LayoutGrid, ShoppingCart, Tv, Package, ShieldCheck, 
+  Utensils, Lock, Sparkles, Clock, CheckCircle2, AlertTriangle, 
+  TrendingUp, Users, ArrowRight, Compass, ChefHat
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const DashboardPage = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [time, setTime] = useState(new Date().toLocaleTimeString());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTime(new Date().toLocaleTimeString());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
+  const role = user?.role || 'GUEST';
+
+  // Role Access Checker
+  const canAccess = (allowedRoles) => {
+    if (!user) return false;
+    if (role === 'OWNER' || role === 'ADMIN' || role === 'MANAGER') return true;
+    return allowedRoles.includes(role);
+  };
+
+  const roleBadges = {
+    OWNER: { label: 'System Owner', color: 'bg-orange-500/20 text-orange-400 border-orange-500/30' },
+    ADMIN: { label: 'Administrator', color: 'bg-amber-500/20 text-amber-400 border-amber-500/30' },
+    MANAGER: { label: 'Restaurant Manager', color: 'bg-amber-500/20 text-amber-400 border-amber-500/30' },
+    CASHIER: { label: 'Cashier Station', color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' },
+    WAITER: { label: 'Service Waiter', color: 'bg-sky-500/20 text-sky-400 border-sky-500/30' },
+    KITCHEN: { label: 'Kitchen Chef', color: 'bg-rose-500/20 text-rose-400 border-rose-500/30' },
+  };
+
+  const currentRoleBadge = roleBadges[role] || { label: role, color: 'bg-slate-800 text-slate-300 border-slate-700' };
+
   return (
-    <div className="min-h-screen bg-[#0d1217] text-slate-100 p-6 font-sans">
-      {/* Top Navbar */}
-      <header className="flex justify-between items-center bg-[#141a22]/90 border border-slate-800/80 backdrop-blur-xl p-4 px-6 rounded-3xl mb-8 shadow-2xl">
+    <div className="min-h-screen bg-[#0d1217] text-slate-100 p-4 md:p-6 font-sans">
+      {/* Top Navbar Header */}
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#141a22]/90 border border-slate-800/80 backdrop-blur-xl p-4 px-6 rounded-3xl mb-6 shadow-2xl">
         <div className="flex items-center space-x-4">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-600 border border-orange-400/30 flex items-center justify-center text-white font-extrabold text-xs shadow-lg shadow-orange-500/20 tracking-wider">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-600 border border-orange-400/30 flex items-center justify-center text-white font-black text-sm shadow-lg shadow-orange-500/20 tracking-wider">
             MC
           </div>
           <div>
-            <h1 className="text-xl font-extrabold text-white tracking-tight">Maison Ceylon</h1>
-            <p className="text-xs text-slate-400">Welcome back, <span className="text-orange-400 font-extrabold">{user?.name}</span> ({user?.role})</p>
+            <div className="flex items-center space-x-2">
+              <h1 className="text-xl font-extrabold text-white tracking-tight">Maison Ceylon</h1>
+              <span className={`px-2.5 py-0.5 rounded-lg border text-[10px] font-black uppercase tracking-wider ${currentRoleBadge.color}`}>
+                {currentRoleBadge.label}
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Welcome back, <strong className="text-slate-200">{user?.name || 'Staff User'}</strong> ({user?.email})
+            </p>
           </div>
         </div>
 
-        <button
-          onClick={handleLogout}
-          className="flex items-center space-x-2 px-4 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-400 text-xs font-bold rounded-2xl transition cursor-pointer"
-        >
-          <LogOut className="w-4 h-4" />
-          <span>Logout</span>
-        </button>
+        <div className="flex items-center space-x-4 w-full md:w-auto justify-between md:justify-end">
+          <div className="bg-[#0d1217] px-4 py-2 rounded-2xl border border-slate-800 text-xs font-mono font-bold text-slate-300">
+            {time}
+          </div>
+
+          <button
+            onClick={handleLogout}
+            className="flex items-center space-x-2 px-4 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-400 text-xs font-bold rounded-2xl transition cursor-pointer"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Logout</span>
+          </button>
+        </div>
       </header>
 
-      {/* Main Grid Navigation */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-        <div
-          onClick={() => navigate('/tables')}
-          className="bg-[#141a22] border border-slate-800/80 hover:border-orange-500/50 p-6 rounded-3xl transition cursor-pointer group shadow-xl hover:-translate-y-1 duration-300"
-        >
-          <div className="w-13 h-13 rounded-2xl bg-orange-500/10 text-orange-400 flex items-center justify-center mb-4 group-hover:scale-110 transition border border-orange-500/20">
-            <LayoutGrid className="w-6 h-6" />
+      <div className="max-w-7xl mx-auto space-y-6">
+        
+        {/* Restaurant Overview Hero Banner */}
+        <div className="bg-[#141a22] border border-slate-800/80 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-orange-500/10 to-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+            <div className="space-y-2 max-w-2xl">
+              <span className="text-xs font-extrabold text-orange-400 tracking-wider uppercase flex items-center space-x-1.5">
+                <Sparkles className="w-4 h-4" />
+                <span>Fine Dining Restaurant Overview</span>
+              </span>
+              <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">
+                Maison Ceylon Operations Dashboard
+              </h2>
+              <p className="text-xs md:text-sm text-slate-400 leading-relaxed">
+                Crafting authentic culinary excellence & fine dining experiences. Use your role-tailored workstation panel below to manage tables, POS orders, kitchen preparation, or stock levels.
+              </p>
+            </div>
+
+            {/* Live Metrics Overview Bar */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full lg:w-auto shrink-0">
+              <div className="bg-[#0d1217] border border-slate-800/80 p-3.5 rounded-2xl text-center">
+                <div className="text-[10px] text-slate-400 font-extrabold uppercase">Menu Dishesh</div>
+                <div className="text-xl font-black text-orange-400">80 <span className="text-[10px] text-slate-500">Items</span></div>
+              </div>
+              <div className="bg-[#0d1217] border border-slate-800/80 p-3.5 rounded-2xl text-center">
+                <div className="text-[10px] text-slate-400 font-extrabold uppercase">Dining Tables</div>
+                <div className="text-xl font-black text-amber-400">8 <span className="text-[10px] text-slate-500">Tables</span></div>
+              </div>
+              <div className="bg-[#0d1217] border border-slate-800/80 p-3.5 rounded-2xl text-center">
+                <div className="text-[10px] text-slate-400 font-extrabold uppercase">Live KDS</div>
+                <div className="text-xl font-black text-emerald-400">STOMP <span className="text-[10px] text-slate-500">Sync</span></div>
+              </div>
+              <div className="bg-[#0d1217] border border-slate-800/80 p-3.5 rounded-2xl text-center">
+                <div className="text-[10px] text-slate-400 font-extrabold uppercase">Inventory</div>
+                <div className="text-xl font-black text-sky-400">Auto <span className="text-[10px] text-slate-500">Tracking</span></div>
+              </div>
+            </div>
           </div>
-          <h3 className="text-lg font-extrabold text-white mb-1 group-hover:text-orange-400 transition">Tables & Floor Layout</h3>
-          <p className="text-slate-400 text-xs leading-relaxed">View interactive dining zone tables & live availability status</p>
         </div>
 
-        <div
-          onClick={() => navigate('/pos')}
-          className="bg-[#141a22] border border-slate-800/80 hover:border-orange-500/50 p-6 rounded-3xl transition cursor-pointer group shadow-xl hover:-translate-y-1 duration-300"
-        >
-          <div className="w-13 h-13 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center mb-4 group-hover:scale-110 transition border border-amber-500/20">
-            <ShoppingCart className="w-6 h-6" />
+        {/* Workstations Grid Header */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h3 className="text-lg font-extrabold text-white tracking-tight flex items-center space-x-2">
+              <Compass className="w-5 h-5 text-orange-400" />
+              <span>Role Workstations & Modules</span>
+            </h3>
+            <p className="text-xs text-slate-400">Modules configured specifically for your logged-in role ({role})</p>
           </div>
-          <h3 className="text-lg font-extrabold text-white mb-1 group-hover:text-amber-400 transition">Order Entry Terminal</h3>
-          <p className="text-slate-400 text-xs leading-relaxed">Add menu items, select modifiers & send order directly to kitchen</p>
         </div>
 
-        <div
-          onClick={() => navigate('/kds')}
-          className="bg-[#141a22] border border-slate-800/80 hover:border-orange-500/50 p-6 rounded-3xl transition cursor-pointer group shadow-xl hover:-translate-y-1 duration-300"
-        >
-          <div className="w-13 h-13 rounded-2xl bg-orange-500/10 text-orange-400 flex items-center justify-center mb-4 group-hover:scale-110 transition border border-orange-500/20">
-            <Tv className="w-6 h-6" />
-          </div>
-          <h3 className="text-lg font-extrabold text-white mb-1 group-hover:text-orange-400 transition">Kitchen Display System (KDS)</h3>
-          <p className="text-slate-400 text-xs leading-relaxed">Real-time live kitchen tickets stream via STOMP WebSocket</p>
-        </div>
+        {/* Workstation Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          {/* Card 1: Tables & Floor Layout */}
+          {(() => {
+            const allowed = canAccess(['OWNER', 'ADMIN', 'MANAGER', 'WAITER']);
+            return (
+              <div
+                onClick={() => allowed && navigate('/tables')}
+                className={`bg-[#141a22] border rounded-3xl p-6 transition duration-300 relative flex flex-col justify-between ${
+                  allowed 
+                    ? 'border-slate-800/80 hover:border-orange-500/50 cursor-pointer shadow-xl hover:-translate-y-1 group' 
+                    : 'border-slate-800/40 opacity-60 cursor-not-allowed'
+                }`}
+              >
+                <div>
+                  <div className="flex justify-between items-start mb-4">
+                    <div className={`w-13 h-13 rounded-2xl flex items-center justify-center transition border ${
+                      allowed 
+                        ? 'bg-orange-500/10 text-orange-400 border-orange-500/20 group-hover:scale-110' 
+                        : 'bg-slate-900 text-slate-600 border-slate-800'
+                    }`}>
+                      <LayoutGrid className="w-6 h-6" />
+                    </div>
 
-        <div
-          onClick={() => navigate('/inventory')}
-          className="bg-[#141a22] border border-slate-800/80 hover:border-amber-500/50 p-6 rounded-3xl transition cursor-pointer group shadow-xl hover:-translate-y-1 duration-300"
-        >
-          <div className="w-13 h-13 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center mb-4 group-hover:scale-110 transition border border-amber-500/20">
-            <Package className="w-6 h-6" />
-          </div>
-          <h3 className="text-lg font-extrabold text-white mb-1 group-hover:text-amber-400 transition">Stock & Ingredients</h3>
-          <p className="text-slate-400 text-xs leading-relaxed">Track BOM raw materials, low stock warnings & stock adjustments</p>
-        </div>
+                    <span className={`px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider ${
+                      allowed 
+                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
+                        : 'bg-slate-900 text-slate-500 border border-slate-800'
+                    }`}>
+                      {allowed ? 'Access Granted' : 'Role Restricted'}
+                    </span>
+                  </div>
 
-        <div
-          onClick={() => window.open('/order', '_blank')}
-          className="bg-[#141a22] border border-slate-800/80 hover:border-orange-500/50 p-6 rounded-3xl transition cursor-pointer group shadow-xl hover:-translate-y-1 duration-300"
-        >
-          <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-600 text-white flex items-center justify-center mb-4 group-hover:scale-110 transition border border-orange-500/30 shadow-lg shadow-orange-500/20">
-            <Utensils className="w-6 h-6" />
+                  <h4 className="text-lg font-extrabold text-white mb-1 group-hover:text-orange-400 transition">
+                    Tables & Floor Layout
+                  </h4>
+                  <p className="text-slate-400 text-xs leading-relaxed mb-4">
+                    View interactive dining floor zones (Main Floor, Patio, VIP), table availability & reservations.
+                  </p>
+                </div>
+
+                <div className="pt-4 border-t border-slate-800/80 flex justify-between items-center">
+                  <span className="text-[11px] text-slate-500 font-bold">Roles: Waiter, Manager, Owner</span>
+                  {allowed ? (
+                    <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition" />
+                  ) : (
+                    <Lock className="w-4 h-4 text-slate-600" />
+                  )}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Card 2: Order Entry Terminal (POS) */}
+          {(() => {
+            const allowed = canAccess(['OWNER', 'ADMIN', 'MANAGER', 'CASHIER', 'WAITER']);
+            return (
+              <div
+                onClick={() => allowed && navigate('/pos')}
+                className={`bg-[#141a22] border rounded-3xl p-6 transition duration-300 relative flex flex-col justify-between ${
+                  allowed 
+                    ? 'border-slate-800/80 hover:border-amber-500/50 cursor-pointer shadow-xl hover:-translate-y-1 group' 
+                    : 'border-slate-800/40 opacity-60 cursor-not-allowed'
+                }`}
+              >
+                <div>
+                  <div className="flex justify-between items-start mb-4">
+                    <div className={`w-13 h-13 rounded-2xl flex items-center justify-center transition border ${
+                      allowed 
+                        ? 'bg-amber-500/10 text-amber-400 border-amber-500/20 group-hover:scale-110' 
+                        : 'bg-slate-900 text-slate-600 border-slate-800'
+                    }`}>
+                      <ShoppingCart className="w-6 h-6" />
+                    </div>
+
+                    <span className={`px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider ${
+                      allowed 
+                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
+                        : 'bg-slate-900 text-slate-500 border border-slate-800'
+                    }`}>
+                      {allowed ? 'Access Granted' : 'Role Restricted'}
+                    </span>
+                  </div>
+
+                  <h4 className="text-lg font-extrabold text-white mb-1 group-hover:text-amber-400 transition">
+                    Order Entry Terminal (POS)
+                  </h4>
+                  <p className="text-slate-400 text-xs leading-relaxed mb-4">
+                    Take orders, customize dish portions (S/M/L), add special requests & dispatch live to kitchen.
+                  </p>
+                </div>
+
+                <div className="pt-4 border-t border-slate-800/80 flex justify-between items-center">
+                  <span className="text-[11px] text-slate-500 font-bold">Roles: Cashier, Waiter, Manager</span>
+                  {allowed ? (
+                    <ArrowRight className="w-4 h-4 text-amber-400 group-hover:translate-x-1 transition" />
+                  ) : (
+                    <Lock className="w-4 h-4 text-slate-600" />
+                  )}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Card 3: Kitchen Display System (KDS) */}
+          {(() => {
+            const allowed = canAccess(['OWNER', 'ADMIN', 'MANAGER', 'KITCHEN']);
+            return (
+              <div
+                onClick={() => allowed && navigate('/kds')}
+                className={`bg-[#141a22] border rounded-3xl p-6 transition duration-300 relative flex flex-col justify-between ${
+                  allowed 
+                    ? 'border-slate-800/80 hover:border-orange-500/50 cursor-pointer shadow-xl hover:-translate-y-1 group' 
+                    : 'border-slate-800/40 opacity-60 cursor-not-allowed'
+                }`}
+              >
+                <div>
+                  <div className="flex justify-between items-start mb-4">
+                    <div className={`w-13 h-13 rounded-2xl flex items-center justify-center transition border ${
+                      allowed 
+                        ? 'bg-orange-500/10 text-orange-400 border-orange-500/20 group-hover:scale-110' 
+                        : 'bg-slate-900 text-slate-600 border-slate-800'
+                    }`}>
+                      <Tv className="w-6 h-6" />
+                    </div>
+
+                    <span className={`px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider ${
+                      allowed 
+                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
+                        : 'bg-slate-900 text-slate-500 border border-slate-800'
+                    }`}>
+                      {allowed ? 'Access Granted' : 'Role Restricted'}
+                    </span>
+                  </div>
+
+                  <h4 className="text-lg font-extrabold text-white mb-1 group-hover:text-orange-400 transition">
+                    Kitchen Display System (KDS)
+                  </h4>
+                  <p className="text-slate-400 text-xs leading-relaxed mb-4">
+                    Live real-time order tickets push stream via STOMP WebSocket for kitchen prep workflow.
+                  </p>
+                </div>
+
+                <div className="pt-4 border-t border-slate-800/80 flex justify-between items-center">
+                  <span className="text-[11px] text-slate-500 font-bold">Roles: Kitchen Chef, Manager</span>
+                  {allowed ? (
+                    <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition" />
+                  ) : (
+                    <Lock className="w-4 h-4 text-slate-600" />
+                  )}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Card 4: Stock & Ingredients */}
+          {(() => {
+            const allowed = canAccess(['OWNER', 'ADMIN', 'MANAGER', 'KITCHEN']);
+            return (
+              <div
+                onClick={() => allowed && navigate('/inventory')}
+                className={`bg-[#141a22] border rounded-3xl p-6 transition duration-300 relative flex flex-col justify-between ${
+                  allowed 
+                    ? 'border-slate-800/80 hover:border-amber-500/50 cursor-pointer shadow-xl hover:-translate-y-1 group' 
+                    : 'border-slate-800/40 opacity-60 cursor-not-allowed'
+                }`}
+              >
+                <div>
+                  <div className="flex justify-between items-start mb-4">
+                    <div className={`w-13 h-13 rounded-2xl flex items-center justify-center transition border ${
+                      allowed 
+                        ? 'bg-amber-500/10 text-amber-400 border-amber-500/20 group-hover:scale-110' 
+                        : 'bg-slate-900 text-slate-600 border-slate-800'
+                    }`}>
+                      <Package className="w-6 h-6" />
+                    </div>
+
+                    <span className={`px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider ${
+                      allowed 
+                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
+                        : 'bg-slate-900 text-slate-500 border border-slate-800'
+                    }`}>
+                      {allowed ? 'Access Granted' : 'Role Restricted'}
+                    </span>
+                  </div>
+
+                  <h4 className="text-lg font-extrabold text-white mb-1 group-hover:text-amber-400 transition">
+                    Stock & Ingredients
+                  </h4>
+                  <p className="text-slate-400 text-xs leading-relaxed mb-4">
+                    Track raw materials, BOM recipe ingredients, low stock threshold warnings & stock adjustments.
+                  </p>
+                </div>
+
+                <div className="pt-4 border-t border-slate-800/80 flex justify-between items-center">
+                  <span className="text-[11px] text-slate-500 font-bold">Roles: Kitchen, Manager, Owner</span>
+                  {allowed ? (
+                    <ArrowRight className="w-4 h-4 text-amber-400 group-hover:translate-x-1 transition" />
+                  ) : (
+                    <Lock className="w-4 h-4 text-slate-600" />
+                  )}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Card 5: Customer QR Order Portal */}
+          <div
+            onClick={() => window.open('/order', '_blank')}
+            className="bg-[#141a22] border border-slate-800/80 hover:border-orange-500/50 p-6 rounded-3xl transition cursor-pointer group shadow-xl hover:-translate-y-1 duration-300 flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex justify-between items-start mb-4">
+                <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-600 text-white flex items-center justify-center group-hover:scale-110 transition border border-orange-500/30 shadow-lg shadow-orange-500/20">
+                  <Utensils className="w-6 h-6" />
+                </div>
+
+                <span className="px-2.5 py-1 rounded-xl bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[10px] font-black uppercase tracking-wider">
+                  Public Portal
+                </span>
+              </div>
+
+              <h4 className="text-lg font-extrabold text-white mb-1 group-hover:text-orange-400 transition flex items-center space-x-2">
+                <span>Customer Order Portal</span>
+              </h4>
+              <p className="text-slate-400 text-xs leading-relaxed mb-4">
+                Public self-ordering portal for customers to scan table QR code & send live orders to kitchen.
+              </p>
+            </div>
+
+            <div className="pt-4 border-t border-slate-800/80 flex justify-between items-center">
+              <span className="text-[11px] text-slate-500 font-bold">Open in New Window</span>
+              <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition" />
+            </div>
           </div>
-          <h3 className="text-lg font-extrabold text-white mb-1 group-hover:text-orange-400 transition flex items-center space-x-2">
-            <span>Customer Order Portal</span>
-            <span className="px-2 py-0.5 bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[10px] rounded-lg">LIVE</span>
-          </h3>
-          <p className="text-slate-400 text-xs leading-relaxed">QR Code & Table Self-Ordering Portal for customers to browse & order</p>
+
         </div>
       </div>
     </div>
