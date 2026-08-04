@@ -66,7 +66,7 @@ export const DashboardPage = () => {
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5">
-              Welcome back, <strong className="text-amber-300 font-bold">{user?.name || 'Staff User'}</strong> ({user?.email})
+              {new Date().getHours() < 12 ? 'Good Morning' : new Date().getHours() < 17 ? 'Good Afternoon' : new Date().getHours() < 22 ? 'Good Evening' : 'Late Hours'}, <strong className="text-amber-300 font-bold">{user?.name || 'Staff User'}</strong> ({user?.email})
             </p>
           </div>
         </div>

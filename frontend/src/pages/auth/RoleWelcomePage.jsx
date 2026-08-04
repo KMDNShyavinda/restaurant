@@ -159,6 +159,21 @@ export const RoleWelcomePage = () => {
 
   const PrimaryIconComponent = currentConfig.primaryIcon;
 
+  const getDynamicGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) {
+      return { text: 'Good Morning,', icon: '🌅' };
+    } else if (hour >= 12 && hour < 17) {
+      return { text: 'Good Afternoon,', icon: '☀️' };
+    } else if (hour >= 17 && hour < 22) {
+      return { text: 'Good Evening,', icon: '🌙' };
+    } else {
+      return { text: 'Late Hours Welcome,', icon: '🌌' };
+    }
+  };
+
+  const greeting = getDynamicGreeting();
+
   return (
     <div className="min-h-screen bg-[#07090c] text-slate-100 font-sans p-4 md:p-8 flex flex-col justify-between selection:bg-amber-500 selection:text-black relative overflow-hidden">
       
@@ -209,9 +224,10 @@ export const RoleWelcomePage = () => {
                 </div>
 
                 <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-                  Welcome Back,<br />
-                  <span className={`bg-gradient-to-r ${currentConfig.heroGradient} bg-clip-text text-transparent`}>
-                    {userName}
+                  {greeting.text}<br />
+                  <span className={`bg-gradient-to-r ${currentConfig.heroGradient} bg-clip-text text-transparent flex items-center space-x-2`}>
+                    <span>{userName}</span>
+                    <span className="text-3xl sm:text-4xl ml-2">{greeting.icon}</span>
                   </span>
                 </h1>
 
