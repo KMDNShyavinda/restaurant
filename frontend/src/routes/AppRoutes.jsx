@@ -9,6 +9,7 @@ import { InventoryPage } from '../pages/inventory/InventoryPage';
 import { CustomerOrderPage } from '../pages/customer/CustomerOrderPage';
 import { OrderTrackingPage } from '../pages/customer/OrderTrackingPage';
 import { RestaurantHomePage } from '../pages/public/RestaurantHomePage';
+import { RoleWelcomePage } from '../pages/auth/RoleWelcomePage';
 import { ProtectedRoute } from './ProtectedRoute';
 
 export const AppRoutes = () => {
@@ -25,6 +26,7 @@ export const AppRoutes = () => {
 
       {/* Protected Routes with Role-Based Permission Control */}
       <Route element={<ProtectedRoute />}>
+        <Route path="/welcome" element={<RoleWelcomePage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
       </Route>
 

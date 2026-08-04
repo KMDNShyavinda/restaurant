@@ -31,7 +31,7 @@ export const LoginPage = () => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      navigate('/dashboard');
+      navigate('/welcome');
     }
   }, [isAuthenticated, user, navigate]);
 
@@ -43,7 +43,7 @@ export const LoginPage = () => {
 
     try {
       await login(loginEmail, loginPassword);
-      navigate('/dashboard');
+      navigate('/welcome');
     } catch (err) {
       console.error("Login failed", err);
       setError(err.response?.data?.message || 'Invalid email or password credentials.');
@@ -73,9 +73,9 @@ export const LoginPage = () => {
         roleName: regRole,
         branchId: 1
       });
-      setSuccessMessage('Account created successfully! Redirecting to dashboard...');
+      setSuccessMessage('Account created successfully! Redirecting to welcome portal...');
       setTimeout(() => {
-        navigate('/dashboard');
+        navigate('/welcome');
       }, 1500);
     } catch (err) {
       console.error("Registration failed", err);
