@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { UtensilsCrossed, Lock, Mail, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
@@ -9,32 +9,47 @@ export const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const { login } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      if (user.role === 'KITCHEN') {
+        navigate('/kds');
+      } else {
+        navigate('/dashboard');
+      }
+    }
+  }, [isAuthenticated, user, navigate]);
+
+  const performLogin = async (targetEmail, targetPassword) => {
     setError(null);
     setLoading(true);
 
     try {
-      const data = await login(email, password);
+      const data = await login(targetEmail, targetPassword);
       if (data.role === 'KITCHEN') {
         navigate('/kds');
       } else {
         navigate('/dashboard');
       }
     } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.message || 'Invalid email or password. Please try again.');
+      console.error("Login failed", err);
+      setError(err.response?.data?.message || 'Invalid email or password. Please check your credentials.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleQuickFill = (roleEmail) => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    performLogin(email, password);
+  };
+
+  const handleQuickLogin = (roleEmail) => {
     setEmail(roleEmail);
     setPassword('password123');
+    performLogin(roleEmail, 'password123');
   };
 
   return (
@@ -118,7 +133,7 @@ export const LoginPage = () => {
           <div className="flex items-center justify-between mb-3 text-slate-400 text-xs font-extrabold uppercase tracking-wider">
             <div className="flex items-center space-x-1.5">
               <ShieldCheck className="w-4 h-4 text-orange-400" />
-              <span>Select Staff Account:</span>
+              <span>One-Click Role Login:</span>
             </div>
             <span className="text-[10px] text-slate-500 font-mono">Password: password123</span>
           </div>
@@ -134,8 +149,8 @@ export const LoginPage = () => {
               <button
                 key={acc.email}
                 type="button"
-                onClick={() => handleQuickFill(acc.email)}
-                className="px-2.5 py-2 bg-[#0d1217] hover:bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 text-xs transition text-left cursor-pointer hover:border-orange-500/40"
+                onClick={() => handleQuickLogin(acc.email)}
+                className="px-2.5 py-2.5 bg-[#0d1217] hover:bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 text-xs transition text-left cursor-pointer hover:border-orange-500/50 hover:-translate-y-0.5 duration-200"
               >
                 <div className={`font-extrabold text-[11px] ${acc.color}`}>{acc.role}</div>
                 <div className="text-[10px] text-slate-400 truncate">{acc.email}</div>
