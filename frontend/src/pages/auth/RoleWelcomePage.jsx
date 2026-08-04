@@ -211,7 +211,7 @@ export const RoleWelcomePage = () => {
 
       {/* Role-Tailored Visual Hero Card */}
       <main className="max-w-6xl w-full mx-auto my-8 space-y-8 z-10">
-        <div className="bg-[#11161d]/95 border border-amber-500/30 rounded-3xl overflow-hidden shadow-2xl relative backdrop-blur-2xl">
+        <div className="bg-[#11161d]/95 border border-amber-500/30 rounded-3xl overflow-hidden shadow-2xl relative backdrop-blur-2xl min-h-[420px]">
           
           <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
             
@@ -259,7 +259,7 @@ export const RoleWelcomePage = () => {
             </div>
 
             {/* Right Role-Tailored Visual Imagery */}
-            <div className="lg:col-span-5 relative min-h-[280px] lg:min-h-full overflow-hidden bg-slate-900">
+            <div className="lg:col-span-5 relative min-h-[320px] lg:min-h-[420px] overflow-hidden bg-slate-900">
               <img 
                 src={currentConfig.heroImage} 
                 alt={currentConfig.title} 
