@@ -5,6 +5,7 @@ import { DashboardPage } from '../pages/dashboard/DashboardPage';
 import { TableLayoutPage } from '../pages/tables/TableLayoutPage';
 import { PosTerminalPage } from '../pages/pos/PosTerminalPage';
 import { KdsPage } from '../pages/kds/KdsPage';
+import { InventoryPage } from '../pages/inventory/InventoryPage';
 import { ProtectedRoute } from './ProtectedRoute';
 
 export const AppRoutes = () => {
@@ -18,6 +19,7 @@ export const AppRoutes = () => {
         <Route path="/tables" element={<TableLayoutPage />} />
         <Route path="/pos" element={<PosTerminalPage />} />
         <Route path="/kds" element={<KdsPage />} />
+        <Route path="/inventory" element={<InventoryPage />} />
       </Route>
 
       <Route path="/unauthorized" element={
