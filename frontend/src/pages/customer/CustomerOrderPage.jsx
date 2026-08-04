@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 
 export const CustomerOrderPage = () => {
+  const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [tables, setTables] = useState([]);
