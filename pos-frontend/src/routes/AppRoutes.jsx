@@ -4,6 +4,7 @@ import { LoginPage } from '../pages/auth/LoginPage';
 import { DashboardPage } from '../pages/dashboard/DashboardPage';
 import { TableLayoutPage } from '../pages/tables/TableLayoutPage';
 import { PosTerminalPage } from '../pages/pos/PosTerminalPage';
+import { KdsPage } from '../pages/kds/KdsPage';
 import { ProtectedRoute } from './ProtectedRoute';
 
 export const AppRoutes = () => {
@@ -16,6 +17,7 @@ export const AppRoutes = () => {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/tables" element={<TableLayoutPage />} />
         <Route path="/pos" element={<PosTerminalPage />} />
+        <Route path="/kds" element={<KdsPage />} />
       </Route>
 
       <Route path="/unauthorized" element={
