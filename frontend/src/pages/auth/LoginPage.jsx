@@ -175,41 +175,59 @@ export const LoginPage = () => {
             </div>
           </div>
 
-          {/* Form header */}
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-              {activeTab === 'LOGIN' ? 'Welcome back' : 'Create account'}
-            </h2>
-            <p className="text-slate-400 text-xs mt-1">
-              {activeTab === 'LOGIN'
-                ? 'Sign in to your staff portal and start your session.'
-                : 'Register a new team member to the system.'}
-            </p>
-          </div>
+          {/* Card-Style Tab Selector */}
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => { setActiveTab('LOGIN'); setError(null); }}
+              className={`p-4 rounded-2xl border text-left transition cursor-pointer group relative overflow-hidden ${
+                activeTab === 'LOGIN'
+                  ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/10 border-amber-500/60 shadow-lg shadow-amber-500/15'
+                  : 'bg-[#141b24] border-slate-800 hover:border-slate-700 hover:bg-[#1a2330]'
+              }`}
+            >
+              {activeTab === 'LOGIN' && (
+                <div className="absolute top-0 right-0 w-20 h-20 bg-amber-500/10 rounded-full blur-xl pointer-events-none" />
+              )}
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 transition ${
+                activeTab === 'LOGIN'
+                  ? 'bg-gradient-to-tr from-amber-500 to-orange-500 shadow-md shadow-amber-500/30'
+                  : 'bg-slate-800 group-hover:bg-slate-700'
+              }`}>
+                <LogIn className="w-4 h-4 text-white" />
+              </div>
+              <div className={`text-sm font-extrabold mb-0.5 ${ activeTab === 'LOGIN' ? 'text-white' : 'text-slate-400' }`}>Sign In</div>
+              <div className="text-[10px] text-slate-500 leading-tight">Access your staff portal</div>
+              {activeTab === 'LOGIN' && (
+                <div className="absolute bottom-2 right-2 w-2 h-2 rounded-full bg-amber-400" />
+              )}
+            </button>
 
-          {/* Tab Switcher */}
-          <div className="flex bg-[#141b24] p-1 rounded-2xl border border-slate-800 gap-1">
-            {[
-              { id: 'LOGIN',    label: 'Sign In',       icon: LogIn },
-              { id: 'REGISTER', label: 'Create Account', icon: UserPlus },
-            ].map(tab => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => { setActiveTab(tab.id); setError(null); }}
-                  className={`flex-1 py-2.5 rounded-xl text-xs font-extrabold flex items-center justify-center space-x-1.5 transition cursor-pointer ${
-                    activeTab === tab.id
-                      ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg border border-amber-400/30'
-                      : 'text-slate-400 hover:text-white'
-                  }`}
-                >
-                  <Icon className="w-3.5 h-3.5" />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
+            <button
+              type="button"
+              onClick={() => { setActiveTab('REGISTER'); setError(null); }}
+              className={`p-4 rounded-2xl border text-left transition cursor-pointer group relative overflow-hidden ${
+                activeTab === 'REGISTER'
+                  ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/10 border-amber-500/60 shadow-lg shadow-amber-500/15'
+                  : 'bg-[#141b24] border-slate-800 hover:border-slate-700 hover:bg-[#1a2330]'
+              }`}
+            >
+              {activeTab === 'REGISTER' && (
+                <div className="absolute top-0 right-0 w-20 h-20 bg-amber-500/10 rounded-full blur-xl pointer-events-none" />
+              )}
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 transition ${
+                activeTab === 'REGISTER'
+                  ? 'bg-gradient-to-tr from-amber-500 to-orange-500 shadow-md shadow-amber-500/30'
+                  : 'bg-slate-800 group-hover:bg-slate-700'
+              }`}>
+                <UserPlus className="w-4 h-4 text-white" />
+              </div>
+              <div className={`text-sm font-extrabold mb-0.5 ${ activeTab === 'REGISTER' ? 'text-white' : 'text-slate-400' }`}>Create Account</div>
+              <div className="text-[10px] text-slate-500 leading-tight">Register a team member</div>
+              {activeTab === 'REGISTER' && (
+                <div className="absolute bottom-2 right-2 w-2 h-2 rounded-full bg-amber-400" />
+              )}
+            </button>
           </div>
 
           {/* Alerts */}
