@@ -213,8 +213,8 @@ export const PosTerminalPage = () => {
               <Utensils className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-base font-extrabold text-white tracking-wide">POS Order Terminal</h1>
-              <p className="text-xs text-slate-400">Gourmet Bistro Terminal • Table & Order Taking</p>
+              <h1 className="text-base font-extrabold text-white tracking-wide">The Royal Spice POS</h1>
+              <p className="text-xs text-slate-400">Fine Dining POS • Table & Order Taking</p>
             </div>
           </div>
         </div>
