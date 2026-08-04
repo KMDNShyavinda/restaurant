@@ -352,7 +352,7 @@ export const DashboardPage = () => {
                 </div>
 
                 <span className="px-2.5 py-1 rounded-xl bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[10px] font-black uppercase tracking-wider">
-                  Public Portal
+                  Public Ordering
                 </span>
               </div>
 
@@ -367,6 +367,36 @@ export const DashboardPage = () => {
             <div className="pt-4 border-t border-slate-800/80 flex justify-between items-center">
               <span className="text-[11px] text-slate-500 font-bold">Open in New Window</span>
               <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition" />
+            </div>
+          </div>
+
+          {/* Card 6: Maison Ceylon Public Website */}
+          <div
+            onClick={() => window.open('/', '_blank')}
+            className="bg-[#141a22] border border-slate-800/80 hover:border-amber-500/50 p-6 rounded-3xl transition cursor-pointer group shadow-xl hover:-translate-y-1 duration-300 flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex justify-between items-start mb-4">
+                <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-600 text-white flex items-center justify-center group-hover:scale-110 transition border border-amber-500/30 shadow-lg shadow-amber-500/20">
+                  <Sparkles className="w-6 h-6" />
+                </div>
+
+                <span className="px-2.5 py-1 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] font-black uppercase tracking-wider">
+                  Public Website
+                </span>
+              </div>
+
+              <h4 className="text-lg font-extrabold text-white mb-1 group-hover:text-amber-400 transition flex items-center space-x-2">
+                <span>Main Restaurant Website</span>
+              </h4>
+              <p className="text-slate-400 text-xs leading-relaxed mb-4">
+                Public fine dining landing page featuring culinary story, signature dishes & table reservation bookings.
+              </p>
+            </div>
+
+            <div className="pt-4 border-t border-slate-800/80 flex justify-between items-center">
+              <span className="text-[11px] text-slate-500 font-bold">Open Landing Page</span>
+              <ArrowRight className="w-4 h-4 text-amber-400 group-hover:translate-x-1 transition" />
             </div>
           </div>
 

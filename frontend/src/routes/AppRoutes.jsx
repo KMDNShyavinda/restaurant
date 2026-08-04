@@ -7,12 +7,15 @@ import { PosTerminalPage } from '../pages/pos/PosTerminalPage';
 import { KdsPage } from '../pages/kds/KdsPage';
 import { InventoryPage } from '../pages/inventory/InventoryPage';
 import { CustomerOrderPage } from '../pages/customer/CustomerOrderPage';
+import { RestaurantHomePage } from '../pages/public/RestaurantHomePage';
 import { ProtectedRoute } from './ProtectedRoute';
 
 export const AppRoutes = () => {
   return (
     <Routes>
-      {/* Public Routes */}
+      {/* Public Web Application Routes */}
+      <Route path="/" element={<RestaurantHomePage />} />
+      <Route path="/home" element={<RestaurantHomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/order" element={<CustomerOrderPage />} />
       <Route path="/menu" element={<CustomerOrderPage />} />
