@@ -175,59 +175,60 @@ export const LoginPage = () => {
             </div>
           </div>
 
-          {/* Card-Style Tab Selector */}
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              onClick={() => { setActiveTab('LOGIN'); setError(null); }}
-              className={`p-4 rounded-2xl border text-left transition cursor-pointer group relative overflow-hidden ${
-                activeTab === 'LOGIN'
-                  ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/10 border-amber-500/60 shadow-lg shadow-amber-500/15'
-                  : 'bg-[#141b24] border-slate-800 hover:border-slate-700 hover:bg-[#1a2330]'
-              }`}
-            >
-              {activeTab === 'LOGIN' && (
-                <div className="absolute top-0 right-0 w-20 h-20 bg-amber-500/10 rounded-full blur-xl pointer-events-none" />
-              )}
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 transition ${
-                activeTab === 'LOGIN'
-                  ? 'bg-gradient-to-tr from-amber-500 to-orange-500 shadow-md shadow-amber-500/30'
-                  : 'bg-slate-800 group-hover:bg-slate-700'
-              }`}>
-                <LogIn className="w-4 h-4 text-white" />
-              </div>
-              <div className={`text-sm font-extrabold mb-0.5 ${ activeTab === 'LOGIN' ? 'text-white' : 'text-slate-400' }`}>Sign In</div>
-              <div className="text-[10px] text-slate-500 leading-tight">Access your staff portal</div>
-              {activeTab === 'LOGIN' && (
-                <div className="absolute bottom-2 right-2 w-2 h-2 rounded-full bg-amber-400" />
-              )}
-            </button>
+          {/* Single Unified Tab Card */}
+          <div className="bg-[#141b24] border border-slate-700/80 rounded-3xl p-4 shadow-xl relative overflow-hidden">
+            {/* Card ambient glow */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/8 rounded-full blur-2xl pointer-events-none" />
 
-            <button
-              type="button"
-              onClick={() => { setActiveTab('REGISTER'); setError(null); }}
-              className={`p-4 rounded-2xl border text-left transition cursor-pointer group relative overflow-hidden ${
-                activeTab === 'REGISTER'
-                  ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/10 border-amber-500/60 shadow-lg shadow-amber-500/15'
-                  : 'bg-[#141b24] border-slate-800 hover:border-slate-700 hover:bg-[#1a2330]'
-              }`}
-            >
-              {activeTab === 'REGISTER' && (
-                <div className="absolute top-0 right-0 w-20 h-20 bg-amber-500/10 rounded-full blur-xl pointer-events-none" />
-              )}
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 transition ${
-                activeTab === 'REGISTER'
-                  ? 'bg-gradient-to-tr from-amber-500 to-orange-500 shadow-md shadow-amber-500/30'
-                  : 'bg-slate-800 group-hover:bg-slate-700'
+            {/* Card header */}
+            <div className="flex items-center space-x-3 mb-4">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-lg transition-all duration-300 ${
+                activeTab === 'LOGIN'
+                  ? 'bg-gradient-to-tr from-amber-500 to-orange-500 shadow-amber-500/30'
+                  : 'bg-gradient-to-tr from-indigo-500 to-purple-500 shadow-purple-500/30'
               }`}>
-                <UserPlus className="w-4 h-4 text-white" />
+                {activeTab === 'LOGIN'
+                  ? <LogIn className="w-5 h-5 text-white" />
+                  : <UserPlus className="w-5 h-5 text-white" />
+                }
               </div>
-              <div className={`text-sm font-extrabold mb-0.5 ${ activeTab === 'REGISTER' ? 'text-white' : 'text-slate-400' }`}>Create Account</div>
-              <div className="text-[10px] text-slate-500 leading-tight">Register a team member</div>
-              {activeTab === 'REGISTER' && (
-                <div className="absolute bottom-2 right-2 w-2 h-2 rounded-full bg-amber-400" />
-              )}
-            </button>
+              <div>
+                <div className="text-sm font-extrabold text-white">
+                  {activeTab === 'LOGIN' ? 'Sign In' : 'Create Account'}
+                </div>
+                <div className="text-[10px] text-slate-500">
+                  {activeTab === 'LOGIN' ? 'Access your staff portal' : 'Register a team member'}
+                </div>
+              </div>
+            </div>
+
+            {/* Segmented toggle inside card */}
+            <div className="flex bg-[#0d1117] rounded-2xl p-1 border border-slate-800 gap-1">
+              <button
+                type="button"
+                onClick={() => { setActiveTab('LOGIN'); setError(null); }}
+                className={`flex-1 py-2.5 rounded-xl text-xs font-extrabold flex items-center justify-center space-x-1.5 transition-all duration-200 cursor-pointer ${
+                  activeTab === 'LOGIN'
+                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md shadow-amber-500/25 border border-amber-400/30'
+                    : 'text-slate-500 hover:text-slate-300'
+                }`}
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Sign In</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => { setActiveTab('REGISTER'); setError(null); }}
+                className={`flex-1 py-2.5 rounded-xl text-xs font-extrabold flex items-center justify-center space-x-1.5 transition-all duration-200 cursor-pointer ${
+                  activeTab === 'REGISTER'
+                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md shadow-amber-500/25 border border-amber-400/30'
+                    : 'text-slate-500 hover:text-slate-300'
+                }`}
+              >
+                <UserPlus className="w-3.5 h-3.5" />
+                <span>Create Account</span>
+              </button>
+            </div>
           </div>
 
           {/* Alerts */}
