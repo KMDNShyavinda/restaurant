@@ -200,7 +200,7 @@ export const LoginPage = () => {
             </div>
 
             {/* Card Body */}
-            <div className="px-6 py-5 space-y-4">
+            <div className="px-6 py-5 space-y-4" style={{minHeight: '340px'}}>
 
               {error && (
                 <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center space-x-3 text-rose-400 text-xs font-bold">
