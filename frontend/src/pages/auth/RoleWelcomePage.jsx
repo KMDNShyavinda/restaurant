@@ -69,7 +69,7 @@ export const RoleWelcomePage = () => {
       roleBadge: '💳 Billing Cashier Station',
       badgeColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40',
       heroGradient: 'from-emerald-400 via-teal-400 to-emerald-500',
-      heroImage: 'https://images.unsplash.com/photo-1556742049-0a67ef6e885c?w=1200',
+      heroImage: 'https://images.unsplash.com/photo-1556740758-90de374c12ad?w=1200',
       welcomeMsg: 'Your POS Terminal session is active. Ready to process fast customer orders, accept Cash/Card/QR payments, apply discounts, and generate split bills.',
       primaryRoute: '/pos',
       primaryBtnText: 'Open Express POS Terminal',
@@ -224,10 +224,9 @@ export const RoleWelcomePage = () => {
                 </div>
 
                 <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-                  {greeting.text}<br />
-                  <span className={`bg-gradient-to-r ${currentConfig.heroGradient} bg-clip-text text-transparent flex items-center space-x-2`}>
-                    <span>{userName}</span>
-                    <span className="text-3xl sm:text-4xl ml-2">{greeting.icon}</span>
+                  <span className="text-white">{greeting.text}</span><br />
+                  <span className={`bg-gradient-to-r ${currentConfig.heroGradient} bg-clip-text text-transparent`}>
+                    {userName}
                   </span>
                 </h1>
 
