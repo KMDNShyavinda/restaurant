@@ -7,6 +7,7 @@ import { PosTerminalPage } from '../pages/pos/PosTerminalPage';
 import { KdsPage } from '../pages/kds/KdsPage';
 import { InventoryPage } from '../pages/inventory/InventoryPage';
 import { CustomerOrderPage } from '../pages/customer/CustomerOrderPage';
+import { OrderTrackingPage } from '../pages/customer/OrderTrackingPage';
 import { RestaurantHomePage } from '../pages/public/RestaurantHomePage';
 import { ProtectedRoute } from './ProtectedRoute';
 
@@ -19,6 +20,8 @@ export const AppRoutes = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/order" element={<CustomerOrderPage />} />
       <Route path="/menu" element={<CustomerOrderPage />} />
+      <Route path="/track" element={<OrderTrackingPage />} />
+      <Route path="/track/:orderId" element={<OrderTrackingPage />} />
 
       {/* Protected Routes with Role-Based Permission Control */}
       <Route element={<ProtectedRoute />}>

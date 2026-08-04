@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Utensils, Calendar, Clock, MapPin, Phone, Star, Sparkles, 
-  ChevronRight, Award, Flame, ShoppingBag, ShieldCheck, Heart, User, Search
+  ChevronRight, Award, Flame, ShoppingBag, ShieldCheck, Heart, User, Search, Activity
 } from 'lucide-react';
 import { ordersApi } from '../../api/ordersApi';
 
@@ -79,6 +79,14 @@ export const RestaurantHomePage = () => {
 
           {/* Header Action Buttons */}
           <div className="flex items-center space-x-3">
+            <button
+              onClick={() => navigate('/track')}
+              className="px-3.5 py-2.5 bg-[#141a22] hover:bg-slate-900 border border-slate-800 text-orange-400 font-extrabold rounded-2xl text-xs flex items-center space-x-2 transition cursor-pointer shadow-lg"
+            >
+              <Activity className="w-4 h-4" />
+              <span>Track Order</span>
+            </button>
+
             <button
               onClick={() => navigate('/order')}
               className="px-4 py-2.5 bg-[#141a22] hover:bg-slate-900 border border-slate-800 text-orange-400 font-extrabold rounded-2xl text-xs flex items-center space-x-2 transition cursor-pointer shadow-lg"
