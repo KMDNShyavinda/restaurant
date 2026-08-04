@@ -23,10 +23,10 @@ export const AppRoutes = () => {
       </Route>
 
       <Route path="/unauthorized" element={
-        <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white p-4">
-          <h1 className="text-3xl font-bold text-rose-500 mb-2">403 - Access Denied</h1>
-          <p className="text-slate-400 mb-4">You do not have required role permissions to view this module.</p>
-          <a href="/dashboard" className="px-4 py-2 bg-sky-600 rounded-xl text-sm font-semibold">Return to Dashboard</a>
+        <div className="min-h-screen bg-[#0d1217] flex flex-col items-center justify-center text-white p-4 font-sans">
+          <h1 className="text-3xl font-extrabold text-rose-500 mb-2">403 - Access Denied</h1>
+          <p className="text-slate-400 mb-6 text-sm">You do not have required role permissions to view this module.</p>
+          <a href="/dashboard" className="px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 rounded-2xl text-xs font-extrabold shadow-lg shadow-orange-500/25">Return to Dashboard</a>
         </div>
       } />
 

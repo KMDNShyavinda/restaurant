@@ -105,22 +105,22 @@ export const KdsPage = () => {
   const readyCount = tickets.filter(t => t.status === 'READY').length;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-6 flex flex-col">
+    <div className="min-h-screen bg-[#0d1217] text-slate-100 p-6 flex flex-col font-sans">
       {/* Top KDS Navbar */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-900/90 border border-slate-800 backdrop-blur-xl p-4 rounded-2xl mb-6 shadow-xl shrink-0">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#141a22]/90 border border-slate-800/80 backdrop-blur-xl p-4 px-6 rounded-3xl mb-6 shadow-2xl shrink-0">
         <div className="flex items-center space-x-4">
           <button
             onClick={() => navigate('/dashboard')}
-            className="p-2.5 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-300 transition cursor-pointer"
+            className="p-2.5 bg-[#0d1217] hover:bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 transition cursor-pointer"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-600 text-white flex items-center justify-center font-bold shadow-lg shadow-orange-500/20">
               <Tv className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white tracking-tight">Kitchen Display System (KDS)</h1>
+              <h1 className="text-xl font-extrabold text-white tracking-tight">Kitchen Display System (KDS)</h1>
               <p className="text-xs text-slate-400">Live order tickets push • Live prep queue</p>
             </div>
           </div>
@@ -129,7 +129,7 @@ export const KdsPage = () => {
         {/* Status Indicators & Station Filter */}
         <div className="flex items-center space-x-4 w-full md:w-auto justify-between md:justify-end">
           {/* WebSocket Status Indicator */}
-          <div className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold ${
+          <div className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-2xl border text-xs font-bold ${
             wsConnected 
               ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
               : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
@@ -139,18 +139,18 @@ export const KdsPage = () => {
           </div>
 
           {/* Clock Ticker */}
-          <div className="bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 text-xs font-mono text-slate-300">
+          <div className="bg-[#0d1217] px-3.5 py-2 rounded-2xl border border-slate-800 text-xs font-mono font-bold text-slate-300">
             {time}
           </div>
 
           {/* Station Selector */}
-          <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
+          <div className="flex bg-[#0d1217] p-1 rounded-2xl border border-slate-800 text-xs font-extrabold">
             {stations.map(st => (
               <button
                 key={st}
                 onClick={() => setSelectedStation(st)}
-                className={`px-3 py-1 rounded-lg transition cursor-pointer ${
-                  selectedStation === st ? 'bg-amber-500 text-white shadow' : 'text-slate-400 hover:text-white'
+                className={`px-3.5 py-1.5 rounded-xl transition cursor-pointer ${
+                  selectedStation === st ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md shadow-orange-500/25' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 {st}
@@ -160,7 +160,7 @@ export const KdsPage = () => {
 
           <button
             onClick={fetchTickets}
-            className="p-2.5 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-300 transition cursor-pointer"
+            className="p-2.5 bg-[#0d1217] hover:bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 transition cursor-pointer"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
@@ -169,29 +169,29 @@ export const KdsPage = () => {
 
       {/* Ticket Queue Metric Summary Bar */}
       <div className="grid grid-cols-3 gap-4 mb-6 shrink-0">
-        <div className="bg-slate-900 border border-amber-500/20 p-4 rounded-2xl bg-gradient-to-b from-amber-500/5 to-transparent">
-          <div className="text-amber-400 text-xs font-medium uppercase tracking-wider mb-1">Queued Orders</div>
-          <div className="text-2xl font-bold text-amber-400">{queuedCount}</div>
+        <div className="bg-[#141a22] border border-orange-500/20 p-4 rounded-3xl shadow-lg bg-gradient-to-b from-orange-500/5 to-transparent">
+          <div className="text-orange-400 text-xs font-bold uppercase tracking-wider mb-1">Queued Orders</div>
+          <div className="text-2xl font-black text-orange-400">{queuedCount}</div>
         </div>
-        <div className="bg-slate-900 border border-sky-500/20 p-4 rounded-2xl bg-gradient-to-b from-sky-500/5 to-transparent">
-          <div className="text-sky-400 text-xs font-medium uppercase tracking-wider mb-1">Preparing Now</div>
-          <div className="text-2xl font-bold text-sky-400">{preparingCount}</div>
+        <div className="bg-[#141a22] border border-amber-500/20 p-4 rounded-3xl shadow-lg bg-gradient-to-b from-amber-500/5 to-transparent">
+          <div className="text-amber-400 text-xs font-bold uppercase tracking-wider mb-1">Preparing Now</div>
+          <div className="text-2xl font-black text-amber-400">{preparingCount}</div>
         </div>
-        <div className="bg-slate-900 border border-emerald-500/20 p-4 rounded-2xl bg-gradient-to-b from-emerald-500/5 to-transparent">
-          <div className="text-emerald-400 text-xs font-medium uppercase tracking-wider mb-1">Ready for Pickup</div>
-          <div className="text-2xl font-bold text-emerald-400">{readyCount}</div>
+        <div className="bg-[#141a22] border border-emerald-500/20 p-4 rounded-3xl shadow-lg bg-gradient-to-b from-emerald-500/5 to-transparent">
+          <div className="text-emerald-400 text-xs font-bold uppercase tracking-wider mb-1">Ready for Pickup</div>
+          <div className="text-2xl font-black text-emerald-400">{readyCount}</div>
         </div>
       </div>
 
       {/* Ticket Cards Grid */}
       {loading ? (
         <div className="flex-1 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
         </div>
       ) : filteredTickets.length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center bg-slate-900/50 border border-slate-800/80 rounded-3xl p-12 text-center">
+        <div className="flex-1 flex flex-col items-center justify-center bg-[#141a22] border border-slate-800/80 rounded-3xl p-12 text-center">
           <UtensilsCrossed className="w-16 h-16 text-slate-600 mb-3" />
-          <h3 className="text-lg font-bold text-slate-300">All Kitchen Orders Clear!</h3>
+          <h3 className="text-lg font-extrabold text-slate-300">All Kitchen Orders Clear!</h3>
           <p className="text-xs text-slate-500 max-w-sm mt-1">New incoming orders sent from the POS terminal will instantly appear on this screen live.</p>
         </div>
       ) : (
@@ -204,16 +204,16 @@ export const KdsPage = () => {
             return (
               <div
                 key={t.id}
-                className={`bg-slate-900 border rounded-2xl p-5 flex flex-col justify-between shadow-2xl relative overflow-hidden transition transform hover:-translate-y-1 ${
-                  isQueued ? 'border-amber-500/40 shadow-amber-500/5' :
-                  isPreparing ? 'border-sky-500/40 shadow-sky-500/5' :
+                className={`bg-[#141a22] border rounded-3xl p-5 flex flex-col justify-between shadow-2xl relative overflow-hidden transition transform hover:-translate-y-1 ${
+                  isQueued ? 'border-orange-500/40 shadow-orange-500/5' :
+                  isPreparing ? 'border-amber-500/40 shadow-amber-500/5' :
                   'border-emerald-500/40 shadow-emerald-500/5'
                 }`}
               >
                 {/* Status Color Glow Top Bar */}
                 <div className={`h-2 w-full absolute top-0 left-0 ${
-                  isQueued ? 'bg-amber-500 animate-pulse' :
-                  isPreparing ? 'bg-sky-500' : 'bg-emerald-500'
+                  isQueued ? 'bg-orange-500 animate-pulse' :
+                  isPreparing ? 'bg-amber-500' : 'bg-emerald-500'
                 }`} />
 
                 <div>
@@ -222,7 +222,7 @@ export const KdsPage = () => {
                     <div>
                       <div className="flex items-center space-x-2">
                         <span className="text-lg font-black text-white">Ticket #{t.id}</span>
-                        <span className="text-xs font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+                        <span className="text-xs font-extrabold px-2 py-0.5 rounded-lg bg-[#0d1217] text-slate-300 border border-slate-800">
                           Order #{t.order?.id}
                         </span>
                       </div>
@@ -231,9 +231,9 @@ export const KdsPage = () => {
                       </p>
                     </div>
 
-                    <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${
-                      isQueued ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
-                      isPreparing ? 'bg-sky-500/10 text-sky-400 border border-sky-500/20' :
+                    <span className={`px-2.5 py-1 rounded-xl text-[10px] font-extrabold uppercase tracking-wider ${
+                      isQueued ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' :
+                      isPreparing ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
                       'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
                     }`}>
                       {t.status}
@@ -241,8 +241,8 @@ export const KdsPage = () => {
                   </div>
 
                   {/* Prep Time Timer */}
-                  <div className="flex items-center space-x-1.5 text-xs text-slate-400 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800/80 mb-4">
-                    <Clock className="w-3.5 h-3.5 text-amber-400" />
+                  <div className="flex items-center space-x-1.5 text-xs text-slate-400 bg-[#0d1217] px-3 py-2 rounded-2xl border border-slate-800/80 mb-4">
+                    <Clock className="w-3.5 h-3.5 text-orange-400" />
                     <span>Printed: <strong className="text-slate-200">{getPrepTimeAgo(t.printedAt)}</strong></span>
                     <span className="ml-auto font-mono text-[11px] text-slate-500">{t.station}</span>
                   </div>
@@ -250,16 +250,16 @@ export const KdsPage = () => {
                   {/* Order Items List */}
                   <div className="space-y-3 mb-4">
                     {t.order?.items?.map((item, i) => (
-                      <div key={i} className="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/60">
+                      <div key={i} className="bg-[#0d1217]/80 p-3 rounded-2xl border border-slate-800/60">
                         <div className="flex justify-between items-start">
                           <span className="font-bold text-white text-sm">
-                            <span className="text-amber-400 font-extrabold mr-2">{item.quantity}x</span>
+                            <span className="text-orange-400 font-black mr-2">{item.quantity}x</span>
                             {item.menuItem?.name || 'Dish Item'}
                           </span>
                         </div>
 
                         {item.notes && (
-                          <p className="text-xs text-amber-300/90 font-medium italic mt-1 pl-5 border-l-2 border-amber-500/40">
+                          <p className="text-xs text-amber-300/90 font-medium italic mt-1 pl-3 border-l-2 border-amber-500/40">
                             "{item.notes}"
                           </p>
                         )}
@@ -273,7 +273,7 @@ export const KdsPage = () => {
                   {isQueued && (
                     <button
                       onClick={() => handleUpdateStatus(t.id, 'PREPARING')}
-                      className="w-full py-3 bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-sky-500/20 text-xs flex items-center justify-center space-x-2 transition cursor-pointer"
+                      className="w-full py-3.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-white font-extrabold rounded-2xl shadow-xl shadow-orange-500/20 text-xs flex items-center justify-center space-x-2 transition cursor-pointer"
                     >
                       <Flame className="w-4 h-4" />
                       <span>Start Preparing</span>
@@ -283,7 +283,7 @@ export const KdsPage = () => {
                   {isPreparing && (
                     <button
                       onClick={() => handleUpdateStatus(t.id, 'READY')}
-                      className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20 text-xs flex items-center justify-center space-x-2 transition cursor-pointer"
+                      className="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-extrabold rounded-2xl shadow-xl shadow-emerald-500/20 text-xs flex items-center justify-center space-x-2 transition cursor-pointer"
                     >
                       <CheckCircle2 className="w-4 h-4" />
                       <span>Mark Ready</span>
@@ -291,7 +291,7 @@ export const KdsPage = () => {
                   )}
 
                   {isReady && (
-                    <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-center text-emerald-400 font-bold text-xs flex items-center justify-center space-x-2">
+                    <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-center text-emerald-400 font-extrabold text-xs flex items-center justify-center space-x-2">
                       <CheckCircle2 className="w-4 h-4" />
                       <span>Ready for Service</span>
                     </div>
