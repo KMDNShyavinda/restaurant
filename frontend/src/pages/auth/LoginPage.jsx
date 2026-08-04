@@ -339,12 +339,19 @@ export const LoginPage = () => {
               { role: 'Manager', email: 'manager@pos.com', color: 'text-amber-400' },
               { role: 'Cashier', email: 'cashier@pos.com', color: 'text-emerald-400' },
               { role: 'Waiter', email: 'waiter@pos.com', color: 'text-sky-400' },
-              { role: 'Kitchen Staff', email: 'kitchen@pos.com', color: 'text-rose-400' }
+              { role: 'Kitchen Staff', email: 'kitchen@pos.com', color: 'text-rose-400' },
+              { role: 'Customer Guest', email: 'customer@pos.com', color: 'text-purple-400', isCustomerRedirect: true }
             ].map(acc => (
               <button
                 key={acc.email}
                 type="button"
-                onClick={() => handleQuickLogin(acc.email)}
+                onClick={() => {
+                  if (acc.isCustomerRedirect) {
+                    navigate('/order');
+                  } else {
+                    handleQuickLogin(acc.email);
+                  }
+                }}
                 className="px-2.5 py-2.5 bg-[#0d1217] hover:bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 text-xs transition text-left cursor-pointer hover:border-orange-500/50 hover:-translate-y-0.5 duration-200"
               >
                 <div className={`font-extrabold text-[11px] ${acc.color}`}>{acc.role}</div>
