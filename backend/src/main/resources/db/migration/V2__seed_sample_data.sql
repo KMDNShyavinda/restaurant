@@ -5,12 +5,12 @@
 
 -- 1. ADDITIONAL USERS FOR TESTING ALL ROLES
 -- (Passwords default hash for 'password123', also updated by DataInitializer)
-INSERT INTO users (branch_id, role_id, name, email, phone, password_hash) VALUES
-(1, 2, 'Sarah Manager', 'manager@pos.com', '555-0102', '$2a$10$e8w.KzR1aI0X5/kZ1N.2n.VwHqD43fTj9k5x1pYg6.gQ/H6W/n4eS'),
-(1, 3, 'Chris Cashier', 'cashier@pos.com', '555-0103', '$2a$10$e8w.KzR1aI0X5/kZ1N.2n.VwHqD43fTj9k5x1pYg6.gQ/H6W/n4eS'),
-(1, 4, 'Will Waiter', 'waiter@pos.com', '555-0104', '$2a$10$e8w.KzR1aI0X5/kZ1N.2n.VwHqD43fTj9k5x1pYg6.gQ/H6W/n4eS'),
-(1, 5, 'Kevin Kitchen', 'kitchen@pos.com', '555-0105', '$2a$10$e8w.KzR1aI0X5/kZ1N.2n.VwHqD43fTj9k5x1pYg6.gQ/H6W/n4eS')
-ON CONFLICT (email) DO NOTHING;
+INSERT INTO users (id, branch_id, role_id, name, email, phone, password_hash) VALUES
+(2, 1, 2, 'Sarah Manager', 'manager@pos.com', '555-0102', '$2a$10$e8w.KzR1aI0X5/kZ1N.2n.VwHqD43fTj9k5x1pYg6.gQ/H6W/n4eS'),
+(3, 1, 3, 'Chris Cashier', 'cashier@pos.com', '555-0103', '$2a$10$e8w.KzR1aI0X5/kZ1N.2n.VwHqD43fTj9k5x1pYg6.gQ/H6W/n4eS'),
+(4, 1, 4, 'Will Waiter', 'waiter@pos.com', '555-0104', '$2a$10$e8w.KzR1aI0X5/kZ1N.2n.VwHqD43fTj9k5x1pYg6.gQ/H6W/n4eS'),
+(5, 1, 5, 'Kevin Kitchen', 'kitchen@pos.com', '555-0105', '$2a$10$e8w.KzR1aI0X5/kZ1N.2n.VwHqD43fTj9k5x1pYg6.gQ/H6W/n4eS')
+ON CONFLICT (id) DO NOTHING;
 
 -- 2. CUSTOMERS
 INSERT INTO customers (id, name, phone, email, address, loyalty_points) VALUES
