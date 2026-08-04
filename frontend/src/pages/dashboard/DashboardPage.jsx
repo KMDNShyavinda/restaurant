@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { 
   LogOut, LayoutGrid, ShoppingCart, Tv, Package, ShieldCheck, 
   Utensils, Lock, Sparkles, Clock, CheckCircle2, AlertTriangle, 
-  TrendingUp, Users, ArrowRight, Compass, ChefHat
+  TrendingUp, Users, ArrowRight, Compass, ChefHat, Activity
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -34,45 +34,59 @@ export const DashboardPage = () => {
   };
 
   const roleBadges = {
-    OWNER: { label: 'System Owner', color: 'bg-orange-500/20 text-orange-400 border-orange-500/30' },
-    ADMIN: { label: 'Administrator', color: 'bg-amber-500/20 text-amber-400 border-amber-500/30' },
-    MANAGER: { label: 'Restaurant Manager', color: 'bg-amber-500/20 text-amber-400 border-amber-500/30' },
-    CASHIER: { label: 'Cashier Station', color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' },
-    WAITER: { label: 'Service Waiter', color: 'bg-sky-500/20 text-sky-400 border-sky-500/30' },
-    KITCHEN: { label: 'Kitchen Chef', color: 'bg-rose-500/20 text-rose-400 border-rose-500/30' },
+    OWNER: { label: '👑 System Owner', color: 'bg-amber-500/20 text-amber-400 border-amber-500/40' },
+    ADMIN: { label: '👑 Super Admin', color: 'bg-amber-500/20 text-amber-400 border-amber-500/40' },
+    MANAGER: { label: '📊 Branch Manager', color: 'bg-orange-500/20 text-orange-400 border-orange-500/40' },
+    CASHIER: { label: '💳 Billing Cashier', color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' },
+    WAITER: { label: '🍷 Service Waitstaff', color: 'bg-sky-500/20 text-sky-400 border-sky-500/40' },
+    KITCHEN: { label: '👨‍🍳 Head Chef', color: 'bg-rose-500/20 text-rose-400 border-rose-500/40' },
   };
 
   const currentRoleBadge = roleBadges[role] || { label: role, color: 'bg-slate-800 text-slate-300 border-slate-700' };
 
   return (
-    <div className="min-h-screen bg-[#0d1217] text-slate-100 p-4 md:p-6 font-sans">
+    <div className="min-h-screen bg-[#07090c] text-slate-100 p-4 md:p-6 font-sans selection:bg-amber-500 selection:text-black relative overflow-hidden">
+      {/* Ambient Gold & Amber Glows */}
+      <div className="absolute top-1/4 -left-20 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 -right-20 w-[500px] h-[500px] bg-orange-600/10 rounded-full blur-[120px] pointer-events-none" />
+
       {/* Top Navbar Header */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#141a22]/90 border border-slate-800/80 backdrop-blur-xl p-4 px-6 rounded-3xl mb-6 shadow-2xl">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#11161d]/90 border border-amber-500/30 backdrop-blur-2xl p-4 px-6 rounded-3xl mb-6 shadow-2xl z-10 relative">
         <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-600 border border-orange-400/30 flex items-center justify-center text-white font-black text-sm shadow-lg shadow-orange-500/20 tracking-wider">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 via-amber-500 to-orange-500 border border-amber-400/30 flex items-center justify-center text-white font-black text-sm shadow-lg shadow-amber-500/20 tracking-wider">
             MC
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <h1 className="text-xl font-extrabold text-white tracking-tight">Maison Ceylon</h1>
+              <h1 className="text-xl font-extrabold text-white tracking-tight flex items-center space-x-2">
+                <span className="bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500 bg-clip-text text-transparent">Maison Ceylon</span>
+              </h1>
               <span className={`px-2.5 py-0.5 rounded-lg border text-[10px] font-black uppercase tracking-wider ${currentRoleBadge.color}`}>
                 {currentRoleBadge.label}
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5">
-              Welcome back, <strong className="text-slate-200">{user?.name || 'Staff User'}</strong> ({user?.email})
+              Welcome back, <strong className="text-amber-300 font-bold">{user?.name || 'Staff User'}</strong> ({user?.email})
             </p>
           </div>
         </div>
 
         <div className="flex items-center space-x-4 w-full md:w-auto justify-between md:justify-end">
-          <div className="bg-[#0d1217] px-4 py-2 rounded-2xl border border-slate-800 text-xs font-mono font-bold text-slate-300">
+          <button
+            onClick={() => navigate('/welcome')}
+            className="px-4 py-2 bg-[#07090c] hover:bg-slate-900 border border-amber-500/30 text-amber-400 text-xs font-extrabold rounded-2xl transition cursor-pointer flex items-center space-x-1.5"
+          >
+            <Activity className="w-3.5 h-3.5" />
+            <span>Portal Launchpad</span>
+          </button>
+
+          <div className="bg-[#07090c] px-4 py-2 rounded-2xl border border-slate-800 text-xs font-mono font-bold text-slate-300">
             {time}
           </div>
 
           <button
             onClick={handleLogout}
-            className="flex items-center space-x-2 px-4 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-400 text-xs font-bold rounded-2xl transition cursor-pointer"
+            className="flex items-center space-x-2 px-4 py-2 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-400 text-xs font-bold rounded-2xl transition cursor-pointer"
           >
             <LogOut className="w-4 h-4" />
             <span>Logout</span>
@@ -80,41 +94,41 @@ export const DashboardPage = () => {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-6 relative z-10">
         
         {/* Restaurant Overview Hero Banner */}
-        <div className="bg-[#141a22] border border-slate-800/80 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-orange-500/10 to-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="bg-[#11161d]/90 border border-amber-500/30 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden backdrop-blur-2xl">
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-amber-500/10 to-orange-500/10 rounded-full blur-3xl pointer-events-none" />
           
           <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
             <div className="space-y-2 max-w-2xl">
-              <span className="text-xs font-extrabold text-orange-400 tracking-wider uppercase flex items-center space-x-1.5">
+              <span className="text-xs font-extrabold text-amber-400 tracking-wider uppercase flex items-center space-x-1.5">
                 <Sparkles className="w-4 h-4" />
-                <span>Fine Dining Restaurant Overview</span>
+                <span>Fine Dining Executive Operations</span>
               </span>
               <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">
                 Maison Ceylon Operations Dashboard
               </h2>
-              <p className="text-xs md:text-sm text-slate-400 leading-relaxed">
+              <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
                 Crafting authentic culinary excellence & fine dining experiences. Use your role-tailored workstation panel below to manage tables, POS orders, kitchen preparation, or stock levels.
               </p>
             </div>
 
             {/* Live Metrics Overview Bar */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full lg:w-auto shrink-0">
-              <div className="bg-[#0d1217] border border-slate-800/80 p-3.5 rounded-2xl text-center">
-                <div className="text-[10px] text-slate-400 font-extrabold uppercase">Menu Dishesh</div>
-                <div className="text-xl font-black text-orange-400">80 <span className="text-[10px] text-slate-500">Items</span></div>
+              <div className="bg-[#07090c] border border-amber-500/20 p-3.5 rounded-2xl text-center shadow-lg">
+                <div className="text-[10px] text-slate-400 font-extrabold uppercase">Gourmet Dishes</div>
+                <div className="text-xl font-black text-amber-400">80 <span className="text-[10px] text-slate-500">Items</span></div>
               </div>
-              <div className="bg-[#0d1217] border border-slate-800/80 p-3.5 rounded-2xl text-center">
+              <div className="bg-[#07090c] border border-amber-500/20 p-3.5 rounded-2xl text-center shadow-lg">
                 <div className="text-[10px] text-slate-400 font-extrabold uppercase">Dining Tables</div>
-                <div className="text-xl font-black text-amber-400">8 <span className="text-[10px] text-slate-500">Tables</span></div>
+                <div className="text-xl font-black text-orange-400">8 <span className="text-[10px] text-slate-500">Tables</span></div>
               </div>
-              <div className="bg-[#0d1217] border border-slate-800/80 p-3.5 rounded-2xl text-center">
+              <div className="bg-[#07090c] border border-amber-500/20 p-3.5 rounded-2xl text-center shadow-lg">
                 <div className="text-[10px] text-slate-400 font-extrabold uppercase">Live KDS</div>
                 <div className="text-xl font-black text-emerald-400">STOMP <span className="text-[10px] text-slate-500">Sync</span></div>
               </div>
-              <div className="bg-[#0d1217] border border-slate-800/80 p-3.5 rounded-2xl text-center">
+              <div className="bg-[#07090c] border border-amber-500/20 p-3.5 rounded-2xl text-center shadow-lg">
                 <div className="text-[10px] text-slate-400 font-extrabold uppercase">Inventory</div>
                 <div className="text-xl font-black text-sky-400">Auto <span className="text-[10px] text-slate-500">Tracking</span></div>
               </div>
@@ -126,8 +140,8 @@ export const DashboardPage = () => {
         <div className="flex justify-between items-center">
           <div>
             <h3 className="text-lg font-extrabold text-white tracking-tight flex items-center space-x-2">
-              <Compass className="w-5 h-5 text-orange-400" />
-              <span>Role Workstations & Modules</span>
+              <Compass className="w-5 h-5 text-amber-400" />
+              <span>Role Workstations & Operational Modules</span>
             </h3>
             <p className="text-xs text-slate-400">Modules configured specifically for your logged-in role ({role})</p>
           </div>
@@ -142,9 +156,9 @@ export const DashboardPage = () => {
             return (
               <div
                 onClick={() => allowed && navigate('/tables')}
-                className={`bg-[#141a22] border rounded-3xl p-6 transition duration-300 relative flex flex-col justify-between ${
+                className={`bg-[#11161d] border rounded-3xl p-6 transition duration-300 relative flex flex-col justify-between ${
                   allowed 
-                    ? 'border-slate-800/80 hover:border-orange-500/50 cursor-pointer shadow-xl hover:-translate-y-1 group' 
+                    ? 'border-slate-800 hover:border-amber-500/60 cursor-pointer shadow-xl hover:-translate-y-1 group' 
                     : 'border-slate-800/40 opacity-60 cursor-not-allowed'
                 }`}
               >
@@ -152,7 +166,7 @@ export const DashboardPage = () => {
                   <div className="flex justify-between items-start mb-4">
                     <div className={`w-13 h-13 rounded-2xl flex items-center justify-center transition border ${
                       allowed 
-                        ? 'bg-orange-500/10 text-orange-400 border-orange-500/20 group-hover:scale-110' 
+                        ? 'bg-amber-500/10 text-amber-400 border-amber-500/20 group-hover:scale-110' 
                         : 'bg-slate-900 text-slate-600 border-slate-800'
                     }`}>
                       <LayoutGrid className="w-6 h-6" />
@@ -167,7 +181,7 @@ export const DashboardPage = () => {
                     </span>
                   </div>
 
-                  <h4 className="text-lg font-extrabold text-white mb-1 group-hover:text-orange-400 transition">
+                  <h4 className="text-lg font-extrabold text-white mb-1 group-hover:text-amber-400 transition">
                     Tables & Floor Layout
                   </h4>
                   <p className="text-slate-400 text-xs leading-relaxed mb-4">
@@ -178,7 +192,7 @@ export const DashboardPage = () => {
                 <div className="pt-4 border-t border-slate-800/80 flex justify-between items-center">
                   <span className="text-[11px] text-slate-500 font-bold">Roles: Waiter, Manager, Owner</span>
                   {allowed ? (
-                    <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition" />
+                    <ArrowRight className="w-4 h-4 text-amber-400 group-hover:translate-x-1 transition" />
                   ) : (
                     <Lock className="w-4 h-4 text-slate-600" />
                   )}
@@ -193,9 +207,9 @@ export const DashboardPage = () => {
             return (
               <div
                 onClick={() => allowed && navigate('/pos')}
-                className={`bg-[#141a22] border rounded-3xl p-6 transition duration-300 relative flex flex-col justify-between ${
+                className={`bg-[#11161d] border rounded-3xl p-6 transition duration-300 relative flex flex-col justify-between ${
                   allowed 
-                    ? 'border-slate-800/80 hover:border-amber-500/50 cursor-pointer shadow-xl hover:-translate-y-1 group' 
+                    ? 'border-slate-800 hover:border-amber-500/60 cursor-pointer shadow-xl hover:-translate-y-1 group' 
                     : 'border-slate-800/40 opacity-60 cursor-not-allowed'
                 }`}
               >
@@ -244,9 +258,9 @@ export const DashboardPage = () => {
             return (
               <div
                 onClick={() => allowed && navigate('/kds')}
-                className={`bg-[#141a22] border rounded-3xl p-6 transition duration-300 relative flex flex-col justify-between ${
+                className={`bg-[#11161d] border rounded-3xl p-6 transition duration-300 relative flex flex-col justify-between ${
                   allowed 
-                    ? 'border-slate-800/80 hover:border-orange-500/50 cursor-pointer shadow-xl hover:-translate-y-1 group' 
+                    ? 'border-slate-800 hover:border-amber-500/60 cursor-pointer shadow-xl hover:-translate-y-1 group' 
                     : 'border-slate-800/40 opacity-60 cursor-not-allowed'
                 }`}
               >
@@ -295,9 +309,9 @@ export const DashboardPage = () => {
             return (
               <div
                 onClick={() => allowed && navigate('/inventory')}
-                className={`bg-[#141a22] border rounded-3xl p-6 transition duration-300 relative flex flex-col justify-between ${
+                className={`bg-[#11161d] border rounded-3xl p-6 transition duration-300 relative flex flex-col justify-between ${
                   allowed 
-                    ? 'border-slate-800/80 hover:border-amber-500/50 cursor-pointer shadow-xl hover:-translate-y-1 group' 
+                    ? 'border-slate-800 hover:border-amber-500/60 cursor-pointer shadow-xl hover:-translate-y-1 group' 
                     : 'border-slate-800/40 opacity-60 cursor-not-allowed'
                 }`}
               >
@@ -343,20 +357,20 @@ export const DashboardPage = () => {
           {/* Card 5: Customer QR Order Portal */}
           <div
             onClick={() => window.open('/order', '_blank')}
-            className="bg-[#141a22] border border-slate-800/80 hover:border-orange-500/50 p-6 rounded-3xl transition cursor-pointer group shadow-xl hover:-translate-y-1 duration-300 flex flex-col justify-between"
+            className="bg-[#11161d] border border-slate-800 hover:border-amber-500/60 p-6 rounded-3xl transition cursor-pointer group shadow-xl hover:-translate-y-1 duration-300 flex flex-col justify-between"
           >
             <div>
               <div className="flex justify-between items-start mb-4">
-                <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-600 text-white flex items-center justify-center group-hover:scale-110 transition border border-orange-500/30 shadow-lg shadow-orange-500/20">
+                <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center group-hover:scale-110 transition border border-amber-500/30 shadow-lg shadow-amber-500/20">
                   <Utensils className="w-6 h-6" />
                 </div>
 
-                <span className="px-2.5 py-1 rounded-xl bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[10px] font-black uppercase tracking-wider">
+                <span className="px-2.5 py-1 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] font-black uppercase tracking-wider">
                   Public Ordering
                 </span>
               </div>
 
-              <h4 className="text-lg font-extrabold text-white mb-1 group-hover:text-orange-400 transition flex items-center space-x-2">
+              <h4 className="text-lg font-extrabold text-white mb-1 group-hover:text-amber-400 transition flex items-center space-x-2">
                 <span>Customer Order Portal</span>
               </h4>
               <p className="text-slate-400 text-xs leading-relaxed mb-4">
@@ -366,14 +380,14 @@ export const DashboardPage = () => {
 
             <div className="pt-4 border-t border-slate-800/80 flex justify-between items-center">
               <span className="text-[11px] text-slate-500 font-bold">Open in New Window</span>
-              <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition" />
+              <ArrowRight className="w-4 h-4 text-amber-400 group-hover:translate-x-1 transition" />
             </div>
           </div>
 
           {/* Card 6: Maison Ceylon Public Website */}
           <div
             onClick={() => window.open('/', '_blank')}
-            className="bg-[#141a22] border border-slate-800/80 hover:border-amber-500/50 p-6 rounded-3xl transition cursor-pointer group shadow-xl hover:-translate-y-1 duration-300 flex flex-col justify-between"
+            className="bg-[#11161d] border border-slate-800 hover:border-amber-500/60 p-6 rounded-3xl transition cursor-pointer group shadow-xl hover:-translate-y-1 duration-300 flex flex-col justify-between"
           >
             <div>
               <div className="flex justify-between items-start mb-4">
