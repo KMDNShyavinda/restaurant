@@ -18,10 +18,19 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        userRepository.findByEmail("admin@pos.com").ifPresent(user -> {
-            user.setPasswordHash(passwordEncoder.encode("password123"));
-            userRepository.save(user);
-            System.out.println(">>> Default admin password initialized successfully with valid BCrypt hash!");
-        });
+        String[] emails = {
+            "admin@pos.com",
+            "manager@pos.com",
+            "cashier@pos.com",
+            "waiter@pos.com",
+            "kitchen@pos.com"
+        };
+        for (String email : emails) {
+            userRepository.findByEmail(email).ifPresent(user -> {
+                user.setPasswordHash(passwordEncoder.encode("password123"));
+                userRepository.save(user);
+            });
+        }
+        System.out.println(">>> Demo account passwords initialized with valid BCrypt hashes for: admin, manager, cashier, waiter, kitchen");
     }
 }

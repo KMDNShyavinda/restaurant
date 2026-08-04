@@ -33,6 +33,27 @@ restaurant-pos/
 
 ---
 
+## 🔑 Demo Accounts & Pre-Seeded Sample Data
+
+The application comes pre-loaded with rich sample data across all modules (Menu, Tables, Orders, KDS, Customers, Inventory):
+
+| Role | Email | Password | Access Level |
+| :--- | :--- | :--- | :--- |
+| **System Owner / Admin** | `admin@pos.com` | `password123` | Full access to all modules & settings |
+| **Branch Manager** | `manager@pos.com` | `password123` | Dashboard, Reports, Inventory & Menu |
+| **Billing Cashier** | `cashier@pos.com` | `password123` | POS Terminal, Orders & Payments |
+| **Waitstaff** | `waiter@pos.com` | `password123` | Table Layout, Reservations & Order Taking |
+| **Kitchen Staff** | `kitchen@pos.com` | `password123` | Kitchen Display System (KDS) |
+
+### 📦 Sample Dataset Highlights
+- **14 Menu Items** across 5 Categories (Starters, Mains, Wood-Fired Pizza, Desserts, Beverages) with custom modifiers & image URLs.
+- **8 Dining Tables** across 3 Zones (Main Floor, Patio, VIP Section) with pre-set statuses (`FREE`, `OCCUPIED`, `RESERVED`, `MAINTENANCE`).
+- **Customer Database** with loyalty points and active reservations.
+- **Real-Time KDS Tickets** in `QUEUED` & `IN_PREPARATION` states.
+- **Inventory Stock Tracker** with 8 raw ingredients, recipe mappings, low-stock warnings (e.g. Mozzarella, Espresso Beans), and audit adjustment logs.
+
+---
+
 ## 🌟 Core Features & Modules
 
 ### 1. 🔐 Security & Role-Based Access Control (RBAC)
