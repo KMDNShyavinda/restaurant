@@ -30,27 +30,31 @@ export const AppRoutes = () => {
         <Route path="/dashboard" element={<DashboardPage />} />
       </Route>
 
-      <Route element={<ProtectedRoute allowedRoles={['OWNER', 'ADMIN', 'MANAGER', 'WAITER']} />}>
+      <Route element={<ProtectedRoute allowedRoles={['OWNER', 'ADMIN', 'MANAGER', 'WAITER', 'WAITSTAFF', 'CASHIER']} />}>
         <Route path="/tables" element={<TableLayoutPage />} />
       </Route>
 
-      <Route element={<ProtectedRoute allowedRoles={['OWNER', 'ADMIN', 'MANAGER', 'CASHIER', 'WAITER']} />}>
+      <Route element={<ProtectedRoute allowedRoles={['OWNER', 'ADMIN', 'MANAGER', 'CASHIER', 'WAITER', 'WAITSTAFF']} />}>
         <Route path="/pos" element={<PosTerminalPage />} />
       </Route>
 
-      <Route element={<ProtectedRoute allowedRoles={['OWNER', 'ADMIN', 'MANAGER', 'KITCHEN']} />}>
+      <Route element={<ProtectedRoute allowedRoles={['OWNER', 'ADMIN', 'MANAGER', 'KITCHEN', 'KITCHEN_STAFF']} />}>
         <Route path="/kds" element={<KdsPage />} />
       </Route>
 
-      <Route element={<ProtectedRoute allowedRoles={['OWNER', 'ADMIN', 'MANAGER', 'KITCHEN']} />}>
+      <Route element={<ProtectedRoute allowedRoles={['OWNER', 'ADMIN', 'MANAGER', 'KITCHEN', 'KITCHEN_STAFF']} />}>
         <Route path="/inventory" element={<InventoryPage />} />
       </Route>
 
       <Route path="/unauthorized" element={
-        <div className="min-h-screen bg-[#0d1217] flex flex-col items-center justify-center text-white p-4 font-sans">
-          <h1 className="text-3xl font-extrabold text-rose-500 mb-2">403 - Access Denied</h1>
-          <p className="text-slate-400 mb-6 text-sm">Your account role does not have permission to access this module.</p>
-          <a href="/dashboard" className="px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 rounded-2xl text-xs font-extrabold shadow-lg shadow-orange-500/25">Return to Overview Dashboard</a>
+        <div className="min-h-screen bg-[#07090c] flex flex-col items-center justify-center text-white p-4 font-sans selection:bg-amber-500">
+          <div className="bg-[#11161d] border border-rose-500/30 p-8 rounded-3xl max-w-md text-center shadow-2xl space-y-4">
+            <h1 className="text-3xl font-extrabold text-rose-400 mb-1">403 - Access Restricted</h1>
+            <p className="text-slate-400 text-xs">Your account role does not have permission to access this workstation module.</p>
+            <a href="/welcome" className="inline-block px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 rounded-2xl text-xs font-extrabold text-white shadow-lg shadow-amber-500/25 uppercase tracking-wider">
+              Return to Role Launchpad
+            </a>
+          </div>
         </div>
       } />
 
