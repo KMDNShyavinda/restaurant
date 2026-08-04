@@ -211,9 +211,9 @@ export const RoleWelcomePage = () => {
 
       {/* Role-Tailored Visual Hero Card */}
       <main className="max-w-6xl w-full mx-auto my-8 space-y-8 z-10">
-        <div className="bg-[#11161d]/95 border border-amber-500/30 rounded-3xl overflow-hidden shadow-2xl relative backdrop-blur-2xl min-h-[420px]">
+        <div className="bg-[#11161d]/95 border border-amber-500/30 rounded-3xl overflow-hidden shadow-2xl relative backdrop-blur-2xl flex flex-col" style={{minHeight: '420px'}}>
           
-          <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-12 flex-1" style={{minHeight: '420px'}}>
             
             {/* Left Hero Text Section */}
             <div className="lg:col-span-7 p-6 sm:p-10 space-y-6 flex flex-col justify-between">
@@ -258,12 +258,13 @@ export const RoleWelcomePage = () => {
               </div>
             </div>
 
-            {/* Right Role-Tailored Visual Imagery */}
-            <div className="lg:col-span-5 relative min-h-[320px] lg:min-h-[420px] overflow-hidden bg-slate-900">
+            {/* Right Role-Tailored Visual Imagery - always fills full card height */}
+            <div className="lg:col-span-5 relative overflow-hidden bg-slate-900" style={{minHeight: '420px'}}>
               <img 
                 src={currentConfig.heroImage} 
                 alt={currentConfig.title} 
-                className="w-full h-full object-cover filter brightness-90 contrast-110 group-hover:scale-105 transition duration-700"
+                className="absolute inset-0 w-full h-full object-cover filter brightness-90 contrast-110"
+                style={{objectPosition: 'center center'}}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#11161d] via-transparent to-transparent lg:bg-gradient-to-r lg:from-[#11161d] lg:via-transparent lg:to-transparent" />
               
