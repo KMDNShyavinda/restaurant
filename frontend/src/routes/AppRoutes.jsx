@@ -6,12 +6,16 @@ import { TableLayoutPage } from '../pages/tables/TableLayoutPage';
 import { PosTerminalPage } from '../pages/pos/PosTerminalPage';
 import { KdsPage } from '../pages/kds/KdsPage';
 import { InventoryPage } from '../pages/inventory/InventoryPage';
+import { CustomerOrderPage } from '../pages/customer/CustomerOrderPage';
 import { ProtectedRoute } from './ProtectedRoute';
 
 export const AppRoutes = () => {
   return (
     <Routes>
+      {/* Public Routes */}
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/order" element={<CustomerOrderPage />} />
+      <Route path="/menu" element={<CustomerOrderPage />} />
 
       {/* Protected Routes for Authenticated Staff */}
       <Route element={<ProtectedRoute />}>
@@ -30,7 +34,7 @@ export const AppRoutes = () => {
         </div>
       } />
 
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to="/order" replace />} />
     </Routes>
   );
 };

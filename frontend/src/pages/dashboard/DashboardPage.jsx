@@ -80,6 +80,20 @@ export const DashboardPage = () => {
           <h3 className="text-lg font-extrabold text-white mb-1 group-hover:text-amber-400 transition">Stock & Ingredients</h3>
           <p className="text-slate-400 text-xs leading-relaxed">Track BOM raw materials, low stock warnings & stock adjustments</p>
         </div>
+
+        <div
+          onClick={() => window.open('/order', '_blank')}
+          className="bg-[#141a22] border border-slate-800/80 hover:border-orange-500/50 p-6 rounded-3xl transition cursor-pointer group shadow-xl hover:-translate-y-1 duration-300"
+        >
+          <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-600 text-white flex items-center justify-center mb-4 group-hover:scale-110 transition border border-orange-500/30 shadow-lg shadow-orange-500/20">
+            <Utensils className="w-6 h-6" />
+          </div>
+          <h3 className="text-lg font-extrabold text-white mb-1 group-hover:text-orange-400 transition flex items-center space-x-2">
+            <span>Customer Order Portal</span>
+            <span className="px-2 py-0.5 bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[10px] rounded-lg">LIVE</span>
+          </h3>
+          <p className="text-slate-400 text-xs leading-relaxed">QR Code & Table Self-Ordering Portal for customers to browse & order</p>
+        </div>
       </div>
     </div>
   );
