@@ -49,7 +49,7 @@ export const LoginPage = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-600 shadow-lg shadow-orange-500/25 mb-4">
             <UtensilsCrossed className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">The Royal Spice</h1>
+          <h1 className="text-3xl font-extrabold text-white tracking-tight">Maison Ceylon</h1>
           <p className="text-slate-400 text-sm mt-1">Sign in to access your POS terminal session</p>
         </div>
 

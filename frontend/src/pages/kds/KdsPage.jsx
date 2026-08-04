@@ -121,7 +121,7 @@ export const KdsPage = () => {
             </div>
             <div>
               <h1 className="text-xl font-extrabold text-white tracking-tight">Kitchen Display System (KDS)</h1>
-              <p className="text-xs text-slate-400">The Royal Spice • Live order tickets & prep queue</p>
+              <p className="text-xs text-slate-400">Maison Ceylon • Live order tickets & prep queue</p>
             </div>
           </div>
         </div>

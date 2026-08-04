@@ -130,7 +130,7 @@ export const TableLayoutPage = () => {
           </button>
           <div>
             <h1 className="text-2xl font-extrabold text-white tracking-tight">Tables & Floor Layout</h1>
-            <p className="text-xs text-slate-400">The Royal Spice • Live seating & table reservations</p>
+            <p className="text-xs text-slate-400">Maison Ceylon • Live seating & table reservations</p>
           </div>
         </div>
 

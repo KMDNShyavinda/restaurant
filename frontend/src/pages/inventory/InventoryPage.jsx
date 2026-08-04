@@ -131,7 +131,7 @@ export const InventoryPage = () => {
             </div>
             <div>
               <h1 className="text-xl font-extrabold text-white tracking-tight">Stock & Raw Ingredients</h1>
-              <p className="text-xs text-slate-400">The Royal Spice • BOM materials & low stock warnings</p>
+              <p className="text-xs text-slate-400">Maison Ceylon • BOM materials & low stock warnings</p>
             </div>
           </div>
         </div>

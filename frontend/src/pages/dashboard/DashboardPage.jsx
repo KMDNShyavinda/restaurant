@@ -18,10 +18,10 @@ export const DashboardPage = () => {
       <header className="flex justify-between items-center bg-[#141a22]/90 border border-slate-800/80 backdrop-blur-xl p-4 px-6 rounded-3xl mb-8 shadow-2xl">
         <div className="flex items-center space-x-4">
           <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-600 border border-orange-400/30 flex items-center justify-center text-white font-extrabold text-xs shadow-lg shadow-orange-500/20 tracking-wider">
-            TRS
+            MC
           </div>
           <div>
-            <h1 className="text-xl font-extrabold text-white tracking-tight">The Royal Spice</h1>
+            <h1 className="text-xl font-extrabold text-white tracking-tight">Maison Ceylon</h1>
             <p className="text-xs text-slate-400">Welcome back, <span className="text-orange-400 font-extrabold">{user?.name}</span> ({user?.role})</p>
           </div>
         </div>

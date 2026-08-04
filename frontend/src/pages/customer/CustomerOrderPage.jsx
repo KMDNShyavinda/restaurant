@@ -160,7 +160,7 @@ export const CustomerOrderPage = () => {
             </div>
             <div>
               <h1 className="text-base font-extrabold text-white tracking-tight flex items-center space-x-1.5">
-                <span>The Royal Spice</span>
+                <span>Maison Ceylon</span>
                 <span className="px-2 py-0.5 bg-orange-500/10 border border-orange-500/30 text-orange-400 text-[10px] font-black rounded-lg uppercase tracking-wider">
                   Self Order
                 </span>
