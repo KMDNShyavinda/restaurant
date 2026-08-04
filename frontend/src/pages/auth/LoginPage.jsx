@@ -114,27 +114,42 @@ export const LoginPage = () => {
         </form>
 
         {/* Quick Credentials Demo Presets */}
-        <div className="mt-8 pt-6 border-t border-slate-800/80">
-          <div className="flex items-center space-x-2 mb-3 text-slate-400 text-xs font-bold uppercase tracking-wider">
-            <ShieldCheck className="w-4 h-4 text-orange-400" />
-            <span>Select Role Account:</span>
+        <div className="mt-6 pt-6 border-t border-slate-800/80">
+          <div className="flex items-center justify-between mb-3 text-slate-400 text-xs font-extrabold uppercase tracking-wider">
+            <div className="flex items-center space-x-1.5">
+              <ShieldCheck className="w-4 h-4 text-orange-400" />
+              <span>Select Staff Account:</span>
+            </div>
+            <span className="text-[10px] text-slate-500 font-mono">Password: password123</span>
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => handleQuickFill('admin@pos.com')}
-              className="px-3 py-2 bg-[#0d1217] hover:bg-slate-900 border border-slate-800 rounded-xl text-slate-300 text-xs font-medium transition text-left cursor-pointer"
-            >
-              <div className="font-extrabold text-orange-400">Super Admin</div>
-              <div className="text-[11px] text-slate-400 truncate">admin@pos.com</div>
-            </button>
-            <button
-              onClick={() => handleQuickFill('manager@pos.com')}
-              className="px-3 py-2 bg-[#0d1217] hover:bg-slate-900 border border-slate-800 rounded-xl text-slate-300 text-xs font-medium transition text-left cursor-pointer"
-            >
-              <div className="font-extrabold text-amber-400">Manager</div>
-              <div className="text-[11px] text-slate-400 truncate">manager@pos.com</div>
-            </button>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
+            {[
+              { role: 'Super Admin', email: 'admin@pos.com', color: 'text-orange-400' },
+              { role: 'Manager', email: 'manager@pos.com', color: 'text-amber-400' },
+              { role: 'Cashier', email: 'cashier@pos.com', color: 'text-emerald-400' },
+              { role: 'Waiter', email: 'waiter@pos.com', color: 'text-sky-400' },
+              { role: 'Kitchen Staff', email: 'kitchen@pos.com', color: 'text-rose-400' }
+            ].map(acc => (
+              <button
+                key={acc.email}
+                type="button"
+                onClick={() => handleQuickFill(acc.email)}
+                className="px-2.5 py-2 bg-[#0d1217] hover:bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 text-xs transition text-left cursor-pointer hover:border-orange-500/40"
+              >
+                <div className={`font-extrabold text-[11px] ${acc.color}`}>{acc.role}</div>
+                <div className="text-[10px] text-slate-400 truncate">{acc.email}</div>
+              </button>
+            ))}
           </div>
+
+          <a
+            href="/order"
+            className="w-full py-2.5 px-4 bg-[#0d1217] hover:bg-slate-900 border border-slate-800 text-slate-300 text-xs font-bold rounded-2xl flex items-center justify-center space-x-2 transition cursor-pointer"
+          >
+            <span>Customer? Open Self-Ordering Menu</span>
+            <ArrowRight className="w-3.5 h-3.5 text-orange-400" />
+          </a>
         </div>
       </div>
     </div>

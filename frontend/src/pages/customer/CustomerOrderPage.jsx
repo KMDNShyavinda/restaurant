@@ -189,6 +189,15 @@ export const CustomerOrderPage = () => {
               </select>
             )}
 
+            {/* Staff Login Button */}
+            <button
+              onClick={() => navigate('/login')}
+              className="px-3.5 py-1.5 bg-[#0d1217] hover:bg-slate-900 border border-slate-800 text-slate-300 rounded-2xl text-xs font-bold transition cursor-pointer flex items-center space-x-1.5"
+            >
+              <Smartphone className="w-3.5 h-3.5 text-orange-400" />
+              <span className="hidden sm:inline">Staff Login</span>
+            </button>
+
             {/* Cart Icon Badge */}
             <button
               onClick={() => setShowCartDrawer(true)}
