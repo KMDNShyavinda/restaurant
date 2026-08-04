@@ -6,6 +6,7 @@ import {
   TrendingUp, Users, ArrowRight, Compass, ChefHat, Activity
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { PendingApprovals } from './components/PendingApprovals';
 
 export const DashboardPage = () => {
   const { user, logout } = useAuth();
@@ -415,6 +416,9 @@ export const DashboardPage = () => {
           </div>
 
         </div>
+
+        {/* Admin Pendings */}
+        <PendingApprovals />
       </div>
     </div>
   );

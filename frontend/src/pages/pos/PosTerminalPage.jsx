@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ordersApi } from '../../api/ordersApi';
 import { tablesApi } from '../../api/tablesApi';
 import { useAuth } from '../../context/AuthContext';
+import { useActionGuard } from '../../hooks/useActionGuard';
 import { 
   ArrowLeft, Search, Plus, Minus, Trash2, Send, 
   CreditCard, CheckCircle2, Utensils, X, Receipt, DollarSign,
@@ -42,6 +43,7 @@ export const PosTerminalPage = () => {
   const [completedInvoice, setCompletedInvoice] = useState(null);
 
   const { user } = useAuth();
+  const { isPending } = useActionGuard();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -116,6 +118,10 @@ export const PosTerminalPage = () => {
   const grandTotal = subtotal + tax;
 
   const handleSendToKitchen = async () => {
+    if (isPending) {
+      alert("Not yet approved user role. Please wait for an Admin to approve your account.");
+      return;
+    }
     if (cart.length === 0) return;
     try {
       setIsSendingToKitchen(true);
@@ -146,6 +152,10 @@ export const PosTerminalPage = () => {
   };
 
   const handleProcessPayment = async () => {
+    if (isPending) {
+      alert("Not yet approved user role. Please wait for an Admin to approve your account.");
+      return;
+    }
     if (!activeOrder && cart.length === 0) return;
     try {
       setIsProcessingPayment(true);

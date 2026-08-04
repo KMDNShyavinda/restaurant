@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { kitchenApi } from '../../api/kitchenApi';
+import { useAuth } from '../../context/AuthContext';
+import { useActionGuard } from '../../hooks/useActionGuard';
 import { Client } from '@stomp/stompjs';
 import { 
   ArrowLeft, Tv, Clock, CheckCircle2, Flame, 
@@ -14,6 +16,8 @@ export const KdsPage = () => {
   const [wsConnected, setWsConnected] = useState(false);
   const [time, setTime] = useState(new Date().toLocaleTimeString());
 
+  const { user } = useAuth();
+  const { isPending } = useActionGuard();
   const navigate = useNavigate();
 
   const fetchTickets = async () => {
@@ -80,6 +84,10 @@ export const KdsPage = () => {
   }, [selectedStation]);
 
   const handleUpdateStatus = async (ticketId, newStatus) => {
+    if (isPending) {
+      alert("Not yet approved user role. Please wait for an Admin to approve your account.");
+      return;
+    }
     try {
       const updated = await kitchenApi.updateTicketStatus(ticketId, newStatus);
       setTickets(prev => prev.map(t => t.id === ticketId ? updated : t));

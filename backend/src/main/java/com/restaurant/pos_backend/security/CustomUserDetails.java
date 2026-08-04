@@ -19,6 +19,7 @@ public class CustomUserDetails implements UserDetails {
     private final String name;
     private final Long branchId;
     private final String roleName;
+    private final String status;
     private final Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserDetails(User user) {
@@ -28,6 +29,7 @@ public class CustomUserDetails implements UserDetails {
         this.name = user.getName();
         this.branchId = user.getBranch() != null ? user.getBranch().getId() : null;
         this.roleName = user.getRole() != null ? user.getRole().getName() : "USER";
+        this.status = user.getStatus() != null ? user.getStatus() : "ACTIVE";
 
         Set<GrantedAuthority> auths = new HashSet<>();
         // Add Role authority (ROLE_ADMIN, ROLE_MANAGER, etc.)

@@ -61,6 +61,7 @@ public class AuthService {
                 .name(userDetails.getName())
                 .email(userDetails.getUsername())
                 .role(userDetails.getRoleName())
+                .status(userDetails.getStatus())
                 .branchId(userDetails.getBranchId())
                 .build();
     }
@@ -85,7 +86,7 @@ public class AuthService {
                 .phone(request.getPhone())
                 .role(role)
                 .branch(branch)
-                .status("ACTIVE")
+                .status("PENDING")
                 .build();
 
         userRepository.save(newUser);
