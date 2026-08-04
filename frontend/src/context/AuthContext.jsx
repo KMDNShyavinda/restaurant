@@ -27,6 +27,15 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
+  const register = async (userData) => {
+    const data = await authApi.register(userData);
+    setToken(data.token);
+    setUser(data);
+    localStorage.setItem('pos_jwt_token', data.token);
+    localStorage.setItem('pos_user_data', JSON.stringify(data));
+    return data;
+  };
+
   const logout = () => {
     setToken(null);
     setUser(null);
@@ -39,7 +48,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated: !!token, loading, login, logout, hasRole }}>
+    <AuthContext.Provider value={{ user, token, isAuthenticated: !!token, loading, login, register, logout, hasRole }}>
       {children}
     </AuthContext.Provider>
   );

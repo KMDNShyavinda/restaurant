@@ -5,4 +5,9 @@ export const authApi = {
     const response = await axiosClient.post('/auth/login', { email, password });
     return response.data;
   },
+
+  register: async (userData) => {
+    const response = await axiosClient.post('/auth/register', userData);
+    return response.data;
+  }
 };
