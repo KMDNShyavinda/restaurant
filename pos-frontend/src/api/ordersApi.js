@@ -1,0 +1,42 @@
+import axiosClient from './axiosClient';
+
+export const ordersApi = {
+  getCategories: async (branchId = 1) => {
+    const response = await axiosClient.get(`/menu/categories?branchId=${branchId}`);
+    return response.data;
+  },
+
+  getMenuItems: async (branchId = 1, categoryId = null) => {
+    let url = `/menu/items?branchId=${branchId}`;
+    if (categoryId) {
+      url += `&categoryId=${categoryId}`;
+    }
+    const response = await axiosClient.get(url);
+    return response.data;
+  },
+
+  createOrder: async (orderData) => {
+    const response = await axiosClient.post('/orders', orderData);
+    return response.data;
+  },
+
+  addItemsToOrder: async (orderId, items) => {
+    const response = await axiosClient.post(`/orders/${orderId}/items`, items);
+    return response.data;
+  },
+
+  sendToKitchen: async (orderId) => {
+    const response = await axiosClient.post(`/orders/${orderId}/send-to-kitchen`);
+    return response.data;
+  },
+
+  processPayment: async (orderId, paymentData) => {
+    const response = await axiosClient.post(`/orders/${orderId}/payments`, paymentData);
+    return response.data;
+  },
+
+  getInvoice: async (orderId) => {
+    const response = await axiosClient.get(`/orders/${orderId}/invoice`);
+    return response.data;
+  },
+};
