@@ -184,7 +184,8 @@ export const PosTerminalPage = () => {
   };
 
   const filteredItems = menuItems.filter(item => {
-    const matchesCat = !selectedCategory || item.category?.id === selectedCategory;
+    const itemCatId = item.category?.id;
+    const matchesCat = selectedCategory === null || (itemCatId && String(itemCatId) === String(selectedCategory));
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCat && matchesSearch;
   });
@@ -260,30 +261,33 @@ export const PosTerminalPage = () => {
         {/* Left Column: Category Tabs + Menu Item Grid (65%) */}
         <div className="w-7/12 lg:w-2/3 flex flex-col border-r border-slate-800/80 p-4 overflow-hidden">
           {/* Category Tabs */}
-          <div className="flex items-center space-x-2 overflow-x-auto pb-3 mb-4 shrink-0">
+          <div className="flex items-center space-x-2 overflow-x-auto pb-3 mb-4 shrink-0 no-scrollbar">
             <button
               onClick={() => setSelectedCategory(null)}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition cursor-pointer shrink-0 ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer shrink-0 border ${
                 selectedCategory === null
-                  ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20'
-                  : 'bg-slate-900 text-slate-400 hover:bg-slate-800 border border-slate-800'
+                  ? 'bg-sky-500 text-white border-sky-400 shadow-lg shadow-sky-500/20'
+                  : 'bg-slate-900 text-slate-400 hover:bg-slate-800 border-slate-800'
               }`}
             >
               All Items ({menuItems.length})
             </button>
-            {categories.map(c => (
-              <button
-                key={c.id}
-                onClick={() => setSelectedCategory(c.id)}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold transition cursor-pointer shrink-0 ${
-                  selectedCategory === c.id
-                    ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20'
-                    : 'bg-slate-900 text-slate-400 hover:bg-slate-800 border border-slate-800'
-                }`}
-              >
-                {c.name}
-              </button>
-            ))}
+            {categories.map(c => {
+              const count = menuItems.filter(i => String(i.category?.id) === String(c.id)).length;
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => setSelectedCategory(c.id)}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer shrink-0 border ${
+                    selectedCategory === c.id
+                      ? 'bg-sky-500 text-white border-sky-400 shadow-lg shadow-sky-500/20'
+                      : 'bg-slate-900 text-slate-400 hover:bg-slate-800 border-slate-800'
+                  }`}
+                >
+                  {c.name} ({count})
+                </button>
+              );
+            })}
           </div>
 
           {/* Menu Items Grid */}
@@ -291,28 +295,47 @@ export const PosTerminalPage = () => {
             <div className="flex-1 flex items-center justify-center">
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-sky-500"></div>
             </div>
+          ) : filteredItems.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-slate-500 text-center">
+              <Utensils className="w-12 h-12 mb-2 opacity-30" />
+              <p className="text-sm font-medium">No dishes found</p>
+              <p className="text-xs">Try selecting another category tab or clearing search</p>
+            </div>
           ) : (
             <div className="flex-1 overflow-y-auto grid grid-cols-2 md:grid-cols-3 gap-4 pr-2">
               {filteredItems.map(item => (
                 <div
                   key={item.id}
                   onClick={() => addToCart(item)}
-                  className="bg-slate-900 border border-slate-800 hover:border-sky-500/50 p-4 rounded-2xl cursor-pointer transition transform hover:-translate-y-1 shadow-lg flex flex-col justify-between group"
+                  className="bg-slate-900 border border-slate-800 hover:border-sky-500/50 p-3.5 rounded-2xl cursor-pointer transition transform hover:-translate-y-1 shadow-lg flex flex-col justify-between group overflow-hidden"
                 >
                   <div>
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-800 text-sky-400">
+                    {/* Item Image Banner */}
+                    <div className="w-full h-36 bg-slate-950 rounded-xl overflow-hidden mb-3 relative group-hover:shadow-md transition">
+                      <img
+                        src={item.imageUrl || 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500'}
+                        alt={item.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500';
+                        }}
+                      />
+                      <span className="absolute top-2 left-2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-950/80 backdrop-blur-md text-sky-400 border border-slate-800/80 shadow">
                         {item.category?.name || 'General'}
                       </span>
-                      <span className="text-sm font-black text-emerald-400">${item.price?.toFixed(2)}</span>
+                      <span className="absolute bottom-2 right-2 text-xs font-black px-2.5 py-1 rounded-lg bg-slate-950/90 backdrop-blur-md text-emerald-400 border border-slate-800/80 shadow">
+                        ${item.price?.toFixed(2)}
+                      </span>
                     </div>
+
                     <h3 className="font-bold text-white text-sm mb-1 group-hover:text-sky-400 transition">{item.name}</h3>
-                    <p className="text-xs text-slate-400 line-clamp-2">{item.description}</p>
+                    <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">{item.description}</p>
                   </div>
                   
-                  <div className="mt-4 pt-2 border-t border-slate-800/60 flex items-center justify-between text-xs text-sky-400 font-semibold">
-                    <span>Add to Cart</span>
-                    <div className="w-6 h-6 rounded-lg bg-sky-500/10 flex items-center justify-center group-hover:bg-sky-500 group-hover:text-white transition">
+                  <div className="mt-3 pt-2 border-t border-slate-800/60 flex items-center justify-between text-xs text-sky-400 font-semibold">
+                    <span>Add to Order</span>
+                    <div className="w-6.5 h-6.5 rounded-lg bg-sky-500/10 flex items-center justify-center group-hover:bg-sky-500 group-hover:text-white transition shadow">
                       <Plus className="w-3.5 h-3.5" />
                     </div>
                   </div>
