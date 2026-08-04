@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { LogOut, LayoutGrid, ShoppingCart, Tv, Package, ShieldCheck } from 'lucide-react';
+import { LogOut, LayoutGrid, ShoppingCart, Tv, Package, ShieldCheck, Utensils } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const DashboardPage = () => {
