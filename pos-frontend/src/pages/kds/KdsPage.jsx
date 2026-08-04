@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { kitchenApi } from '../../api/kitchenApi';
 import { Client } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
 import { 
   ArrowLeft, Tv, Clock, CheckCircle2, Flame, 
-  RefreshCw, Wifi, WifiOff, Volume2, UtensilsCrossed 
+  RefreshCw, Wifi, WifiOff, UtensilsCrossed 
 } from 'lucide-react';
 
 export const KdsPage = () => {
@@ -37,9 +36,9 @@ export const KdsPage = () => {
       setTime(new Date().toLocaleTimeString());
     }, 1000);
 
-    // STOMP SockJS Client Setup
+    // STOMP Client Setup using native WebSocket
     const client = new Client({
-      webSocketFactory: () => new SockJS('http://localhost:8080/ws/kitchen'),
+      brokerURL: 'ws://localhost:8080/ws/kitchen/websocket',
       reconnectDelay: 5000,
       onConnect: () => {
         setWsConnected(true);
