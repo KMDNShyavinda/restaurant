@@ -40,14 +40,20 @@ public class DataInitializer implements CommandLineRunner {
 
         String encodedPassword = passwordEncoder.encode("password123");
 
+        // Ensure CUSTOMER role exists (id 6)
+        entityManager.createNativeQuery(
+                "INSERT INTO roles (id, name, description) VALUES (6, 'CUSTOMER', 'Customer') ON CONFLICT (id) DO NOTHING"
+        ).executeUpdate();
+
         // Guarantee all demo accounts exist with valid BCrypt hash
         createOrUpdateUser("admin@pos.com", "System Owner", 1L, encodedPassword);
         createOrUpdateUser("manager@pos.com", "Sarah Manager", 2L, encodedPassword);
         createOrUpdateUser("cashier@pos.com", "Chris Cashier", 3L, encodedPassword);
         createOrUpdateUser("waiter@pos.com", "Will Waiter", 4L, encodedPassword);
         createOrUpdateUser("kitchen@pos.com", "Kevin Kitchen", 5L, encodedPassword);
+        createOrUpdateUser("customer@pos.com", "Charlie Customer", 6L, encodedPassword);
 
-        System.out.println(">>> Demo account passwords initialized successfully for: admin, manager, cashier, waiter, kitchen (password: password123)");
+        System.out.println(">>> Demo account passwords initialized successfully for: admin, manager, cashier, waiter, kitchen, customer (password: password123)");
 
         // Seed / Ensure expanded Menu Categories & Menu Items
         seedMenuData();

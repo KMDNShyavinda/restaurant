@@ -9,6 +9,7 @@ import com.restaurant.pos_backend.entity.User;
 import com.restaurant.pos_backend.repository.BranchRepository;
 import com.restaurant.pos_backend.repository.RoleRepository;
 import com.restaurant.pos_backend.repository.UserRepository;
+import com.restaurant.pos_backend.repository.CustomerRepository;
 import com.restaurant.pos_backend.security.CustomUserDetails;
 import com.restaurant.pos_backend.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,9 @@ public class AuthService {
                 .build();
     }
 
+    @Autowired
+    private CustomerRepository customerRepository;
+
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -79,6 +83,8 @@ public class AuthService {
         Long branchId = request.getBranchId() != null ? request.getBranchId() : 1L;
         Branch branch = branchRepository.findById(branchId).orElse(null);
 
+        String status = targetRoleName.equals("CUSTOMER") ? "ACTIVE" : "PENDING";
+
         User newUser = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
@@ -86,10 +92,22 @@ public class AuthService {
                 .phone(request.getPhone())
                 .role(role)
                 .branch(branch)
-                .status("PENDING")
+                .status(status)
                 .build();
 
         userRepository.save(newUser);
+
+        if ("CUSTOMER".equals(targetRoleName)) {
+            // Also create a Customer record linked by email
+            if (customerRepository.findByEmail(request.getEmail()).isEmpty()) {
+                com.restaurant.pos_backend.entity.Customer customer = com.restaurant.pos_backend.entity.Customer.builder()
+                        .name(request.getName())
+                        .email(request.getEmail())
+                        .phone(request.getPhone())
+                        .build();
+                customerRepository.save(customer);
+            }
+        }
 
         // Auto-login registered user and generate JWT
         return login(new LoginRequest(request.getEmail(), request.getPassword()));

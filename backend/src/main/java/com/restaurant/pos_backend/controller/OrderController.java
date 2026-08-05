@@ -11,6 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import com.restaurant.pos_backend.security.CustomUserDetails;
+import com.restaurant.pos_backend.entity.Customer;
+import com.restaurant.pos_backend.repository.CustomerRepository;
 import java.util.List;
 
 @RestController
@@ -21,12 +25,28 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private CustomerRepository customerRepository;
+
     @GetMapping
-    @PreAuthorize("hasAuthority('orders:read') or hasRole('WAITER') or hasRole('CASHIER') or hasRole('MANAGER') or hasRole('OWNER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('CUSTOMER') or hasAuthority('orders:read') or hasRole('WAITER') or hasRole('CASHIER') or hasRole('MANAGER') or hasRole('OWNER') or hasRole('ADMIN')")
     public ResponseEntity<List<Order>> getOrders(
             @RequestParam(defaultValue = "1") Long branchId,
-            @RequestParam(required = false) String status) {
+            @RequestParam(required = false) String status,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        
         List<Order> orders = orderService.getOrders(branchId, status);
+        
+        if ("CUSTOMER".equals(userDetails.getRoleName())) {
+            // Filter orders only for this customer
+            Customer customer = customerRepository.findByEmail(userDetails.getUsername()).orElse(null);
+            if (customer != null) {
+                orders = orders.stream().filter(o -> o.getCustomer() != null && o.getCustomer().getId().equals(customer.getId())).toList();
+            } else {
+                orders = List.of(); // No customer profile means no orders
+            }
+        }
+        
         return ResponseEntity.ok(orders);
     }
 
@@ -37,14 +57,20 @@ public class OrderController {
     }
 
     @PostMapping
-    // Public endpoint for customer ordering
-    public ResponseEntity<Order> createOrder(@Valid @RequestBody OrderCreateRequest request) {
+    @PreAuthorize("hasRole('CUSTOMER') or hasAuthority('orders:create') or hasRole('WAITER') or hasRole('CASHIER') or hasRole('MANAGER') or hasRole('OWNER')")
+    public ResponseEntity<Order> createOrder(@Valid @RequestBody OrderCreateRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        if ("CUSTOMER".equals(userDetails.getRoleName())) {
+            Customer customer = customerRepository.findByEmail(userDetails.getUsername()).orElse(null);
+            if (customer != null) {
+                request.setCustomerId(customer.getId());
+            }
+        }
         Order order = orderService.createOrder(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
 
     @PostMapping("/{id}/items")
-    // Public endpoint for customer ordering
+    @PreAuthorize("hasRole('CUSTOMER') or hasAuthority('orders:create') or hasRole('WAITER') or hasRole('CASHIER') or hasRole('MANAGER') or hasRole('OWNER')")
     public ResponseEntity<Order> addItemsToOrder(
             @PathVariable Long id,
             @Valid @RequestBody List<OrderItemRequest> itemRequests) {
@@ -53,7 +79,7 @@ public class OrderController {
     }
 
     @PostMapping("/{id}/send-to-kitchen")
-    // Public endpoint for customer ordering
+    @PreAuthorize("hasRole('CUSTOMER') or hasAuthority('orders:create') or hasRole('WAITER') or hasRole('CASHIER') or hasRole('MANAGER') or hasRole('OWNER')")
     public ResponseEntity<Order> sendToKitchen(@PathVariable Long id) {
         Order order = orderService.sendToKitchen(id);
         return ResponseEntity.ok(order);
