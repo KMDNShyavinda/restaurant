@@ -113,8 +113,18 @@ export const OrderTrackingPage = () => {
   const handleSearchOrder = (e) => {
     e.preventDefault();
     if (!inputOrderId.trim()) return;
-    setActiveOrderId(inputOrderId.trim());
-    navigate(`/track/${inputOrderId.trim()}`);
+    
+    // Extract only digits from the input (e.g., "Ticket #7" -> "7")
+    const numericId = inputOrderId.replace(/\D/g, '');
+    
+    if (!numericId) {
+      setError("Please enter a valid numeric Order ID.");
+      setOrder(null);
+      return;
+    }
+
+    setActiveOrderId(numericId);
+    navigate(`/track/${numericId}`);
   };
 
   // Pipeline stages configuration
