@@ -49,4 +49,9 @@ export const ordersApi = {
     const response = await axiosClient.get('/orders');
     return response.data;
   },
+
+  updateOrderStatus: async (orderId, status) => {
+    const response = await axiosClient.put(`/orders/${orderId}/status?status=${status}`);
+    return response.data;
+  },
 };

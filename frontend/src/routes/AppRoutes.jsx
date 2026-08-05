@@ -11,6 +11,7 @@ import { OrderTrackingPage } from '../pages/customer/OrderTrackingPage';
 import { CustomerProfilePage } from '../pages/customer/CustomerProfilePage';
 import { RestaurantHomePage } from '../pages/public/RestaurantHomePage';
 import { RoleWelcomePage } from '../pages/auth/RoleWelcomePage';
+import { WaiterDashboardPage } from '../pages/dashboard/WaiterDashboardPage';
 import { ProtectedRoute } from './ProtectedRoute';
 
 export const AppRoutes = () => {
@@ -41,6 +42,10 @@ export const AppRoutes = () => {
 
       <Route element={<ProtectedRoute allowedRoles={['OWNER', 'ADMIN', 'MANAGER', 'WAITER', 'WAITSTAFF', 'CASHIER']} />}>
         <Route path="/tables" element={<TableLayoutPage />} />
+      </Route>
+
+      <Route element={<ProtectedRoute allowedRoles={['OWNER', 'ADMIN', 'MANAGER', 'WAITER', 'WAITSTAFF']} />}>
+        <Route path="/waiter" element={<WaiterDashboardPage />} />
       </Route>
 
       <Route element={<ProtectedRoute allowedRoles={['OWNER', 'ADMIN', 'MANAGER', 'CASHIER', 'WAITER', 'WAITSTAFF']} />}>

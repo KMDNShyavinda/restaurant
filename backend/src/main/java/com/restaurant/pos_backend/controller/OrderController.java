@@ -84,4 +84,13 @@ public class OrderController {
         Order order = orderService.sendToKitchen(id);
         return ResponseEntity.ok(order);
     }
+
+    @PutMapping("/{id}/status")
+    @PreAuthorize("hasRole('WAITER') or hasRole('WAITSTAFF') or hasRole('CASHIER') or hasRole('MANAGER') or hasRole('OWNER') or hasRole('ADMIN')")
+    public ResponseEntity<Order> updateOrderStatus(
+            @PathVariable Long id,
+            @RequestParam String status) {
+        Order order = orderService.updateOrderStatus(id, status);
+        return ResponseEntity.ok(order);
+    }
 }

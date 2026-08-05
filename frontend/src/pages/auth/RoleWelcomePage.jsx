@@ -92,15 +92,16 @@ export const RoleWelcomePage = () => {
       heroGradient: 'from-sky-400 via-indigo-400 to-blue-500',
       heroImage: 'https://images.unsplash.com/photo-1590846406792-0adc7f938f1d?w=1200',
       welcomeMsg: 'Welcome to Floor Service. Manage table assignments across Main Floor, Patio, and VIP zones, take mobile orders, and track guest requests.',
-      primaryRoute: '/tables',
-      primaryBtnText: 'Open Interactive Floor Plan',
-      primaryIcon: MapPin,
+      primaryRoute: '/waiter',
+      primaryBtnText: 'Open Order Management',
+      primaryIcon: CheckCircle2,
       metrics: [
         { label: 'Dining Zones', val: '3 Floor Zones', color: 'text-sky-400' },
         { label: 'Table Layout', val: '8 Active Tables', color: 'text-amber-400' },
         { label: 'Order Dispatch', val: 'Direct to Kitchen', color: 'text-emerald-400' }
       ],
       shortcuts: [
+        { label: 'Order Management', route: '/waiter', icon: CheckCircle2, desc: 'Manage and serve ready orders' },
         { label: 'Interactive Floor Plan', route: '/tables', icon: MapPin, desc: 'Visual floor plan & reservation status' },
         { label: 'Take New Order', route: '/pos', icon: ShoppingCart, desc: 'Send order directly to kitchen' }
       ]

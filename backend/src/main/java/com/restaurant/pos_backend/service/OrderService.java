@@ -184,4 +184,16 @@ public class OrderService {
 
         return savedOrder;
     }
+
+    @Transactional
+    public Order updateOrderStatus(Long orderId, String status) {
+        Order order = getOrderById(orderId);
+        order.setStatus(status.toUpperCase());
+        Order savedOrder = orderRepository.save(order);
+
+        // Push WebSocket update
+        messagingTemplate.convertAndSend("/topic/orders/" + orderId, savedOrder);
+        
+        return savedOrder;
+    }
 }
