@@ -36,6 +36,8 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+        syncSequences();
+
         String encodedPassword = passwordEncoder.encode("password123");
 
         // Guarantee all demo accounts exist with valid BCrypt hash
@@ -49,6 +51,24 @@ public class DataInitializer implements CommandLineRunner {
 
         // Seed / Ensure expanded Menu Categories & Menu Items
         seedMenuData();
+    }
+
+    private void syncSequences() {
+        String[] tables = {
+            "restaurants", "branches", "roles", "permissions", "users", "shifts",
+            "customers", "tables", "reservations", "menu_categories", "menu_items",
+            "modifier_groups", "modifiers", "ingredients", "recipe_items", "suppliers",
+            "purchase_orders", "purchase_order_items", "stock_adjustments", "orders",
+            "order_items", "kitchen_tickets", "taxes", "discounts", "payments", "invoices", "audit_logs"
+        };
+        for (String table : tables) {
+            try {
+                String sql = String.format("SELECT setval('%s_id_seq', COALESCE((SELECT MAX(id) FROM %s), 1))", table, table);
+                entityManager.createNativeQuery(sql).getSingleResult();
+            } catch (Exception ignored) {
+                // Ignore if table or sequence does not exist
+            }
+        }
     }
 
     private void createOrUpdateUser(String email, String defaultName, Long roleId, String encodedPassword) {
