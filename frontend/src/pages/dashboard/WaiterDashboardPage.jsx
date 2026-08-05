@@ -81,10 +81,10 @@ export const WaiterDashboardPage = () => {
                 <div key={order.id} className="bg-[#0a0d14] p-4 rounded-2xl border border-amber-500/20 shadow-md">
                    <div className="flex justify-between items-start mb-2">
                      <span className="font-bold text-amber-400">Order #{order.id}</span>
-                     <span className="text-xs font-bold bg-amber-500/10 text-amber-400 px-2 py-1 rounded-md border border-amber-500/20">Table {order.tableNumber || 'N/A'}</span>
+                     <span className="text-xs font-bold bg-amber-500/10 text-amber-400 px-2 py-1 rounded-md border border-amber-500/20">Table {order.table?.tableNumber || 'N/A'}</span>
                    </div>
                    <div className="text-sm text-slate-400 line-clamp-2">
-                     {order.items?.map(i => `${i.quantity}x ${i.menuItem?.name || 'Item'}`).join(', ')}
+                     {(order.items || []).map(i => `${i.quantity}x ${i.menuItem?.name || 'Item'}`).join(', ')}
                    </div>
                    <div className="mt-3 text-xs text-slate-500 flex items-center gap-1 font-bold">
                      <Clock className="w-3 h-3 text-amber-500/70" /> Preparing...
@@ -116,7 +116,7 @@ export const WaiterDashboardPage = () => {
                   <div key={order.id} className="bg-gradient-to-br from-sky-900/40 to-[#0a0d14] p-5 rounded-2xl border border-sky-400/30 shadow-lg transform transition hover:-translate-y-1">
                      <div className="flex justify-between items-center mb-3">
                        <span className="text-xl font-black text-white drop-shadow-md">Order #{order.id}</span>
-                       <span className="text-sm font-bold bg-sky-500/20 text-sky-300 px-3 py-1 rounded-lg border border-sky-500/30 shadow-inner">Table {order.tableNumber || 'N/A'}</span>
+                       <span className="text-sm font-bold bg-sky-500/20 text-sky-300 px-3 py-1 rounded-lg border border-sky-500/30 shadow-inner">Table {order.table?.tableNumber || 'N/A'}</span>
                      </div>
                      <div className="text-sm text-sky-100/80 mb-5 space-y-1.5 font-medium">
                        {order.items?.map((i, idx) => (
@@ -154,7 +154,7 @@ export const WaiterDashboardPage = () => {
                      </span>
                    </div>
                    <div className="text-xs text-slate-500 font-medium">
-                     Table {order.tableNumber || 'N/A'}
+                     Table {order.table?.tableNumber || 'N/A'}
                    </div>
                 </div>
               ))}
