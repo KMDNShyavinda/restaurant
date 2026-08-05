@@ -6,7 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { 
   Utensils, Search, Plus, Minus, Trash2, ShoppingBag, 
   Clock, CheckCircle2, Flame, Sparkles, ChevronRight, X, ArrowLeft,
-  Smartphone, MapPin, Check, ChefHat, RefreshCw, Tag, Leaf, Wheat, ShieldCheck, Activity, Eye, User
+  Smartphone, MapPin, Check, ChefHat, RefreshCw, Tag, Leaf, Wheat, ShieldCheck, Activity, Eye, User, Star
 } from 'lucide-react';
 
 export const CustomerOrderPage = () => {
@@ -481,6 +481,13 @@ export const CustomerOrderPage = () => {
                     <h3 className="font-extrabold text-white text-base tracking-tight mb-1.5 group-hover:text-orange-400 transition">
                       {dish.name}
                     </h3>
+                    {dish.averageRating && (
+                      <div className="flex items-center space-x-1 mb-2 text-xs font-bold">
+                        <Star className="w-3.5 h-3.5 text-yellow-400 fill-current" />
+                        <span className="text-white">{parseFloat(dish.averageRating).toFixed(1)}</span>
+                        <span className="text-slate-500">({dish.ratingCount || 0})</span>
+                      </div>
+                    )}
                     <p className="text-slate-400 text-xs line-clamp-2 mb-3 leading-relaxed">
                       {dish.description}
                     </p>

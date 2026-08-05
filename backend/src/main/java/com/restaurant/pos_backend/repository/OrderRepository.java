@@ -10,4 +10,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByBranchId(Long branchId);
     List<Order> findByBranchIdAndStatus(Long branchId, String status);
     List<Order> findByTableIdAndStatus(Long tableId, String status);
+    List<Order> findByCustomer(com.restaurant.pos_backend.entity.Customer customer);
 }

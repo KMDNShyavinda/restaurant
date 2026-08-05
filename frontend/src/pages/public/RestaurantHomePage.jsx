@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Utensils, Calendar, Clock, MapPin, Phone, Star, Sparkles, 
-  ChevronRight, Award, Flame, ShoppingBag, ShieldCheck, Heart, User, Search, Activity, ChefHat
+  ChevronRight, Award, Flame, ShoppingBag, ShieldCheck, Heart, User, Search, Activity, ChefHat, Quote
 } from 'lucide-react';
 import { ordersApi } from '../../api/ordersApi';
+import { feedbackApi } from '../../api/feedbackApi';
 import { useAuth } from '../../context/AuthContext';
 
 export const RestaurantHomePage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [featuredDishes, setFeaturedDishes] = useState([]);
+  const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Reservation Modal State
@@ -24,7 +26,18 @@ export const RestaurantHomePage = () => {
 
   useEffect(() => {
     fetchFeaturedMenu();
+    fetchFeedbacks();
   }, []);
+
+  const fetchFeedbacks = async () => {
+    try {
+      const data = await feedbackApi.getFeedbacks();
+      const topFeedbacks = data.filter(f => f.rating === 5).slice(0, 3);
+      setFeedbacks(topFeedbacks);
+    } catch (err) {
+      console.error("Failed to load feedbacks", err);
+    }
+  };
 
   const fetchFeaturedMenu = async () => {
     try {
@@ -306,6 +319,43 @@ export const RestaurantHomePage = () => {
           </div>
         </div>
       </section>
+
+      {/* Testimonials Section */}
+      {feedbacks.length > 0 && (
+        <section className="py-16 px-6 bg-[#07090c] border-b border-amber-500/20">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <span className="text-xs font-extrabold text-amber-400 uppercase tracking-widest block mb-2">
+                Guest Experiences
+              </span>
+              <h2 className="text-3xl font-black text-white tracking-tight">What Our Customers Say</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {feedbacks.map((fb, idx) => (
+                <div key={idx} className="bg-[#11161d] border border-slate-800 rounded-3xl p-6 relative shadow-xl hover:border-amber-500/40 transition">
+                  <Quote className="w-10 h-10 text-amber-500/20 absolute top-6 right-6" />
+                  <div className="flex items-center space-x-1 mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 text-amber-400 fill-current" />
+                    ))}
+                  </div>
+                  <p className="text-sm text-slate-300 italic mb-6 leading-relaxed relative z-10">"{fb.comment}"</p>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center font-bold text-white shadow-lg">
+                      {fb.customer?.name?.charAt(0) || 'G'}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-white text-sm">{fb.customer?.name || 'Valued Guest'}</h4>
+                      <p className="text-xs text-slate-500">Maison Ceylon Customer</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Footer & Contact */}
       <footer id="contact" className="py-12 px-6 border-t border-amber-500/20 bg-[#07090c] text-slate-400 text-xs">

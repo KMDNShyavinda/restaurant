@@ -10,6 +10,7 @@ import com.restaurant.pos_backend.repository.BranchRepository;
 import com.restaurant.pos_backend.repository.MenuCategoryRepository;
 import com.restaurant.pos_backend.repository.MenuItemRepository;
 import com.restaurant.pos_backend.repository.ModifierGroupRepository;
+import com.restaurant.pos_backend.repository.DishRatingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,9 @@ public class MenuService {
 
     @Autowired
     private ModifierGroupRepository modifierGroupRepository;
+
+    @Autowired
+    private DishRatingRepository dishRatingRepository;
 
     // --- CATEGORY OPERATIONS ---
 
@@ -56,18 +60,35 @@ public class MenuService {
     // --- MENU ITEM OPERATIONS ---
 
     public List<MenuItem> getMenuItems(Long branchId, Long categoryId, Boolean availableOnly) {
+        List<MenuItem> items;
         if (categoryId != null) {
-            return menuItemRepository.findByCategoryId(categoryId);
+            items = menuItemRepository.findByCategoryId(categoryId);
+        } else if (Boolean.TRUE.equals(availableOnly)) {
+            items = menuItemRepository.findByCategoryBranchIdAndIsAvailable(branchId, true);
+        } else {
+            items = menuItemRepository.findByCategoryBranchId(branchId);
         }
-        if (Boolean.TRUE.equals(availableOnly)) {
-            return menuItemRepository.findByCategoryBranchIdAndIsAvailable(branchId, true);
+        
+        // Populate ratings
+        for (MenuItem item : items) {
+            populateRatings(item);
         }
-        return menuItemRepository.findByCategoryBranchId(branchId);
+        
+        return items;
+    }
+
+    private void populateRatings(MenuItem item) {
+        Double avgRating = dishRatingRepository.getAverageRatingForMenuItem(item.getId());
+        Long ratingCount = dishRatingRepository.getRatingCountForMenuItem(item.getId());
+        item.setAverageRating(avgRating != null ? avgRating : 0.0);
+        item.setRatingCount(ratingCount != null ? ratingCount : 0L);
     }
 
     public MenuItem getMenuItemById(Long id) {
-        return menuItemRepository.findById(id)
+        MenuItem item = menuItemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Menu Item not found with ID: " + id));
+        populateRatings(item);
+        return item;
     }
 
     @Transactional

@@ -57,4 +57,10 @@ public class MenuItem {
     )
     @Builder.Default
     private Set<ModifierGroup> modifierGroups = new HashSet<>();
+
+    @Transient
+    private Double averageRating;
+
+    @Transient
+    private Long ratingCount;
 }

@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { ordersApi } from '../../api/ordersApi';
+import { feedbackApi } from '../../api/feedbackApi';
 import { 
-  User, Mail, Phone, MapPin, Clock, ChevronRight, Activity, ShoppingBag, LogOut, ArrowLeft, Utensils
+  User, Mail, Phone, MapPin, Clock, ChevronRight, Activity, ShoppingBag, LogOut, ArrowLeft, Utensils, Star, MessageSquare, ThumbsUp, X
 } from 'lucide-react';
 
 export const CustomerProfilePage = () => {
@@ -11,6 +12,47 @@ export const CustomerProfilePage = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  const [selectedOrderToRate, setSelectedOrderToRate] = useState(null);
+  const [dishRatings, setDishRatings] = useState({}); // { [menuItemId]: { rating: 5, comment: '' } }
+  const [restaurantReview, setRestaurantReview] = useState({ rating: 5, comment: '' });
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [ratingLoading, setRatingLoading] = useState(false);
+
+  const handleRestaurantReviewSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setRatingLoading(true);
+      await feedbackApi.submitRestaurantFeedback(restaurantReview);
+      setReviewSubmitted(true);
+      setTimeout(() => setReviewSubmitted(false), 3000);
+      setRestaurantReview({ rating: 5, comment: '' });
+    } catch (err) {
+      console.error("Failed to submit review", err);
+    } finally {
+      setRatingLoading(false);
+    }
+  };
+
+  const handleDishRatingSubmit = async () => {
+    try {
+      setRatingLoading(true);
+      const promises = Object.entries(dishRatings).map(([menuItemId, ratingData]) => {
+        if (ratingData.rating > 0) {
+          return feedbackApi.submitDishRating({ menuItemId, rating: ratingData.rating, comment: ratingData.comment });
+        }
+        return Promise.resolve();
+      });
+      await Promise.all(promises);
+      setSelectedOrderToRate(null);
+      setDishRatings({});
+    } catch (err) {
+      console.error("Failed to submit dish ratings", err);
+    } finally {
+      setRatingLoading(false);
+    }
+  };
+
 
   useEffect(() => {
     fetchOrders();
@@ -138,6 +180,51 @@ export const CustomerProfilePage = () => {
           </div>
         )}
 
+        {/* Restaurant Review */}
+        {orderHistory.length > 0 && (
+          <div className="bg-gradient-to-r from-amber-500/10 to-[#11161d] border border-amber-500/30 rounded-3xl p-6 md:p-8 shadow-2xl space-y-4">
+            <h3 className="text-lg font-black text-white flex items-center space-x-2">
+              <MessageSquare className="w-5 h-5 text-amber-400" />
+              <span>Leave a Restaurant Review</span>
+            </h3>
+            <p className="text-sm text-slate-400">Share your overall experience at Maison Ceylon. We value your feedback!</p>
+            {reviewSubmitted ? (
+              <div className="bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-xl flex items-center space-x-3">
+                <ThumbsUp className="w-5 h-5 text-emerald-400" />
+                <span className="text-emerald-400 font-bold text-sm">Thank you for your feedback!</span>
+              </div>
+            ) : (
+              <form onSubmit={handleRestaurantReviewSubmit} className="space-y-4 max-w-lg">
+                <div>
+                  <div className="flex items-center space-x-2 mb-2">
+                    {[1, 2, 3, 4, 5].map(star => (
+                      <Star 
+                        key={star}
+                        onClick={() => setRestaurantReview(prev => ({ ...prev, rating: star }))}
+                        className={`w-6 h-6 cursor-pointer transition ${star <= restaurantReview.rating ? 'text-amber-400 fill-current' : 'text-slate-600'}`}
+                      />
+                    ))}
+                  </div>
+                  <textarea
+                    required
+                    placeholder="Tell us about your experience..."
+                    value={restaurantReview.comment}
+                    onChange={(e) => setRestaurantReview(prev => ({ ...prev, comment: e.target.value }))}
+                    className="w-full px-4 py-3 bg-[#07090c] border border-slate-800 rounded-xl text-white text-sm focus:outline-none focus:border-amber-500 min-h-[100px]"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={ratingLoading}
+                  className="px-6 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-extrabold rounded-xl text-sm shadow-lg shadow-amber-500/25 transition cursor-pointer"
+                >
+                  {ratingLoading ? 'Submitting...' : 'Submit Review'}
+                </button>
+              </form>
+            )}
+          </div>
+        )}
+
         {/* Order History */}
         <div className="space-y-4">
           <h3 className="text-lg font-black text-white flex items-center space-x-2 pt-4">
@@ -181,8 +268,23 @@ export const CustomerProfilePage = () => {
                         {order.items?.map(i => `${i.quantity}x ${i.menuItem?.name}`).join(', ')}
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right flex flex-col items-end gap-2">
                       <div className="font-black text-amber-400">${parseFloat(order.totalAmount || 0).toFixed(2)}</div>
+                      <button
+                        onClick={() => {
+                          setSelectedOrderToRate(order);
+                          const initialRatings = {};
+                          order.items?.forEach(i => {
+                            if (i.menuItem) {
+                              initialRatings[i.menuItem.id] = { rating: 0, comment: '' };
+                            }
+                          });
+                          setDishRatings(initialRatings);
+                        }}
+                        className="px-4 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 font-extrabold rounded-lg text-xs transition cursor-pointer"
+                      >
+                        Rate Dishes
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -191,6 +293,67 @@ export const CustomerProfilePage = () => {
           )}
         </div>
       </main>
+
+      {/* Rate Dishes Modal */}
+      {selectedOrderToRate && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-[#11161d] border border-slate-800 rounded-3xl w-full max-w-lg shadow-2xl relative max-h-[90vh] flex flex-col">
+            <div className="p-6 border-b border-slate-800 flex justify-between items-center shrink-0">
+              <h3 className="text-lg font-extrabold text-white">Rate Your Dishes</h3>
+              <button 
+                onClick={() => setSelectedOrderToRate(null)}
+                className="text-slate-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto space-y-6">
+              {selectedOrderToRate.items?.filter(i => i.menuItem).map((item, idx) => (
+                <div key={idx} className="space-y-2">
+                  <h4 className="font-bold text-slate-200 text-sm">{item.menuItem.name}</h4>
+                  <div className="flex items-center space-x-1">
+                    {[1, 2, 3, 4, 5].map(star => (
+                      <Star 
+                        key={star}
+                        onClick={() => {
+                          setDishRatings(prev => ({
+                            ...prev,
+                            [item.menuItem.id]: { ...prev[item.menuItem.id], rating: star }
+                          }));
+                        }}
+                        className={`w-5 h-5 cursor-pointer transition ${star <= (dishRatings[item.menuItem.id]?.rating || 0) ? 'text-amber-400 fill-current' : 'text-slate-600'}`}
+                      />
+                    ))}
+                  </div>
+                  <input 
+                    type="text"
+                    placeholder="Optional comment about this dish..."
+                    value={dishRatings[item.menuItem.id]?.comment || ''}
+                    onChange={(e) => {
+                      setDishRatings(prev => ({
+                        ...prev,
+                        [item.menuItem.id]: { ...prev[item.menuItem.id], comment: e.target.value }
+                      }));
+                    }}
+                    className="w-full px-3 py-2 bg-[#07090c] border border-slate-800 rounded-lg text-white text-xs focus:outline-none focus:border-amber-500"
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="p-6 border-t border-slate-800 shrink-0">
+              <button
+                onClick={handleDishRatingSubmit}
+                disabled={ratingLoading || Object.values(dishRatings).every(r => r.rating === 0)}
+                className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-extrabold rounded-xl text-sm shadow-lg shadow-amber-500/25 transition cursor-pointer disabled:opacity-50"
+              >
+                {ratingLoading ? 'Submitting...' : 'Submit Ratings'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
