@@ -260,9 +260,13 @@ export const LoginPage = () => {
                         <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Password</label>
                         <div className="relative">
                           <Lock className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-                          <input type="password" required placeholder="Min 6 chars" value={regPassword}
+                          <input type={showPass ? 'text' : 'password'} required placeholder="Min 6 chars" value={regPassword}
                             onChange={e => setRegPassword(e.target.value)} tabIndex={activeTab === 'REGISTER' ? 0 : -1}
-                            className={`${inp} pl-9 pr-3 py-2.5`} />
+                            className={`${inp} pl-9 pr-8 py-2.5`} />
+                          <button type="button" onClick={() => setShowPass(!showPass)} tabIndex={-1}
+                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-amber-400 transition cursor-pointer">
+                            {showPass ? <EyeOff style={{width:'13px',height:'13px'}} /> : <Eye style={{width:'13px',height:'13px'}} />}
+                          </button>
                         </div>
                       </div>
                       <div>
