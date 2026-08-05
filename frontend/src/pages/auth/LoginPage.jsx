@@ -16,7 +16,7 @@ export const LoginPage = () => {
   const [regEmail, setRegEmail]   = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [regPhone, setRegPhone]   = useState('');
-  const [regRole,  setRegRole]    = useState('CASHIER');
+  const [regRole,  setRegRole]    = useState('CUSTOMER');
   const [showPass, setShowPass]   = useState(false);
   const [loading,  setLoading]    = useState(false);
   const [error,    setError]      = useState(null);
@@ -270,6 +270,7 @@ export const LoginPage = () => {
                         <select value={regRole} onChange={e => setRegRole(e.target.value)}
                           tabIndex={activeTab === 'REGISTER' ? 0 : -1}
                           className={`${inp} px-3 py-2.5 font-bold`}>
+                          <option value="CUSTOMER">Customer</option>
                           <option value="ADMIN">Admin</option>
                           <option value="MANAGER">Manager</option>
                           <option value="CASHIER">Cashier</option>
@@ -302,10 +303,10 @@ export const LoginPage = () => {
 
             {/* Card footer */}
             <div className="px-6 pb-5 pt-3 border-t border-slate-800">
-              <button onClick={() => navigate('/order')}
+              <button onClick={() => navigate('/')}
                 className="w-full py-2.5 bg-[#0b0f16] hover:bg-slate-900 border border-slate-800 hover:border-amber-500/30 text-slate-400 hover:text-amber-400 text-xs font-semibold rounded-xl flex items-center justify-center gap-2 transition cursor-pointer">
                 <UtensilsCrossed style={{width:'13px',height:'13px'}} />
-                <span>Browse menu as guest — no account needed</span>
+                <span>Return to Home Page</span>
               </button>
             </div>
 

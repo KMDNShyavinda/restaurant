@@ -8,8 +8,6 @@ import { KdsPage } from '../pages/kds/KdsPage';
 import { InventoryPage } from '../pages/inventory/InventoryPage';
 import { CustomerOrderPage } from '../pages/customer/CustomerOrderPage';
 import { OrderTrackingPage } from '../pages/customer/OrderTrackingPage';
-import { CustomerLoginPage } from '../pages/customer/CustomerLoginPage';
-import { CustomerSignupPage } from '../pages/customer/CustomerSignupPage';
 import { CustomerProfilePage } from '../pages/customer/CustomerProfilePage';
 import { RestaurantHomePage } from '../pages/public/RestaurantHomePage';
 import { RoleWelcomePage } from '../pages/auth/RoleWelcomePage';
@@ -22,8 +20,6 @@ export const AppRoutes = () => {
       <Route path="/" element={<RestaurantHomePage />} />
       <Route path="/home" element={<RestaurantHomePage />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/customer/login" element={<CustomerLoginPage />} />
-      <Route path="/customer/register" element={<CustomerSignupPage />} />
 
       {/* Protected Customer Routes */}
       <Route element={<ProtectedRoute allowedRoles={['CUSTOMER', 'OWNER', 'ADMIN', 'MANAGER', 'CASHIER', 'WAITER', 'WAITSTAFF']} />}>
