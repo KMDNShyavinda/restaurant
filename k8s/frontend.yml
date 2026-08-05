@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pos-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pos-frontend
+  template:
+    metadata:
+      labels:
+        app: pos-frontend
+    spec:
+      containers:
+      - name: pos-frontend
+        image: restaurant-pos-frontend:latest
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pos-frontend-service
+spec:
+  type: LoadBalancer # අන්තර්ජාලයෙන් ඇප් එකට එන්න පුළුවන් වෙන්න
+  selector:
+    app: pos-frontend
+  ports:
+    - port: 80
+

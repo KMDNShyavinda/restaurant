@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pos-backend
+spec:
+  replicas: 2 # මෙතනින් කියන්නේ backend එකේ කොපි 2ක් රන් කරන්න කියලා (load එක බෙදාගන්න)
+  selector:
+    matchLabels:
+      app: pos-backend
+  template:
+    metadata:
+      labels:
+        app: pos-backend
+    spec:
+      containers:
+      - name: pos-backend
+        image: restaurant-pos-backend:latest
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pos-backend-service
+spec:
+  selector:
+    app: pos-backend
+  ports:
+    - port: 8080
+      targetPort: 8080
