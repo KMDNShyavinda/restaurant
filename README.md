@@ -1,7 +1,7 @@
 # 🍽️ Maison Ceylon — Restaurant POS & Management System
 
 A full-stack, enterprise-grade **Restaurant Point of Sale (POS) and Management System** for **Maison Ceylon** built with modern web technologies. This application provides complete restaurant operation workflows including role-based authentication, an interactive floor plan & table management, a fast POS order terminal, real-time Kitchen Display System (KDS) via WebSockets, a Customer QR Self-Ordering Portal, and real-time inventory/stock tracking.
-
+cls
 ---
 
 ## 🏗️ Project Architecture & Tech Stack
