@@ -25,7 +25,7 @@ export const RoleWelcomePage = () => {
       heroGradient: 'from-amber-400 via-orange-400 to-amber-500',
       heroImage: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200',
       welcomeMsg: 'Welcome to the Executive Command Hub. Oversee revenue analytics, manage user roles, dining layout, inventory stock thresholds, and live KDS streams.',
-      primaryRoute: '/dashboard',
+      primaryRoute: '/admin',
       primaryBtnText: 'Enter Executive Command Center',
       primaryIcon: LayoutDashboard,
       metrics: [
@@ -34,6 +34,7 @@ export const RoleWelcomePage = () => {
         { label: 'Store Control', val: 'All Modules', color: 'text-emerald-400' }
       ],
       shortcuts: [
+        { label: 'Admin Approvals', route: '/admin', icon: ShieldCheck, desc: 'Review & approve pending staff' },
         { label: 'Executive Analytics', route: '/dashboard', icon: LayoutDashboard, desc: 'Sales, revenue & system metrics' },
         { label: 'POS Billing Terminal', route: '/pos', icon: ShoppingCart, desc: 'Process cashier orders & billing' },
         { label: 'Floor Plan & Tables', route: '/tables', icon: MapPin, desc: 'Manage dining floor & reservations' },

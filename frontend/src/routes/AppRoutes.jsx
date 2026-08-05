@@ -12,6 +12,7 @@ import { CustomerProfilePage } from '../pages/customer/CustomerProfilePage';
 import { RestaurantHomePage } from '../pages/public/RestaurantHomePage';
 import { RoleWelcomePage } from '../pages/auth/RoleWelcomePage';
 import { WaiterDashboardPage } from '../pages/dashboard/WaiterDashboardPage';
+import { AdminDashboardPage } from '../pages/dashboard/AdminDashboardPage';
 import { ProtectedRoute } from './ProtectedRoute';
 
 export const AppRoutes = () => {
@@ -38,6 +39,10 @@ export const AppRoutes = () => {
       <Route element={<ProtectedRoute />}>
         <Route path="/welcome" element={<RoleWelcomePage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
+      </Route>
+
+      <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN', 'OWNER']} />}>
+        <Route path="/admin" element={<AdminDashboardPage />} />
       </Route>
 
       <Route element={<ProtectedRoute allowedRoles={['OWNER', 'ADMIN', 'MANAGER', 'WAITER', 'WAITSTAFF', 'CASHIER']} />}>

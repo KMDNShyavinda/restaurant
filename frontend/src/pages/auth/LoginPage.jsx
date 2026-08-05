@@ -185,9 +185,15 @@ export const LoginPage = () => {
             {/* Alert */}
             {(error || success) && (
               <div className={`mx-6 mt-4 p-2.5 rounded-xl border flex items-center gap-2 text-xs font-bold ${
-                error ? 'bg-rose-500/10 border-rose-500/25 text-rose-400' : 'bg-emerald-500/10 border-emerald-500/25 text-emerald-400'
+                error === 'Your account is pending admin approval'
+                  ? 'bg-amber-500/10 border-amber-500/25 text-amber-400'
+                  : error 
+                    ? 'bg-rose-500/10 border-rose-500/25 text-rose-400' 
+                    : 'bg-emerald-500/10 border-emerald-500/25 text-emerald-400'
               }`}>
-                {error ? <AlertCircle className="w-3.5 h-3.5 shrink-0" /> : <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />}
+                {error === 'Your account is pending admin approval'
+                  ? <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                  : error ? <AlertCircle className="w-3.5 h-3.5 shrink-0" /> : <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />}
                 <span>{error || success}</span>
               </div>
             )}

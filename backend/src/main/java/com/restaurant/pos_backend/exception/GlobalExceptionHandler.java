@@ -25,6 +25,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(org.springframework.security.authentication.DisabledException.class)
+    public ResponseEntity<Map<String, Object>> handleDisabledException(org.springframework.security.authentication.DisabledException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.UNAUTHORIZED.value());
+        body.put("error", "Account Disabled");
+        body.put("message", "Your account is pending admin approval.");
+        return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, Object> errors = new HashMap<>();

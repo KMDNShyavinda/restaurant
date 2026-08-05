@@ -112,4 +112,18 @@ public class AuthService {
         // Auto-login registered user and generate JWT
         return login(new LoginRequest(request.getEmail(), request.getPassword()));
     }
+    @Transactional(readOnly = true)
+    public java.util.List<User> getPendingUsers() {
+        return userRepository.findAll().stream()
+                .filter(u -> "PENDING".equalsIgnoreCase(u.getStatus()))
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Transactional
+    public User updateUserStatus(Long userId, String status) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setStatus(status.toUpperCase());
+        return userRepository.save(user);
+    }
 }
