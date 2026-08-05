@@ -22,6 +22,7 @@ public class OrderController {
     private OrderService orderService;
 
     @GetMapping
+    @PreAuthorize("hasAuthority('orders:read') or hasRole('WAITER') or hasRole('CASHIER') or hasRole('MANAGER') or hasRole('OWNER') or hasRole('ADMIN')")
     public ResponseEntity<List<Order>> getOrders(
             @RequestParam(defaultValue = "1") Long branchId,
             @RequestParam(required = false) String status) {
@@ -36,14 +37,14 @@ public class OrderController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('orders:create') or hasRole('WAITER') or hasRole('CASHIER') or hasRole('MANAGER') or hasRole('OWNER')")
+    // Public endpoint for customer ordering
     public ResponseEntity<Order> createOrder(@Valid @RequestBody OrderCreateRequest request) {
         Order order = orderService.createOrder(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
 
     @PostMapping("/{id}/items")
-    @PreAuthorize("hasAuthority('orders:create') or hasRole('WAITER') or hasRole('CASHIER') or hasRole('MANAGER') or hasRole('OWNER')")
+    // Public endpoint for customer ordering
     public ResponseEntity<Order> addItemsToOrder(
             @PathVariable Long id,
             @Valid @RequestBody List<OrderItemRequest> itemRequests) {
@@ -52,7 +53,7 @@ public class OrderController {
     }
 
     @PostMapping("/{id}/send-to-kitchen")
-    @PreAuthorize("hasAuthority('orders:create') or hasRole('WAITER') or hasRole('CASHIER') or hasRole('MANAGER') or hasRole('OWNER')")
+    // Public endpoint for customer ordering
     public ResponseEntity<Order> sendToKitchen(@PathVariable Long id) {
         Order order = orderService.sendToKitchen(id);
         return ResponseEntity.ok(order);
