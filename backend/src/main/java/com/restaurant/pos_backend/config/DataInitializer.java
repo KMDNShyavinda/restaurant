@@ -132,6 +132,33 @@ public class DataInitializer implements CommandLineRunner {
         getOrCreateMenuItem(catDrinks, "Fresh Lemon Mint Mojito", "Sparkling muddled lemon juice, fresh mint leaves, cane sugar and crushed ice.", 5.50, "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=500", 4, "BAR");
         getOrCreateMenuItem(catDrinks, "Fresh Mango Passion Smoothie", "Blended fresh Alphonso mangoes, passion fruit juice, and Greek yogurt.", 6.00, "https://images.unsplash.com/photo-1546173159-315724a31696?w=500", 4, "BAR");
 
+        // Generate 100+ dynamic dishes to ensure a massive menu
+        String[] adjectives = {"Spicy", "Garlic", "Roasted", "Crispy", "Smoked", "Truffle", "Herb-Crusted", "Grilled", "Glazed", "Signature"};
+        String[] proteins = {"Chicken", "Beef", "Pork", "Salmon", "Shrimp", "Tofu", "Lamb", "Duck", "Halibut", "Wagyu"};
+        String[] styles = {"Tacos", "Pasta", "Bowl", "Salad", "Sandwich", "Curry", "Stir-Fry", "Risotto", "Platter", "Bites"};
+        
+        int count = 0;
+        for(String adj : adjectives) {
+            for(String prot : proteins) {
+                // Generate 100 items (10x10)
+                String name = adj + " " + prot + " " + styles[count % styles.length];
+                String desc = "Our chef's special " + name.toLowerCase() + " prepared with premium ingredients and seasonal spices.";
+                double price = 12.00 + (count % 15) + (count % 3 == 0 ? 0.99 : 0.50);
+                String imageUrl = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500";
+                
+                // Distribute across categories
+                MenuCategory targetCat = (count % 2 == 0) ? catMains : catStarters;
+                if (count % 5 == 0) targetCat = catBurgers;
+                if (count % 7 == 0) targetCat = catPizza;
+                
+                String station = (count % 2 == 0) ? "KITCHEN" : "GRILL";
+                
+                getOrCreateMenuItem(targetCat, name, desc, price, imageUrl, 10 + (count % 10), station);
+                count++;
+            }
+        }
+
+
         System.out.println(">>> Menu categories & menu items initialized successfully with 30+ items!");
     }
 
