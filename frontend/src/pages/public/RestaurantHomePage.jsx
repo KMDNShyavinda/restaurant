@@ -118,10 +118,11 @@ export const RestaurantHomePage = () => {
             ) : (
               <button
                 onClick={() => navigate('/login')}
-                className="p-2.5 bg-[#141a22] hover:bg-slate-900 border border-slate-800 text-slate-400 hover:text-amber-400 rounded-2xl transition cursor-pointer"
-                title="Staff & POS Portal"
+                className="px-4 py-2.5 bg-[#141a22] hover:bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 font-extrabold rounded-2xl text-xs flex items-center space-x-2 transition cursor-pointer shadow-lg"
+                title="Sign In or Register"
               >
                 <User className="w-4 h-4" />
+                <span>Sign In / Register</span>
               </button>
             )}
           </div>
