@@ -20,6 +20,11 @@ export const ordersApi = {
     return response.data;
   },
 
+  getOrderById: async (orderId) => {
+    const response = await axiosClient.get(`/orders/${orderId}`);
+    return response.data;
+  },
+
   addItemsToOrder: async (orderId, items) => {
     const response = await axiosClient.post(`/orders/${orderId}/items`, items);
     return response.data;
