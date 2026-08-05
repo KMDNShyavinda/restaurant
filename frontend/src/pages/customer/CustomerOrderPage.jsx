@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { ordersApi } from '../../api/ordersApi';
 import { tablesApi } from '../../api/tablesApi';
+import { useAuth } from '../../context/AuthContext';
 import { 
   Utensils, Search, Plus, Minus, Trash2, ShoppingBag, 
   Clock, CheckCircle2, Flame, Sparkles, ChevronRight, X, ArrowLeft,
-  Smartphone, MapPin, Check, ChefHat, RefreshCw, Tag, Leaf, Wheat, ShieldCheck, Activity, Eye
+  Smartphone, MapPin, Check, ChefHat, RefreshCw, Tag, Leaf, Wheat, ShieldCheck, Activity, Eye, User
 } from 'lucide-react';
 
 export const CustomerOrderPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [categories, setCategories] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [tables, setTables] = useState([]);
@@ -25,8 +27,8 @@ export const CustomerOrderPage = () => {
   const initialTable = searchParams.get('table') || searchParams.get('tableId') || '';
   const [selectedTableId, setSelectedTableId] = useState(initialTable);
   const [orderType, setOrderType] = useState(initialTable ? 'DINE_IN' : 'DINE_IN');
-  const [customerName, setCustomerName] = useState('');
-  const [customerPhone, setCustomerPhone] = useState('');
+  const [customerName, setCustomerName] = useState(user?.name || '');
+  const [customerPhone, setCustomerPhone] = useState(user?.phone || '');
 
   // Dish Inspector Modal
   const [selectedDish, setSelectedDish] = useState(null);
@@ -221,6 +223,16 @@ export const CustomerOrderPage = () => {
           </div>
 
           <div className="flex items-center space-x-3">
+            {user?.role === 'CUSTOMER' && (
+              <button
+                onClick={() => navigate('/customer/profile')}
+                className="px-3.5 py-1.5 bg-[#0d1217] hover:bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 rounded-2xl text-xs font-extrabold transition cursor-pointer flex items-center space-x-1.5 shadow-md"
+              >
+                <User className="w-3.5 h-3.5" />
+                <span>My Profile</span>
+              </button>
+            )}
+
             <button
               onClick={() => navigate('/track')}
               className="px-3.5 py-1.5 bg-[#0d1217] hover:bg-slate-900 border border-slate-800 text-orange-400 rounded-2xl text-xs font-extrabold transition cursor-pointer flex items-center space-x-1.5 shadow-md"
@@ -557,8 +569,8 @@ export const CustomerOrderPage = () => {
                     type="text"
                     placeholder="e.g. John"
                     value={customerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
-                    className="w-full px-3 py-2 bg-[#141a22] border border-slate-800 rounded-xl text-white focus:outline-none focus:border-orange-500 text-xs"
+                    readOnly
+                    className="w-full px-3 py-2 bg-[#141a22] border border-slate-800 rounded-xl text-white focus:outline-none focus:border-orange-500 text-xs opacity-75 cursor-not-allowed"
                   />
                 </div>
 

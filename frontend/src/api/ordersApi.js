@@ -44,4 +44,9 @@ export const ordersApi = {
     const response = await axiosClient.get(`/orders/${orderId}/invoice`);
     return response.data;
   },
+
+  getOrders: async () => {
+    const response = await axiosClient.get('/orders');
+    return response.data;
+  },
 };

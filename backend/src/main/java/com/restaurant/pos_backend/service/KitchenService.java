@@ -38,16 +38,39 @@ public class KitchenService {
         ticket.setStatus(status.toUpperCase());
         KitchenTicket updatedTicket = kitchenTicketRepository.save(ticket);
 
-        // Update corresponding Order items if completed/ready
         Order order = ticket.getOrder();
+        
+        // Update corresponding Order items based on ticket status
+        if ("PREPARING".equalsIgnoreCase(status)) {
+            order.getItems().forEach(item -> {
+                if (ticket.getStation().equalsIgnoreCase(item.getMenuItem().getStation())) {
+                    item.setStatus("PREPARING");
+                }
+            });
+            if ("OPEN".equals(order.getStatus()) || "SENT".equals(order.getStatus())) {
+                order.setStatus("PREPARING");
+            }
+        }
+        
         if ("READY".equalsIgnoreCase(status) || "COMPLETED".equalsIgnoreCase(status)) {
             order.getItems().forEach(item -> {
                 if (ticket.getStation().equalsIgnoreCase(item.getMenuItem().getStation())) {
                     item.setStatus("READY");
                 }
             });
-            orderRepository.save(order);
+            
+            // Check if ALL items are ready
+            boolean allReady = order.getItems().stream()
+                    .allMatch(item -> "READY".equalsIgnoreCase(item.getStatus()) || "DELIVERED".equalsIgnoreCase(item.getStatus()));
+                    
+            if (allReady) {
+                order.setStatus("READY");
+            } else if ("OPEN".equals(order.getStatus()) || "SENT".equals(order.getStatus())) {
+                order.setStatus("PREPARING"); // At least one ticket is ready, so order is preparing
+            }
         }
+        
+        orderRepository.save(order);
 
         // Broadcast STOMP WebSocket push to all KDS clients & POS terminals
         messagingTemplate.convertAndSend("/topic/kitchen/tickets", updatedTicket);

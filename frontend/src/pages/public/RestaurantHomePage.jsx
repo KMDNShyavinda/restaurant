@@ -5,9 +5,11 @@ import {
   ChevronRight, Award, Flame, ShoppingBag, ShieldCheck, Heart, User, Search, Activity, ChefHat
 } from 'lucide-react';
 import { ordersApi } from '../../api/ordersApi';
+import { useAuth } from '../../context/AuthContext';
 
 export const RestaurantHomePage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [featuredDishes, setFeaturedDishes] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -104,13 +106,24 @@ export const RestaurantHomePage = () => {
               <span>Book Table</span>
             </button>
 
-            <button
-              onClick={() => navigate('/login')}
-              className="p-2.5 bg-[#141a22] hover:bg-slate-900 border border-slate-800 text-slate-400 hover:text-amber-400 rounded-2xl transition cursor-pointer"
-              title="Staff & POS Portal"
-            >
-              <User className="w-4 h-4" />
-            </button>
+            {user?.role === 'CUSTOMER' ? (
+              <button
+                onClick={() => navigate('/customer/profile')}
+                className="p-2.5 bg-[#141a22] hover:bg-slate-900 border border-slate-800 text-amber-400 rounded-2xl transition cursor-pointer flex items-center space-x-2"
+                title="My Profile"
+              >
+                <User className="w-4 h-4" />
+                <span className="text-xs font-bold hidden sm:inline">Profile</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate('/login')}
+                className="p-2.5 bg-[#141a22] hover:bg-slate-900 border border-slate-800 text-slate-400 hover:text-amber-400 rounded-2xl transition cursor-pointer"
+                title="Staff & POS Portal"
+              >
+                <User className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
       </nav>

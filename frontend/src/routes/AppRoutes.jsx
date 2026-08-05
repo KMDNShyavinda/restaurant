@@ -8,6 +8,9 @@ import { KdsPage } from '../pages/kds/KdsPage';
 import { InventoryPage } from '../pages/inventory/InventoryPage';
 import { CustomerOrderPage } from '../pages/customer/CustomerOrderPage';
 import { OrderTrackingPage } from '../pages/customer/OrderTrackingPage';
+import { CustomerLoginPage } from '../pages/customer/CustomerLoginPage';
+import { CustomerSignupPage } from '../pages/customer/CustomerSignupPage';
+import { CustomerProfilePage } from '../pages/customer/CustomerProfilePage';
 import { RestaurantHomePage } from '../pages/public/RestaurantHomePage';
 import { RoleWelcomePage } from '../pages/auth/RoleWelcomePage';
 import { ProtectedRoute } from './ProtectedRoute';
@@ -19,10 +22,20 @@ export const AppRoutes = () => {
       <Route path="/" element={<RestaurantHomePage />} />
       <Route path="/home" element={<RestaurantHomePage />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/order" element={<CustomerOrderPage />} />
-      <Route path="/menu" element={<CustomerOrderPage />} />
-      <Route path="/track" element={<OrderTrackingPage />} />
-      <Route path="/track/:orderId" element={<OrderTrackingPage />} />
+      <Route path="/customer/login" element={<CustomerLoginPage />} />
+      <Route path="/customer/register" element={<CustomerSignupPage />} />
+
+      {/* Protected Customer Routes */}
+      <Route element={<ProtectedRoute allowedRoles={['CUSTOMER', 'OWNER', 'ADMIN', 'MANAGER', 'CASHIER', 'WAITER', 'WAITSTAFF']} />}>
+        <Route path="/order" element={<CustomerOrderPage />} />
+        <Route path="/menu" element={<CustomerOrderPage />} />
+        <Route path="/track" element={<OrderTrackingPage />} />
+        <Route path="/track/:orderId" element={<OrderTrackingPage />} />
+      </Route>
+
+      <Route element={<ProtectedRoute allowedRoles={['CUSTOMER']} />}>
+        <Route path="/customer/profile" element={<CustomerProfilePage />} />
+      </Route>
 
       {/* Protected Routes with Role-Based Permission Control */}
       <Route element={<ProtectedRoute />}>
