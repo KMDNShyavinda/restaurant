@@ -807,6 +807,46 @@ export const CustomerOrderPage = () => {
           </div>
         </div>
       )}
+
+      {/* Order Success Modal */}
+      {activeOrder && (
+        <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-[#141a22] border border-emerald-500/30 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden text-center p-8 relative">
+            <div className="absolute top-0 left-0 w-full h-full bg-emerald-500/5 blur-3xl pointer-events-none" />
+            
+            <div className="relative z-10">
+              <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <CheckCircle2 className="w-10 h-10 text-emerald-400" />
+              </div>
+              
+              <h2 className="text-3xl font-extrabold text-white mb-2">Order Placed!</h2>
+              <p className="text-slate-400 text-sm mb-6">
+                Your order has been sent to the kitchen.
+              </p>
+
+              <div className="bg-[#0d1217] border border-slate-800 rounded-2xl p-6 mb-8">
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Your Order ID</p>
+                <p className="text-5xl font-black text-emerald-400">#{activeOrder.id}</p>
+              </div>
+
+              <div className="space-y-3">
+                <button
+                  onClick={() => navigate(`/track/${activeOrder.id}`)}
+                  className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold rounded-2xl shadow-xl shadow-emerald-500/25 transition cursor-pointer text-sm"
+                >
+                  Track Live Status
+                </button>
+                <button
+                  onClick={() => { setActiveOrder(null); setOrderStatus(null); }}
+                  className="w-full py-4 bg-[#0d1217] hover:bg-slate-900 text-slate-300 font-bold rounded-2xl border border-slate-800 transition cursor-pointer text-sm"
+                >
+                  Place Another Order
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
