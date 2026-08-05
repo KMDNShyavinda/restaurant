@@ -193,7 +193,7 @@ export const LoginPage = () => {
             )}
 
             {/* ─── FORMS CONTAINER: fixed height so both tabs identical ─── */}
-            <div className="relative overflow-hidden" style={{ height: '292px' }}>
+            <div className="relative overflow-hidden" style={{ height: '360px' }}>
 
               {/* SIGN IN — absolute, always same size */}
               <div className={`absolute inset-0 px-6 py-4 transition-all duration-300 ${
