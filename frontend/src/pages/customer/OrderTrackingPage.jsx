@@ -310,23 +310,52 @@ export const OrderTrackingPage = () => {
                 <span>Order Items Summary ({order.items?.length || 0})</span>
               </h4>
 
-              <div className="space-y-3">
-                {order.items?.map((item, idx) => (
-                  <div key={idx} className="p-3.5 bg-[#0d1217] border border-slate-800/80 rounded-2xl flex justify-between items-center text-xs">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-7 h-7 rounded-xl bg-orange-500/10 text-orange-400 font-extrabold flex items-center justify-center text-xs">
-                        {item.quantity}x
+              <div className="space-y-4 mt-2">
+                {order.items?.map((item, idx) => {
+                  const menuItem = item.menuItem || {};
+                  return (
+                    <div key={idx} className="p-4 bg-[#0d1217] border border-slate-800/80 rounded-3xl flex gap-4 text-xs transition hover:border-slate-700">
+                      
+                      {/* Dish Image */}
+                      <div className="shrink-0 relative">
+                        {menuItem.imageUrl ? (
+                          <img src={menuItem.imageUrl} alt={menuItem.name} className="w-20 h-20 rounded-2xl object-cover" />
+                        ) : (
+                          <div className="w-20 h-20 bg-slate-900 rounded-2xl flex items-center justify-center">
+                            <Utensils className="w-8 h-8 text-slate-700" />
+                          </div>
+                        )}
+                        <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-orange-500 text-white font-black flex items-center justify-center shadow-lg border-2 border-[#0d1217]">
+                          {item.quantity}
+                        </div>
                       </div>
-                      <div>
-                        <div className="font-bold text-white text-xs">{item.menuItem?.name || item.name || 'Gourmet Dish'}</div>
-                        {item.notes && <div className="text-[10px] text-slate-400 italic">"{item.notes}"</div>}
+
+                      {/* Dish Details */}
+                      <div className="flex-1 flex flex-col justify-center">
+                        <div className="flex justify-between items-start">
+                          <h4 className="font-extrabold text-white text-sm tracking-tight">{menuItem.name || item.name || 'Gourmet Dish'}</h4>
+                          <div className="font-black text-emerald-400 text-sm">
+                            ${parseFloat(item.subtotal || (item.unitPrice * item.quantity) || 0).toFixed(2)}
+                          </div>
+                        </div>
+
+                        {menuItem.description && (
+                          <p className="text-[10px] text-slate-400 mt-1 leading-relaxed pr-4 line-clamp-2">
+                            {menuItem.description}
+                          </p>
+                        )}
+                        
+                        {(item.notes || menuItem.station) && (
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {item.notes && <span className="px-2 py-1 bg-amber-500/10 text-amber-400 text-[9px] rounded-lg border border-amber-500/20">"{item.notes}"</span>}
+                            {menuItem.station && <span className="px-2 py-1 bg-slate-800 text-slate-300 text-[9px] rounded-lg">{menuItem.station} Station</span>}
+                          </div>
+                        )}
                       </div>
+
                     </div>
-                    <div className="font-extrabold text-slate-200">
-                      ${parseFloat(item.subtotal || (item.unitPrice * item.quantity) || 0).toFixed(2)}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </>
