@@ -1,30 +1,43 @@
+# Kubernetes API වර්ශන් එක (Deployments වලට පාවිච්චි කරන්නේ apps/v1)
 apiVersion: apps/v1
+# අපිට හදන්න ඕන රිසෝස් එකේ වර්ගය Deployment එකක්
 kind: Deployment
 metadata:
+  # මේ Deployment එකට දෙන නම
   name: pos-backend
 spec:
-  replicas: 2 # මෙතනින් කියන්නේ backend එකේ කොපි 2ක් රන් කරන්න කියලා (load එක බෙදාගන්න)
+  # මෙතනින් කියන්නේ backend එකේ කොපි 2ක් රන් කරන්න කියලා (load එක බෙදාගන්න)
+  replicas: 2 
   selector:
     matchLabels:
+      # මේ labels තියෙන Pods ටික තමයි මේ Deployment එකට අයිති කියලා කියන්නේ
       app: pos-backend
   template:
     metadata:
       labels:
         app: pos-backend
+    # Pod එක ඇතුලේ රන් වෙන්න ඕන Container එකේ විස්තර
     spec:
       containers:
       - name: pos-backend
+        # අර අපි Docker වලින් හදාගත්ත Backend Image එකේ නම
         image: restaurant-pos-backend:latest
+        # Container එක K8s ඇතුලේ රන් වෙන port එක
         ports:
         - containerPort: 8080
 ---
+# Service එකක් හදන්න පාවිච්චි කරන API version එක
 apiVersion: v1
+# රිසෝස් වර්ගය Service එකක්
 kind: Service
 metadata:
   name: pos-backend-service
 spec:
+  # app: pos-backend තියෙන Pods වලට තමයි මේ සර්විස් එක ට්‍රැෆික් එක යවන්නේ
   selector:
     app: pos-backend
   ports:
+    # වෙනත් අය මේ සර්විස් එකට එන්න ඕන Port එක
     - port: 8080
+      # ඒ එන ට්‍රැෆික් එක Pod එක ඇතුලේ තියෙන කන්ටේනර් එකේ යවන්න ඕන Port එක
       targetPort: 8080

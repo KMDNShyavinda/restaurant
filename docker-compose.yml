@@ -1,50 +1,71 @@
+# Docker Compose ෆයිල් එකේ version එක
 version: '3.8'
 
+# මේක ඇතුලේ තමයි අපි රන් කරන්න ඕන containers ටික දාන්නේ
 services:
+  
+  # 1. PostgreSQL Database Container එක
   postgres:
+    # අන්තර්ජාලයෙන් ගන්න ඕන Docker Image එක (PostgreSQL 15)
     image: postgres:15-alpine
+    # Container එකට දෙන නම
     container_name: pos_postgres
+    # Database එකට අවශ්‍ය Usernames, Passwords සහ DB නම
     environment:
       POSTGRES_DB: pos_db
       POSTGRES_USER: pos_user
       POSTGRES_PASSWORD: pos_password
+    # අපේ පරිගණකයේ 5432 port එක Container එකේ 5432 port එකට සම්බන්ද කරයි
     ports:
       - "5432:5432"
+    # Container එක ඩිලීට් වුණත් ඩේටා මැකෙන්නේ නැති වෙන්න Volume එකක් සෙට් කරයි
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  # 2. pgAdmin Container එක (Database එක බලන්න තියෙන UI එක)
   pgadmin:
     image: dpage/pgadmin4
     container_name: pos_pgadmin
+    # ලොග් වෙන්න අවශ්‍ය Email සහ Password එක
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@pos.com
       PGADMIN_DEFAULT_PASSWORD: adminpassword
+    # අපේ පරිගණකයේ 5050 port එකෙන් pgAdmin වෙබ් එකට යන්න පුළුවන්
     ports:
       - "5050:80"
 
+  # 3. අපේ Java Spring Boot Backend Container එක
   backend:
+    # Docker Hub එකෙන් image එකක් ගන්නේ නැතුව, අපේ කෝඩ් එකෙන් image එක බිල්ඩ් කරගන්නවා
     build:
-      context: ./backend
+      context: ./backend # Dockerfile එක තියෙන ෆෝල්ඩරය
       dockerfile: Dockerfile
     container_name: pos_backend
+    # Backend එක 8080 port එකෙන් රන් වෙයි
     ports:
       - "8080:8080"
+    # Database එකට connect වෙන්න අවශ්‍ය credentials මෙතනින් දෙනවා
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/pos_db
       - SPRING_DATASOURCE_USERNAME=pos_user
       - SPRING_DATASOURCE_PASSWORD=pos_password
+    # Postgres database එක රන් වුණාට පස්සේ විතරක් backend එක start වෙන්න ඕන නිසා
     depends_on:
       - postgres
 
+  # 4. අපේ React Vite Frontend Container එක
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: pos_frontend
+    # Frontend එක 3000 port එකෙන් රන් වෙයි
     ports:
       - "3000:80"
+    # Backend එක රන් වුණාට පස්සේ විතරක් frontend එක start වෙන්න ඕන නිසා
     depends_on:
       - backend
 
+# Containers අතර දත්ත ස්ථිරව තබා ගැනීමට (Persist කරන්න) හදපු Volume එක
 volumes:
   pgdata:

@@ -1,8 +1,11 @@
+# Kubernetes API වර්ශන් එක
 apiVersion: apps/v1
+# රිසෝස් එකේ වර්ගය Deployment එකක්
 kind: Deployment
 metadata:
   name: pos-frontend
 spec:
+  # Frontend එකේ කොපි 2ක් රන් කරන්න (High Availability සඳහා)
   replicas: 2
   selector:
     matchLabels:
@@ -11,21 +14,25 @@ spec:
     metadata:
       labels:
         app: pos-frontend
+    # Pod එක ඇතුලේ දුවන Container එකේ විස්තර
     spec:
       containers:
       - name: pos-frontend
+        # අපේ React Frontend Docker Image එක
         image: restaurant-pos-frontend:latest
         ports:
         - containerPort: 80
 ---
+# Service එක හදන්න පාවිච්චි කරන API version එක
 apiVersion: v1
 kind: Service
 metadata:
   name: pos-frontend-service
 spec:
-  type: LoadBalancer # අන්තර්ජාලයෙන් ඇප් එකට එන්න පුළුවන් වෙන්න
+  # අන්තර්ජාලයෙන් (පිටතින්) ඇප් එකට එන්න පුළුවන් වෙන්න Cloud Provider ගෙන් Public IP එකක් ගන්නවා
+  type: LoadBalancer 
   selector:
     app: pos-frontend
   ports:
+    # පිටතින් එන ට්‍රැෆික් එක ගන්න Port එක (සාමාන්‍ය HTTP traffic - 80)
     - port: 80
-
