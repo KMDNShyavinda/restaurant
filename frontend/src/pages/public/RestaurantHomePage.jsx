@@ -64,78 +64,81 @@ export const RestaurantHomePage = () => {
     <div className="min-h-screen bg-[#07090c] text-slate-100 font-sans selection:bg-amber-500 selection:text-black">
       
       {/* High-Class Navigation Bar */}
-      <nav className="sticky top-0 z-40 bg-[#0d1217]/90 border-b border-amber-500/20 backdrop-blur-2xl px-6 py-4 shadow-2xl">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <nav className="sticky top-0 z-40 bg-[#0d1217]/90 border-b border-amber-500/20 backdrop-blur-2xl px-4 lg:px-8 py-4 shadow-2xl w-full">
+        <div className="max-w-[1600px] mx-auto flex items-center justify-between gap-2 lg:gap-6">
           
           {/* Brand Logo */}
-          <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate('/')}>
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-600 via-amber-500 to-orange-500 text-white flex items-center justify-center font-black text-sm shadow-lg shadow-amber-500/25 border border-amber-400/30">
+          <div className="flex items-center space-x-2 lg:space-x-3 cursor-pointer shrink-0" onClick={() => navigate('/')}>
+            <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-xl lg:rounded-2xl bg-gradient-to-tr from-amber-600 via-amber-500 to-orange-500 text-white flex items-center justify-center font-black text-sm shadow-lg shadow-amber-500/25 border border-amber-400/30 shrink-0">
               MC
             </div>
-            <div>
-              <h1 className="text-xl font-extrabold text-white tracking-tight flex items-center space-x-2">
-                <span className="bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500 bg-clip-text text-transparent">
+            <div className="flex flex-col">
+              <h1 className="text-lg lg:text-xl font-extrabold text-white tracking-tight flex items-center space-x-2">
+                <span className="bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500 bg-clip-text text-transparent truncate max-w-[120px] sm:max-w-none">
                   Maison Ceylon
                 </span>
-                <span className="px-2 py-0.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-black rounded-lg uppercase tracking-wider">
+                <span className="hidden sm:inline-block px-2 py-0.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-black rounded-lg uppercase tracking-wider shrink-0">
                   Fine Dining
                 </span>
               </h1>
-              <p className="text-[11px] text-slate-400">Authentic Gastronomy & Bistro</p>
+              <p className="hidden sm:block text-[10px] lg:text-[11px] text-slate-400 truncate">Authentic Gastronomy & Bistro</p>
             </div>
           </div>
 
           {/* Nav Links */}
-          <div className="hidden md:flex items-center space-x-8 text-xs font-bold text-slate-300">
-            <a href="#about" className="hover:text-amber-400 transition">Our Story</a>
-            <a href="#signature" className="hover:text-amber-400 transition">Chef's Specials</a>
-            <a href="#experience" className="hover:text-amber-400 transition">Ambiance</a>
-            <a href="#contact" className="hover:text-amber-400 transition">Location & Hours</a>
+          <div className="hidden lg:flex items-center space-x-4 xl:space-x-8 text-xs font-bold text-slate-300 shrink-0">
+            <a href="#about" className="hover:text-amber-400 transition whitespace-nowrap">Our Story</a>
+            <a href="#signature" className="hover:text-amber-400 transition whitespace-nowrap">Chef's Specials</a>
+            <a href="#experience" className="hover:text-amber-400 transition whitespace-nowrap">Ambiance</a>
+            <a href="#contact" className="hover:text-amber-400 transition whitespace-nowrap">Location & Hours</a>
           </div>
 
           {/* Header Action Buttons */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 lg:space-x-3 shrink-0">
             <button
               onClick={() => navigate('/track')}
-              className="px-3.5 py-2.5 bg-[#141a22] hover:bg-slate-900 border border-slate-800 text-amber-400 font-extrabold rounded-2xl text-xs flex items-center space-x-2 transition cursor-pointer shadow-lg"
+              className="hidden lg:flex px-3 py-2 lg:px-3.5 lg:py-2.5 bg-[#141a22] hover:bg-slate-900 border border-slate-800 text-amber-400 font-extrabold rounded-xl lg:rounded-2xl text-xs items-center space-x-2 transition cursor-pointer shadow-lg whitespace-nowrap"
             >
-              <Activity className="w-4 h-4" />
+              <Activity className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
               <span>Track Order</span>
             </button>
 
             <button
               onClick={() => navigate('/order')}
-              className="px-4 py-2.5 bg-[#141a22] hover:bg-slate-900 border border-slate-800 text-amber-400 font-extrabold rounded-2xl text-xs flex items-center space-x-2 transition cursor-pointer shadow-lg"
+              className="px-3 py-2 lg:px-4 lg:py-2.5 bg-[#141a22] hover:bg-slate-900 border border-slate-800 text-amber-400 font-extrabold rounded-xl lg:rounded-2xl text-xs flex items-center space-x-2 transition cursor-pointer shadow-lg whitespace-nowrap"
             >
-              <ShoppingBag className="w-4 h-4" />
-              <span>Online Menu</span>
+              <ShoppingBag className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
+              <span className="hidden sm:inline">Online Menu</span>
+              <span className="sm:hidden">Menu</span>
             </button>
 
             <button
               onClick={() => setShowBookingModal(true)}
-              className="px-5 py-2.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-500 text-white font-extrabold rounded-2xl text-xs shadow-xl shadow-amber-500/25 transition cursor-pointer flex items-center space-x-1.5 border border-amber-400/30"
+              className="px-3 py-2 lg:px-5 lg:py-2.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-500 text-white font-extrabold rounded-xl lg:rounded-2xl text-xs shadow-xl shadow-amber-500/25 transition cursor-pointer flex items-center space-x-1.5 border border-amber-400/30 whitespace-nowrap"
             >
-              <Calendar className="w-4 h-4" />
-              <span>Book Table</span>
+              <Calendar className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
+              <span className="hidden sm:inline">Book Table</span>
+              <span className="sm:hidden">Book</span>
             </button>
 
             {user?.role === 'CUSTOMER' ? (
               <button
                 onClick={() => navigate('/customer/profile')}
-                className="p-2.5 bg-[#141a22] hover:bg-slate-900 border border-slate-800 text-amber-400 rounded-2xl transition cursor-pointer flex items-center space-x-2"
+                className="p-2 lg:p-2.5 bg-[#141a22] hover:bg-slate-900 border border-slate-800 text-amber-400 rounded-xl lg:rounded-2xl transition cursor-pointer flex items-center space-x-2 whitespace-nowrap"
                 title="My Profile"
               >
-                <User className="w-4 h-4" />
-                <span className="text-xs font-bold hidden sm:inline">Profile</span>
+                <User className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
+                <span className="text-xs font-bold hidden md:inline">Profile</span>
               </button>
             ) : (
               <button
                 onClick={() => navigate('/login')}
-                className="px-4 py-2.5 bg-[#141a22] hover:bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 font-extrabold rounded-2xl text-xs flex items-center space-x-2 transition cursor-pointer shadow-lg"
+                className="px-3 py-2 lg:px-4 lg:py-2.5 bg-[#141a22] hover:bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 font-extrabold rounded-xl lg:rounded-2xl text-xs flex items-center space-x-2 transition cursor-pointer shadow-lg whitespace-nowrap"
                 title="Sign In or Register"
               >
-                <User className="w-4 h-4" />
-                <span>Sign In / Register</span>
+                <User className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
+                <span className="hidden md:inline">Sign In / Register</span>
+                <span className="md:hidden">Sign In</span>
               </button>
             )}
           </div>
