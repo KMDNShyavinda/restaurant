@@ -103,6 +103,56 @@ export const KdsPage = () => {
     return `${mins}m ago`;
   };
 
+  const getTicketColorStyles = (status, printedAtStr) => {
+    if (status === 'READY') {
+      return {
+        border: 'border-emerald-500/40',
+        shadow: 'shadow-[0_0_15px_rgba(16,185,129,0.1)]',
+        glow: 'bg-emerald-500',
+        badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+        timeText: 'text-emerald-400'
+      };
+    }
+    
+    if (!printedAtStr) {
+      return {
+        border: 'border-emerald-500/40',
+        shadow: 'shadow-[0_0_15px_rgba(16,185,129,0.1)]',
+        glow: 'bg-emerald-500',
+        badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+        timeText: 'text-emerald-400'
+      };
+    }
+
+    const mins = Math.floor((new Date() - new Date(printedAtStr)) / 60000);
+    
+    if (mins >= 20) {
+      return {
+        border: 'border-rose-500/80',
+        shadow: 'shadow-[0_0_25px_rgba(225,29,72,0.4)]',
+        glow: 'bg-rose-500 animate-pulse',
+        badge: 'bg-rose-600/30 text-rose-300 border-rose-500/50 font-black animate-pulse',
+        timeText: 'text-rose-400 font-black animate-pulse text-sm'
+      };
+    } else if (mins >= 10) {
+      return {
+        border: 'border-amber-500/60',
+        shadow: 'shadow-[0_0_15px_rgba(245,158,11,0.2)]',
+        glow: 'bg-amber-500',
+        badge: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+        timeText: 'text-amber-400 font-bold'
+      };
+    } else {
+      return {
+        border: 'border-emerald-500/40',
+        shadow: 'shadow-[0_0_15px_rgba(16,185,129,0.1)]',
+        glow: 'bg-emerald-500',
+        badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+        timeText: 'text-emerald-400'
+      };
+    }
+  };
+
   const stations = ['ALL', 'KITCHEN', 'BAR'];
   const filteredTickets = selectedStation === 'ALL'
     ? tickets
@@ -222,21 +272,15 @@ export const KdsPage = () => {
             const isQueued = t.status === 'QUEUED';
             const isPreparing = t.status === 'PREPARING';
             const isReady = t.status === 'READY';
+            const colors = getTicketColorStyles(t.status, t.printedAt);
 
             return (
               <div
                 key={t.id}
-                className={`bg-[#141a22] border rounded-3xl p-5 flex flex-col justify-between shadow-2xl relative overflow-hidden transition transform hover:-translate-y-1 ${
-                  isQueued ? 'border-orange-500/40 shadow-orange-500/5' :
-                  isPreparing ? 'border-amber-500/40 shadow-amber-500/5' :
-                  'border-emerald-500/40 shadow-emerald-500/5'
-                }`}
+                className={`bg-[#141a22] border rounded-3xl p-5 flex flex-col justify-between relative transition transform hover:-translate-y-1 ${colors.border} ${colors.shadow}`}
               >
                 {/* Status Color Glow Top Bar */}
-                <div className={`h-2 w-full absolute top-0 left-0 ${
-                  isQueued ? 'bg-orange-500 animate-pulse' :
-                  isPreparing ? 'bg-amber-500' : 'bg-emerald-500'
-                }`} />
+                <div className={`h-2 w-full absolute top-0 left-0 ${colors.glow}`} />
 
                 <div>
                   {/* Card Header */}
@@ -253,19 +297,15 @@ export const KdsPage = () => {
                       </p>
                     </div>
 
-                    <span className={`px-2.5 py-1 rounded-xl text-[10px] font-extrabold uppercase tracking-wider ${
-                      isQueued ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' :
-                      isPreparing ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
-                      'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                    }`}>
+                    <span className={`px-2.5 py-1 rounded-xl text-[10px] uppercase tracking-wider border ${colors.badge}`}>
                       {t.status}
                     </span>
                   </div>
 
                   {/* Prep Time Timer */}
-                  <div className="flex items-center space-x-1.5 text-xs text-slate-400 bg-[#0d1217] px-3 py-2 rounded-2xl border border-slate-800/80 mb-4">
-                    <Clock className="w-3.5 h-3.5 text-orange-400" />
-                    <span>Printed: <strong className="text-slate-200">{getPrepTimeAgo(t.printedAt)}</strong></span>
+                  <div className={`flex items-center space-x-1.5 text-xs bg-[#0d1217] px-3 py-2 rounded-2xl border border-slate-800/80 mb-4 ${colors.timeText}`}>
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>Printed: <strong>{getPrepTimeAgo(t.printedAt)}</strong></span>
                     <span className="ml-auto font-mono text-[11px] text-slate-500">{t.station}</span>
                   </div>
 
