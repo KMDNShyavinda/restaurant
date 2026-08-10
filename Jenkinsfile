@@ -14,35 +14,55 @@ pipeline {
             }
         }
         
-        // 2 වෙනි පියවර: Java Backend එක බිල්ඩ් කිරීම
+        // 2 වෙනි පියවර: Java Backend එක Test කරලා Build කිරීම
         stage('Backend එක Build කිරීම') {
             steps {
-                // 'backend' ෆෝල්ඩරය ඇතුළට යයි
                 dir('backend') {
-                    // Maven හරහා Java කෝඩ් එක compile කරලා JAR ෆයිල් එකක් සාදයි (Tests skip කර ඇත)
-                    sh './mvnw clean package -DskipTests'
+                    // Maven හරහා Java කෝඩ් එක test කරලා compile කරයි
+                    sh './mvnw clean package'
                 }
             }
         }
         
-        // 3 වෙනි පියවර: React Frontend එක බිල්ඩ් කිරීම
+        // 3 වෙනි පියවර: React Frontend එක Test කරලා බිල්ඩ් කිරීම
         stage('Frontend එක Build කිරීම') {
             steps {
-                // 'frontend' ෆෝල්ඩරය ඇතුළට යයි
                 dir('frontend') {
-                    // Node packages ටික ඩවුන්ලෝඩ් කරගනී
                     sh 'npm install'
-                    // අන්තර්ජාලයට දාන්න පුළුවන් විදිහට (Production) React කෝඩ් එක බිල්ඩ් කරයි
+                    // Frontend Tests රන් කරයි
+                    sh 'npm run test'
                     sh 'npm run build'
                 }
             }
         }
         
-        // 4 වෙනි පියවර: කෝඩ් එකෙන් අලුත් Docker Images සෑදීම
-        stage('Docker Images සෑදීම') {
+        // 4 වෙනි පියවර: Docker Images බිල්ඩ් කිරීම සහ Registry එකට Push කිරීම
+        stage('Docker Images සෑදීම සහ Push කිරීම') {
             steps {
-                // docker-compose.yml ෆයිල් එකේ තියෙන විදිහට images ටික බිල්ඩ් කරයි
-                sh 'docker compose build'
+                // Docker Hub/Registry Credentials පාවිච්චි කරලා ලොග් වෙනවා
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                    sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                    
+                    // Images බිල්ඩ් කරනවා
+                    sh 'docker build -t restaurant-pos-backend:latest ./backend'
+                    sh 'docker build -t restaurant-pos-frontend:latest ./frontend'
+                    
+                    // (Optional) Docker Hub එකට push කරන කමාන්ඩ් මෙතන දාන්න පුළුවන්
+                    // sh 'docker push restaurant-pos-backend:latest'
+                    // sh 'docker push restaurant-pos-frontend:latest'
+                }
+            }
+        }
+        
+        // 5 වෙනි පියවර: Kubernetes වලට Deploy කිරීම
+        stage('Kubernetes වලට Deploy කිරීම') {
+            steps {
+                // K8s Cluster එකට අලුත් configuration එක Apply කරනවා
+                sh 'kubectl apply -f k8s/'
+                
+                // Deploy වුනාට පස්සේ Pods restart කරලා අලුත් image එක ගන්න කියනවා
+                sh 'kubectl rollout restart deployment/pos-backend'
+                sh 'kubectl rollout restart deployment/pos-frontend'
             }
         }
     }
