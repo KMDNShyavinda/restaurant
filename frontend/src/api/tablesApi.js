@@ -11,6 +11,11 @@ export const tablesApi = {
     return response.data;
   },
 
+  updateTablePosition: async (id, x, y) => {
+    const response = await axiosClient.patch(`/tables/${id}/position?x=${x}&y=${y}`);
+    return response.data;
+  },
+
   createTable: async (tableData) => {
     const response = await axiosClient.post('/tables', tableData);
     return response.data;

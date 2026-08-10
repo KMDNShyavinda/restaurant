@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { tablesApi } from '../../api/tablesApi';
 import { 
   ArrowLeft, Plus, Users, Calendar, CheckCircle2, 
-  Clock, Sparkles, X, RefreshCw, ShoppingBag 
+  Clock, Sparkles, X, RefreshCw, ShoppingBag, Map, Save, LayoutGrid
 } from 'lucide-react';
 
 export const TableLayoutPage = () => {
@@ -13,6 +14,11 @@ export const TableLayoutPage = () => {
   const [showReservationModal, setShowReservationModal] = useState(false);
   const [showAddTableModal, setShowAddTableModal] = useState(false);
   const [selectedTableForRes, setSelectedTableForRes] = useState(null);
+
+  // Edit Mode state
+  const [isEditingMode, setIsEditingMode] = useState(false);
+  const [isSavingLayout, setIsSavingLayout] = useState(false);
+  const containerRef = useRef(null);
 
   // Reservation form state
   const [customerName, setCustomerName] = useState('');
@@ -32,7 +38,13 @@ export const TableLayoutPage = () => {
     try {
       setLoading(true);
       const data = await tablesApi.getTables(1);
-      setTables(data);
+      // Give default coordinates if null
+      const processed = data.map((t, idx) => ({
+        ...t,
+        positionX: t.positionX ?? (50 + (idx % 4) * 150),
+        positionY: t.positionY ?? (50 + Math.floor(idx / 4) * 150)
+      }));
+      setTables(processed);
     } catch (err) {
       console.error("Failed to load tables", err);
     } finally {
@@ -81,7 +93,9 @@ export const TableLayoutPage = () => {
         tableNumber: newTableNumber,
         capacity: parseInt(newCapacity),
         zone: newZone,
-        status: 'FREE'
+        status: 'FREE',
+        positionX: 100,
+        positionY: 100
       });
       setShowAddTableModal(false);
       setNewTableNumber('');
@@ -102,10 +116,38 @@ export const TableLayoutPage = () => {
 
   const openReserveModal = (table) => {
     setSelectedTableForRes(table);
-    // Default 1 hour from now
     const nextHour = new Date(Date.now() + 3600000).toISOString().slice(0, 16);
     setReservationTime(nextHour);
     setShowReservationModal(true);
+  };
+
+  const handleDragEnd = (event, info, tableId) => {
+    if (!isEditingMode) return;
+    setTables(prev => prev.map(t => {
+      if (t.id === tableId) {
+        return {
+          ...t,
+          positionX: t.positionX + info.offset.x,
+          positionY: t.positionY + info.offset.y
+        };
+      }
+      return t;
+    }));
+  };
+
+  const handleSaveLayout = async () => {
+    try {
+      setIsSavingLayout(true);
+      await Promise.all(tables.map(t => 
+        tablesApi.updateTablePosition(t.id, t.positionX, t.positionY)
+      ));
+      setIsEditingMode(false);
+    } catch (error) {
+      console.error("Failed to save layout", error);
+      alert("Error saving layout");
+    } finally {
+      setIsSavingLayout(false);
+    }
   };
 
   const zones = ['ALL', ...new Set(tables.map(t => t.zone))];
@@ -117,349 +159,232 @@ export const TableLayoutPage = () => {
   const occupiedCount = tables.filter(t => t.status === 'OCCUPIED').length;
   const reservedCount = tables.filter(t => t.status === 'RESERVED').length;
 
+  const getShapeClass = (capacity) => {
+    if (capacity <= 2) return 'rounded-2xl w-24 h-24'; // Small Square
+    if (capacity >= 6) return 'rounded-full w-32 h-32'; // Large Circle
+    return 'rounded-3xl w-32 h-24'; // Rectangle
+  };
+
   return (
-    <div className="min-h-screen bg-[#0d1217] text-slate-100 p-6 font-sans">
+    <div className="min-h-screen bg-[#07090c] text-slate-100 flex flex-col font-sans overflow-hidden">
       {/* Top Header */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#11161d] border border-amber-500/30 backdrop-blur-2xl p-4 px-6 rounded-3xl mb-6 shadow-2xl">
+      <header className="flex justify-between items-center bg-[#11161d] border-b border-amber-500/30 p-4 px-6 shrink-0 z-20">
         <div className="flex items-center space-x-4">
           <button 
             onClick={() => navigate('/welcome')}
             className="p-2.5 bg-[#07090c] hover:bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 transition cursor-pointer"
-            title="Return to Role Launchpad"
           >
             <ArrowLeft className="w-5 h-5 text-amber-400" />
           </button>
           
-          {/* Waitstaff Photo Avatar */}
           <div className="flex items-center space-x-3 pl-2 border-l border-slate-800">
             <div className="relative">
               <img 
                 src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=150" 
-                alt="Active Waitstaff" 
-                className="w-10 h-10 rounded-2xl object-cover border-2 border-sky-500 shadow-md"
+                alt="Waitstaff" 
+                className="w-10 h-10 rounded-2xl object-cover border-2 border-amber-500"
               />
-              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-sky-500 border-2 border-[#11161d] rounded-full"></span>
+              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-[#11161d] rounded-full"></span>
             </div>
-
             <div>
               <div className="flex items-center space-x-2">
-                <h1 className="text-sm font-extrabold text-white tracking-tight">Floor Waitstaff Station</h1>
-                <span className="px-2 py-0.5 bg-sky-500/20 text-sky-400 border border-sky-500/30 text-[10px] font-black rounded-lg uppercase tracking-wider">
-                  🍷 Dining Floor
-                </span>
+                <h1 className="text-sm font-extrabold text-white">Interactive Floor Plan</h1>
               </div>
-              <p className="text-[11px] text-slate-400">Maison Ceylon • Live Floor Plan & Table Reservations</p>
+              <p className="text-[11px] text-slate-400">Live Table Monitoring & Layout</p>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center space-x-3 w-full md:w-auto">
+        <div className="flex items-center space-x-3">
           <button
             onClick={fetchTables}
             className="p-2.5 bg-[#0d1217] hover:bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 transition cursor-pointer"
           >
             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
           </button>
+          
+          {isEditingMode ? (
+            <button
+              onClick={handleSaveLayout}
+              disabled={isSavingLayout}
+              className="flex items-center space-x-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold rounded-2xl transition cursor-pointer disabled:opacity-50"
+            >
+              <Save className="w-4 h-4" />
+              <span>{isSavingLayout ? 'Saving...' : 'Save Layout'}</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => setIsEditingMode(true)}
+              className="flex items-center space-x-2 px-5 py-2.5 bg-[#0d1217] border border-amber-500/30 hover:border-amber-500 text-amber-400 font-extrabold rounded-2xl transition cursor-pointer"
+            >
+              <Map className="w-4 h-4" />
+              <span>Edit Layout</span>
+            </button>
+          )}
+
           <button
             onClick={() => setShowAddTableModal(true)}
-            className="flex items-center space-x-2 px-5 py-2.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-white font-extrabold rounded-2xl shadow-xl shadow-orange-500/25 transition cursor-pointer"
+            className="flex items-center space-x-2 px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold rounded-2xl shadow-xl shadow-amber-500/25 transition cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>Add New Table</span>
+            <span>Add Table</span>
           </button>
         </div>
       </header>
 
-      {/* Metrics Summary Bar */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-[#141a22] border border-slate-800/80 p-4 rounded-3xl shadow-lg">
-          <div className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Total Capacity</div>
-          <div className="text-2xl font-black text-white">{tables.length} <span className="text-xs font-normal text-slate-400">Tables</span></div>
-        </div>
-        <div className="bg-[#141a22] border border-emerald-500/20 p-4 rounded-3xl shadow-lg bg-gradient-to-b from-emerald-500/5 to-transparent">
-          <div className="text-emerald-400 text-xs font-bold uppercase tracking-wider mb-1">Available (Free)</div>
-          <div className="text-2xl font-black text-emerald-400">{freeCount}</div>
-        </div>
-        <div className="bg-[#141a22] border border-rose-500/20 p-4 rounded-3xl shadow-lg bg-gradient-to-b from-rose-500/5 to-transparent">
-          <div className="text-rose-400 text-xs font-bold uppercase tracking-wider mb-1">Occupied</div>
-          <div className="text-2xl font-black text-rose-400">{occupiedCount}</div>
-        </div>
-        <div className="bg-[#141a22] border border-amber-500/20 p-4 rounded-3xl shadow-lg bg-gradient-to-b from-amber-500/5 to-transparent">
-          <div className="text-amber-400 text-xs font-bold uppercase tracking-wider mb-1">Reserved</div>
-          <div className="text-2xl font-black text-amber-400">{reservedCount}</div>
-        </div>
-      </div>
-
-      {/* Zone Filters */}
-      <div className="flex items-center space-x-2 overflow-x-auto pb-4 mb-4 no-scrollbar">
-        {zones.map(z => (
-          <button
-            key={z}
-            onClick={() => setSelectedZone(z)}
-            className={`px-4 py-2 rounded-2xl text-xs font-extrabold transition cursor-pointer shrink-0 border ${
-              selectedZone === z 
-                ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white border-orange-400 shadow-lg shadow-orange-500/25' 
-                : 'bg-[#141a22] text-slate-400 hover:bg-slate-900 border-slate-800'
-            }`}
-          >
-            {z === 'ALL' ? 'All Zones' : z}
-          </button>
-        ))}
-      </div>
-
-      {/* Tables Grid */}
-      {loading ? (
-        <div className="flex justify-center items-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredTables.map(t => {
-            const isFree = t.status === 'FREE';
-            const isOccupied = t.status === 'OCCUPIED';
-            const isReserved = t.status === 'RESERVED';
-
-            return (
-              <div 
-                key={t.id}
-                className={`bg-[#141a22] border rounded-3xl p-5 relative overflow-hidden transition transform hover:-translate-y-1 shadow-xl flex flex-col justify-between ${
-                  isFree ? 'border-emerald-500/30 hover:border-emerald-500/60' :
-                  isOccupied ? 'border-rose-500/30 hover:border-rose-500/60' :
-                  'border-amber-500/30 hover:border-amber-500/60'
-                }`}
-              >
-                {/* Glow bar at top */}
-                <div className={`h-1.5 w-full absolute top-0 left-0 ${
-                  isFree ? 'bg-emerald-500' :
-                  isOccupied ? 'bg-rose-500' : 'bg-amber-500'
-                }`} />
-
-                <div>
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <h3 className="text-2xl font-black text-white tracking-tight">{t.tableNumber}</h3>
-                      <span className="text-xs text-slate-400 font-medium">{t.zone}</span>
-                    </div>
-                    <span className={`px-2.5 py-1 rounded-xl text-[11px] font-extrabold uppercase tracking-wider ${
-                      isFree ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-                      isOccupied ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' :
-                      'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                    }`}>
-                      {t.status}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center space-x-2 text-slate-400 text-xs mb-6">
-                    <Users className="w-4 h-4 text-slate-500" />
-                    <span>Capacity: <strong className="text-slate-200">{t.capacity} Guests</strong></span>
-                  </div>
-                </div>
-
-                {/* Table Actions */}
-                <div className="space-y-2 pt-3 border-t border-slate-800/80">
-                  {isFree && (
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        onClick={() => handleStatusChange(t.id, 'OCCUPIED')}
-                        className="w-full py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-xs font-bold rounded-xl transition cursor-pointer"
-                      >
-                        Occupy
-                      </button>
-                      <button
-                        onClick={() => openReserveModal(t)}
-                        className="w-full py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 text-xs font-bold rounded-xl transition cursor-pointer"
-                      >
-                        Reserve
-                      </button>
-                    </div>
-                  )}
-
-                  {isOccupied && (
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        onClick={() => navigate(`/pos?tableId=${t.id}`)}
-                        className="w-full py-2 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/20 text-xs font-bold rounded-xl transition cursor-pointer flex items-center justify-center space-x-1"
-                      >
-                        <ShoppingBag className="w-3.5 h-3.5" />
-                        <span>Order</span>
-                      </button>
-                      <button
-                        onClick={() => handleStatusChange(t.id, 'FREE')}
-                        className="w-full py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-xs font-bold rounded-xl transition cursor-pointer"
-                      >
-                        Release
-                      </button>
-                    </div>
-                  )}
-
-                  {isReserved && (
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        onClick={() => handleStatusChange(t.id, 'OCCUPIED')}
-                        className="w-full py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-xs font-bold rounded-xl transition cursor-pointer"
-                      >
-                        Seat Party
-                      </button>
-                      <button
-                        onClick={() => handleStatusChange(t.id, 'FREE')}
-                        className="w-full py-2 bg-[#0d1217] hover:bg-slate-900 text-slate-300 text-xs font-bold rounded-xl transition cursor-pointer"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  )}
-                </div>
+      {/* Main Workspace */}
+      <div className="flex-1 flex overflow-hidden">
+        
+        {/* Left Sidebar: Filters & Stats */}
+        <div className="w-64 bg-[#11161d] border-r border-slate-800 p-5 shrink-0 overflow-y-auto z-10 flex flex-col space-y-6">
+          <div>
+            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Occupancy Status</h3>
+            <div className="space-y-3">
+              <div className="bg-[#07090c] border border-emerald-500/20 p-3 rounded-2xl flex justify-between items-center">
+                <span className="text-emerald-400 text-sm font-semibold">Free</span>
+                <span className="text-xl font-black text-emerald-400">{freeCount}</span>
               </div>
-            );
-          })}
-        </div>
-      )}
+              <div className="bg-[#07090c] border border-rose-500/20 p-3 rounded-2xl flex justify-between items-center">
+                <span className="text-rose-400 text-sm font-semibold">Occupied</span>
+                <span className="text-xl font-black text-rose-400">{occupiedCount}</span>
+              </div>
+              <div className="bg-[#07090c] border border-amber-500/20 p-3 rounded-2xl flex justify-between items-center">
+                <span className="text-amber-400 text-sm font-semibold">Reserved</span>
+                <span className="text-xl font-black text-amber-400">{reservedCount}</span>
+              </div>
+            </div>
+          </div>
 
-      {/* Reservation Modal */}
+          <div>
+            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center space-x-2">
+              <LayoutGrid className="w-4 h-4" />
+              <span>Floor Zones</span>
+            </h3>
+            <div className="space-y-2">
+              {zones.map(z => (
+                <button
+                  key={z}
+                  onClick={() => setSelectedZone(z)}
+                  className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition cursor-pointer ${
+                    selectedZone === z 
+                      ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30' 
+                      : 'text-slate-400 hover:text-white hover:bg-slate-900 border border-transparent'
+                  }`}
+                >
+                  {z === 'ALL' ? 'Show All Zones' : z}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Area: Interactive Canvas */}
+        <div 
+          className="flex-1 bg-[#0a0d11] relative overflow-hidden" 
+          ref={containerRef}
+          style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0)', backgroundSize: '40px 40px' }}
+        >
+          {loading ? (
+            <div className="absolute inset-0 flex justify-center items-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-500"></div>
+            </div>
+          ) : (
+            filteredTables.map(t => {
+              const isFree = t.status === 'FREE';
+              const isOccupied = t.status === 'OCCUPIED';
+              
+              const statusColors = isFree 
+                ? 'border-emerald-500/50 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.2)] text-emerald-400' 
+                : isOccupied 
+                  ? 'border-rose-500/50 bg-rose-500/10 shadow-[0_0_15px_rgba(244,63,94,0.2)] text-rose-400'
+                  : 'border-amber-500/50 bg-amber-500/10 shadow-[0_0_15px_rgba(245,158,11,0.2)] text-amber-400';
+
+              return (
+                <motion.div
+                  key={t.id}
+                  drag={isEditingMode}
+                  dragConstraints={containerRef}
+                  dragMomentum={false}
+                  onDragEnd={(e, info) => handleDragEnd(e, info, t.id)}
+                  initial={{ x: t.positionX, y: t.positionY }}
+                  animate={{ x: t.positionX, y: t.positionY }}
+                  whileHover={!isEditingMode ? { scale: 1.05 } : {}}
+                  className={`absolute flex flex-col items-center justify-center border-2 backdrop-blur-md cursor-${isEditingMode ? 'move' : 'pointer'} ${getShapeClass(t.capacity)} ${statusColors} group`}
+                >
+                  <span className="text-xl font-black">{t.tableNumber}</span>
+                  <div className="flex items-center space-x-1 mt-1 opacity-70">
+                    <Users className="w-3.5 h-3.5" />
+                    <span className="text-xs font-bold">{t.capacity}</span>
+                  </div>
+
+                  {/* Actions Popover (Hover only in View Mode) */}
+                  {!isEditingMode && (
+                    <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-48 bg-[#11161d] border border-slate-700 rounded-2xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200 z-30 p-2 grid gap-2">
+                      {isFree && (
+                        <>
+                          <button onClick={() => handleStatusChange(t.id, 'OCCUPIED')} className="w-full py-1.5 bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 text-xs font-bold rounded-xl">Seat Guest</button>
+                          <button onClick={() => openReserveModal(t)} className="w-full py-1.5 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 text-xs font-bold rounded-xl">Reserve</button>
+                        </>
+                      )}
+                      {isOccupied && (
+                        <>
+                          <button onClick={() => navigate(`/pos?tableId=${t.id}`)} className="w-full py-1.5 bg-amber-500 text-slate-950 text-xs font-bold rounded-xl flex items-center justify-center space-x-1"><ShoppingBag className="w-3 h-3"/><span>Order</span></button>
+                          <button onClick={() => handleStatusChange(t.id, 'FREE')} className="w-full py-1.5 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 text-xs font-bold rounded-xl">Clear Table</button>
+                        </>
+                      )}
+                      {!isFree && !isOccupied && (
+                        <>
+                          <button onClick={() => handleStatusChange(t.id, 'OCCUPIED')} className="w-full py-1.5 bg-rose-500/20 text-rose-400 text-xs font-bold rounded-xl">Arrived</button>
+                          <button onClick={() => handleStatusChange(t.id, 'FREE')} className="w-full py-1.5 bg-slate-800 text-slate-300 text-xs font-bold rounded-xl">Cancel</button>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </motion.div>
+              );
+            })
+          )}
+        </div>
+      </div>
+
+      {/* Modals remain structurally similar, stylized for the Amber theme */}
       {showReservationModal && selectedTableForRes && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-[#141a22] border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
-            <button 
-              onClick={() => setShowReservationModal(false)}
-              className="absolute top-5 right-5 text-slate-400 hover:text-white transition cursor-pointer"
-            >
+          <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-[#141a22] border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
+            <button onClick={() => setShowReservationModal(false)} className="absolute top-5 right-5 text-slate-400 hover:text-white transition">
               <X className="w-5 h-5" />
             </button>
-
             <h2 className="text-xl font-extrabold text-white mb-1">Reserve Table {selectedTableForRes.tableNumber}</h2>
-            <p className="text-xs text-slate-400 mb-6">Zone: {selectedTableForRes.zone} • Capacity: {selectedTableForRes.capacity} Guests</p>
-
+            <p className="text-xs text-slate-400 mb-6">Capacity: {selectedTableForRes.capacity} Guests</p>
             <form onSubmit={handleCreateReservation} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold uppercase text-slate-300 mb-1">Customer Name</label>
-                <input
-                  type="text"
-                  required
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  placeholder="John Doe"
-                  className="w-full px-4 py-2.5 bg-[#0d1217] border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-orange-500 text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase text-slate-300 mb-1">Phone Number</label>
-                <input
-                  type="tel"
-                  required
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                  placeholder="+1 (555) 019-2834"
-                  className="w-full px-4 py-2.5 bg-[#0d1217] border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-orange-500 text-sm"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-300 mb-1">Date & Time</label>
-                  <input
-                    type="datetime-local"
-                    required
-                    value={reservationTime}
-                    onChange={(e) => setReservationTime(e.target.value)}
-                    className="w-full px-3 py-2.5 bg-[#0d1217] border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-orange-500 text-xs"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-300 mb-1">Party Size</label>
-                  <input
-                    type="number"
-                    min="1"
-                    max={selectedTableForRes.capacity}
-                    value={partySize}
-                    onChange={(e) => setPartySize(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-[#0d1217] border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-orange-500 text-sm"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase text-slate-300 mb-1">Special Requests / Notes</label>
-                <textarea
-                  rows="2"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Window seating preferred, anniversary party..."
-                  className="w-full px-4 py-2.5 bg-[#0d1217] border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-orange-500 text-sm"
-                ></textarea>
-              </div>
-
-              <button
-                type="submit"
-                className="w-full py-3.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-white font-extrabold rounded-2xl shadow-xl shadow-orange-500/25 transition cursor-pointer mt-2"
-              >
-                Confirm Reservation
-              </button>
+              <input type="text" required value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="Customer Name" className="w-full px-4 py-2.5 bg-[#0d1217] border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-amber-500 text-sm" />
+              <input type="tel" required value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} placeholder="Phone Number" className="w-full px-4 py-2.5 bg-[#0d1217] border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-amber-500 text-sm" />
+              <input type="datetime-local" required value={reservationTime} onChange={(e) => setReservationTime(e.target.value)} className="w-full px-4 py-2.5 bg-[#0d1217] border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-amber-500 text-sm" />
+              <input type="number" min="1" max={selectedTableForRes.capacity} value={partySize} onChange={(e) => setPartySize(e.target.value)} className="w-full px-4 py-2.5 bg-[#0d1217] border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-amber-500 text-sm" placeholder="Party Size" />
+              <button type="submit" className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold rounded-2xl shadow-xl shadow-amber-500/25 transition mt-2">Confirm Reservation</button>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
 
-      {/* Add Table Modal */}
       {showAddTableModal && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-[#141a22] border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
-            <button 
-              onClick={() => setShowAddTableModal(false)}
-              className="absolute top-5 right-5 text-slate-400 hover:text-white transition cursor-pointer"
-            >
+          <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-[#141a22] border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
+            <button onClick={() => setShowAddTableModal(false)} className="absolute top-5 right-5 text-slate-400 hover:text-white transition">
               <X className="w-5 h-5" />
             </button>
-
-            <h2 className="text-xl font-extrabold text-white mb-4">Add New Table to Layout</h2>
-
+            <h2 className="text-xl font-extrabold text-white mb-4">Add New Table</h2>
             <form onSubmit={handleCreateTable} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold uppercase text-slate-300 mb-1">Table Number</label>
-                <input
-                  type="text"
-                  required
-                  value={newTableNumber}
-                  onChange={(e) => setNewTableNumber(e.target.value)}
-                  placeholder="e.g. T3, P1, VIP2"
-                  className="w-full px-4 py-2.5 bg-[#0d1217] border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-orange-500 text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase text-slate-300 mb-1">Seating Capacity</label>
-                <input
-                  type="number"
-                  min="1"
-                  max="20"
-                  value={newCapacity}
-                  onChange={(e) => setNewCapacity(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-[#0d1217] border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-orange-500 text-sm"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase text-slate-300 mb-1">Floor Zone</label>
-                <select
-                  value={newZone}
-                  onChange={(e) => setNewZone(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-[#0d1217] border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-orange-500 text-sm"
-                >
-                  <option value="Main Dining">Main Dining</option>
-                  <option value="Patio">Patio</option>
-                  <option value="VIP Section">VIP Section</option>
-                  <option value="Bar Area">Bar Area</option>
-                </select>
-              </div>
-
-              <button
-                type="submit"
-                className="w-full py-3.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-white font-extrabold rounded-2xl shadow-xl shadow-orange-500/25 transition cursor-pointer mt-2"
-              >
-                Create Table
-              </button>
+              <input type="text" required value={newTableNumber} onChange={(e) => setNewTableNumber(e.target.value)} placeholder="Table Number (e.g. T1)" className="w-full px-4 py-2.5 bg-[#0d1217] border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-amber-500 text-sm" />
+              <input type="number" min="1" max="20" value={newCapacity} onChange={(e) => setNewCapacity(e.target.value)} placeholder="Capacity" className="w-full px-4 py-2.5 bg-[#0d1217] border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-amber-500 text-sm" />
+              <select value={newZone} onChange={(e) => setNewZone(e.target.value)} className="w-full px-4 py-2.5 bg-[#0d1217] border border-slate-800 rounded-2xl text-white focus:outline-none focus:border-amber-500 text-sm">
+                <option value="Main Dining">Main Dining</option>
+                <option value="Patio">Patio</option>
+                <option value="VIP Section">VIP Section</option>
+              </select>
+              <button type="submit" className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold rounded-2xl shadow-xl shadow-amber-500/25 transition mt-2">Create Table</button>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>
