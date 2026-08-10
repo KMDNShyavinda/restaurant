@@ -12,9 +12,9 @@ services:
     container_name: pos_postgres
     # Database එකට අවශ්‍ය Usernames, Passwords සහ DB නම
     environment:
-      POSTGRES_DB: pos_db
-      POSTGRES_USER: pos_user
-      POSTGRES_PASSWORD: pos_password
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     # අපේ පරිගණකයේ 5432 port එක Container එකේ 5432 port එකට සම්බන්ද කරයි
     ports:
       - "5432:5432"
@@ -28,8 +28,8 @@ services:
     container_name: pos_pgadmin
     # ලොග් වෙන්න අවශ්‍ය Email සහ Password එක
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@pos.com
-      PGADMIN_DEFAULT_PASSWORD: adminpassword
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     # අපේ පරිගණකයේ 5050 port එකෙන් pgAdmin වෙබ් එකට යන්න පුළුවන්
     ports:
       - "5050:80"
@@ -46,9 +46,10 @@ services:
       - "8080:8080"
     # Database එකට connect වෙන්න අවශ්‍ය credentials මෙතනින් දෙනවා
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/pos_db
-      - SPRING_DATASOURCE_USERNAME=pos_user
-      - SPRING_DATASOURCE_PASSWORD=pos_password
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
+      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
     # Postgres database එක රන් වුණාට පස්සේ විතරක් backend එක start වෙන්න ඕන නිසා
     depends_on:
       - postgres
