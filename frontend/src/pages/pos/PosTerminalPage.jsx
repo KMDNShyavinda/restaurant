@@ -5,10 +5,12 @@ import { tablesApi } from '../../api/tablesApi';
 import { useAuth } from '../../context/AuthContext';
 import { useActionGuard } from '../../hooks/useActionGuard';
 import { 
-  ArrowLeft, Search, Plus, Minus, Trash2, Send, 
-  CreditCard, CheckCircle2, Utensils, X, Receipt, DollarSign,
-  Bell, Star, Flame, SlidersHorizontal, Info, ShoppingBag
+  ArrowLeft, Search, X, CreditCard, CheckCircle2, 
+  Bell, Star, SlidersHorizontal, Info, Plus 
 } from 'lucide-react';
+import { PosCategoryTabs } from '../../components/pos/PosCategoryTabs';
+import { PosMenuGrid } from '../../components/pos/PosMenuGrid';
+import { PosCartPanel } from '../../components/pos/PosCartPanel';
 
 export const PosTerminalPage = () => {
   const [categories, setCategories] = useState([]);
@@ -335,301 +337,42 @@ export const PosTerminalPage = () => {
             </div>
           </div>
 
-          {/* Minimalist Category Pills with Orange Active Dot */}
-          <div className="flex items-center space-x-6 overflow-x-auto pb-2 mb-4 shrink-0 no-scrollbar border-b border-slate-800/60">
-            <div className="flex flex-col items-center">
-              <button
-                onClick={() => setSelectedCategory(null)}
-                className={`text-sm font-bold transition cursor-pointer pb-1 ${
-                  selectedCategory === null
-                    ? 'text-orange-400 font-black'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                All Items
-              </button>
-              {selectedCategory === null && (
-                <span className="w-2 h-2 rounded-full bg-orange-500 shadow-md shadow-orange-500/80 animate-pulse"></span>
-              )}
-            </div>
+          <PosCategoryTabs 
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+          />
 
-            {categories.map(c => {
-              const isSelected = String(selectedCategory) === String(c.id);
-              return (
-                <div key={c.id} className="flex flex-col items-center">
-                  <button
-                    onClick={() => setSelectedCategory(c.id)}
-                    className={`text-sm font-bold transition cursor-pointer pb-1 ${
-                      isSelected
-                        ? 'text-orange-400 font-black'
-                        : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    {c.name}
-                  </button>
-                  {isSelected && (
-                    <span className="w-2 h-2 rounded-full bg-orange-500 shadow-md shadow-orange-500/80 animate-pulse"></span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Product Cards Grid */}
-          {loading ? (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-orange-500"></div>
-            </div>
-          ) : filteredItems.length === 0 ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-slate-500 text-center">
-              <Utensils className="w-12 h-12 mb-2 opacity-30 text-orange-500" />
-              <p className="text-sm font-medium">No dishes found</p>
-              <p className="text-xs">Try selecting another category or clearing search</p>
-            </div>
-          ) : (
-            <div className="flex-1 overflow-y-auto pr-1 space-y-5">
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {filteredItems.map(item => (
-                  <div
-                    key={item.id}
-                    className="bg-[#141a22] border border-slate-800/80 hover:border-orange-500/50 p-3.5 rounded-3xl cursor-pointer transition-all duration-300 hover:-translate-y-1.5 shadow-xl flex flex-col justify-between group relative overflow-hidden"
-                  >
-                    <div>
-                      {/* Image Banner */}
-                      <div 
-                        onClick={() => {
-                          setSelectedDishDetail(item);
-                          setSelectedSize('M');
-                          setItemNote('');
-                        }}
-                        className="w-full h-40 bg-slate-950 rounded-2xl overflow-hidden mb-3 relative group-hover:shadow-2xl transition duration-500"
-                      >
-                        <img
-                          src={item.imageUrl || 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500'}
-                          alt={item.name}
-                          className="w-full h-full object-cover group-hover:scale-110 transition duration-700"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500';
-                          }}
-                        />
-
-                        {/* Top Category Badge */}
-                        <span className="absolute top-2.5 left-2.5 text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md text-orange-400 border border-slate-800 shadow-md">
-                          {item.category?.name || 'Gourmet'}
-                        </span>
-
-                        {/* Rating Badge */}
-                        <div className="absolute top-2.5 right-2.5 flex items-center space-x-1 px-2 py-0.5 rounded-full bg-slate-950/80 backdrop-blur-md text-amber-400 border border-slate-800 text-xs font-extrabold shadow-md">
-                          <Star className="w-3 h-3 fill-amber-400" />
-                          <span>4.8</span>
-                        </div>
-                      </div>
-
-                      {/* Card Info */}
-                      <div 
-                        onClick={() => {
-                          setSelectedDishDetail(item);
-                          setSelectedSize('M');
-                          setItemNote('');
-                        }}
-                      >
-                        <h3 className="font-extrabold text-white text-base mb-0.5 group-hover:text-orange-400 transition line-clamp-1">
-                          {item.name}
-                        </h3>
-                        <p className="text-xs text-slate-400 mb-3 line-clamp-1">Italian classic gourmet</p>
-                      </div>
-                    </div>
-
-                    {/* Bottom Price & Add Action Row */}
-                    <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between">
-                      <div>
-                        <span className="text-xs text-slate-500 font-semibold uppercase block text-[10px]">Price</span>
-                        <span className="text-base font-black text-orange-500">${item.price?.toFixed(2)}</span>
-                      </div>
-
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          addToCart(item);
-                        }}
-                        className="w-9 h-9 rounded-full bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-white font-bold flex items-center justify-center shadow-lg shadow-orange-500/30 hover:scale-110 active:scale-95 transition cursor-pointer"
-                        title="Add to order"
-                      >
-                        <Plus className="w-5 h-5" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Recommended Section (Matching Behance "Recommended" footer) */}
-              {recommendedItems.length > 0 && (
-                <div className="pt-4 border-t border-slate-800/60">
-                  <h3 className="text-sm font-extrabold text-slate-300 uppercase tracking-wider mb-3 flex items-center space-x-2">
-                    <Flame className="w-4 h-4 text-orange-500" />
-                    <span>Recommended for You</span>
-                  </h3>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {recommendedItems.map(rec => (
-                      <div
-                        key={rec.id}
-                        onClick={() => addToCart(rec)}
-                        className="bg-[#141a22] border border-slate-800 p-2.5 rounded-2xl flex items-center justify-between hover:border-orange-500/40 cursor-pointer transition group"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <img
-                            src={rec.imageUrl || 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500'}
-                            alt={rec.name}
-                            className="w-12 h-12 rounded-xl object-cover"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500';
-                            }}
-                          />
-                          <div>
-                            <h4 className="font-bold text-white text-xs group-hover:text-orange-400 transition">{rec.name}</h4>
-                            <span className="text-[11px] font-extrabold text-orange-500">${rec.price?.toFixed(2)}</span>
-                          </div>
-                        </div>
-
-                        <div className="w-7 h-7 rounded-full bg-slate-900 group-hover:bg-orange-500 text-slate-400 group-hover:text-white flex items-center justify-center transition">
-                          <Plus className="w-4 h-4" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+          {/* Product Cards Grid & Recommendations */}
+          <PosMenuGrid 
+            items={filteredItems}
+            loading={loading}
+            recommendedItems={recommendedItems}
+            onSelectItem={(item) => {
+              setSelectedDishDetail(item);
+              setSelectedSize('M');
+              setItemNote('');
+            }}
+            onAddToCart={(item) => addToCart(item)}
+          />
         </div>
 
         {/* Right Column: Order Cart Drawer (35%) */}
-        <div className="w-5/12 lg:w-1/3 bg-[#11161d] flex flex-col justify-between p-5 overflow-hidden border-l border-slate-800/80">
-          {/* Cart Header */}
-          <div className="pb-3 border-b border-slate-800 flex justify-between items-center shrink-0">
-            <div className="flex items-center space-x-2">
-              <ShoppingBag className="w-5 h-5 text-orange-500" />
-              <div>
-                <h2 className="font-extrabold text-white text-base">Current Order Cart</h2>
-                <p className="text-xs text-slate-400">
-                  {orderType} • {selectedTableId ? `Table #${selectedTableId}` : 'No Table'}
-                </p>
-              </div>
-            </div>
-            {cart.length > 0 && (
-              <button
-                onClick={() => setCart([])}
-                className="text-xs text-rose-400 hover:text-rose-300 font-semibold cursor-pointer"
-              >
-                Clear All
-              </button>
-            )}
-          </div>
-
-          {/* Cart Items Scroll List */}
-          <div className="flex-1 overflow-y-auto py-3 space-y-3 pr-1">
-            {cart.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-slate-500 text-center p-6">
-                <div className="w-16 h-16 rounded-full bg-slate-900 flex items-center justify-center mb-3">
-                  <Utensils className="w-8 h-8 opacity-30 text-orange-500" />
-                </div>
-                <p className="text-sm font-bold text-slate-300">Your cart is empty</p>
-                <p className="text-xs text-slate-500 max-w-xs mt-1">Select dishes from the menu to start taking order</p>
-              </div>
-            ) : (
-              cart.map((item, idx) => (
-                <div key={idx} className="bg-[#141a22] border border-slate-800/80 p-3.5 rounded-2xl space-y-2.5 shadow-md">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-extrabold text-white text-sm">{item.name}</h4>
-                      <span className="text-xs text-slate-400">${item.unitPrice?.toFixed(2)} each</span>
-                    </div>
-                    <span className="font-black text-orange-400 text-sm">
-                      ${(item.unitPrice * item.quantity).toFixed(2)}
-                    </span>
-                  </div>
-
-                  {/* Notes Input */}
-                  <input
-                    type="text"
-                    placeholder="Special instructions (e.g. Extra cheese)..."
-                    value={item.notes}
-                    onChange={(e) => updateNotes(idx, e.target.value)}
-                    className="w-full bg-[#0d1217] border border-slate-800 px-3 py-1.5 rounded-xl text-xs text-slate-300 placeholder-slate-600 focus:outline-none focus:border-orange-500"
-                  />
-
-                  {/* Quantity & Delete Controls */}
-                  <div className="flex items-center justify-between pt-1">
-                    <div className="flex items-center space-x-2 bg-[#0d1217] border border-slate-800 rounded-xl p-1">
-                      <button
-                        onClick={() => updateQuantity(idx, -1)}
-                        className="p-1 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white cursor-pointer"
-                      >
-                        <Minus className="w-3.5 h-3.5" />
-                      </button>
-                      <span className="text-xs font-black text-white px-2">{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(idx, 1)}
-                        className="p-1 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white cursor-pointer"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-
-                    <button
-                      onClick={() => removeFromCart(idx)}
-                      className="text-rose-400 hover:text-rose-300 p-1.5 cursor-pointer"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-
-          {/* Cart Summary & Action Buttons */}
-          <div className="pt-4 border-t border-slate-800/80 space-y-4 shrink-0">
-            <div className="space-y-2 text-xs text-slate-400">
-              <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span className="text-slate-200 font-semibold">${subtotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Tax (10%)</span>
-                <span className="text-slate-200 font-semibold">${tax.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-base font-black text-white pt-2 border-t border-slate-800/80">
-                <span>Grand Total</span>
-                <span className="text-orange-500 text-lg">${grandTotal.toFixed(2)}</span>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                disabled={cart.length === 0 || isSendingToKitchen}
-                onClick={handleSendToKitchen}
-                className="py-3.5 px-3 bg-slate-900 hover:bg-slate-800 text-amber-400 border border-amber-500/30 font-bold rounded-2xl text-xs flex items-center justify-center space-x-2 transition cursor-pointer disabled:opacity-50"
-              >
-                <Send className="w-4 h-4" />
-                <span>{isSendingToKitchen ? 'Sending...' : 'To Kitchen'}</span>
-              </button>
-
-              <button
-                disabled={cart.length === 0}
-                onClick={() => setShowCheckoutModal(true)}
-                className="py-3.5 px-3 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-white font-extrabold rounded-2xl text-xs flex items-center justify-center space-x-2 shadow-xl shadow-orange-500/25 transition cursor-pointer disabled:opacity-50 active:scale-95"
-              >
-                <CreditCard className="w-4 h-4" />
-                <span>Pay & Invoice</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        <PosCartPanel 
+          cart={cart}
+          orderType={orderType}
+          selectedTableId={selectedTableId}
+          subtotal={subtotal}
+          tax={tax}
+          grandTotal={grandTotal}
+          isSendingToKitchen={isSendingToKitchen}
+          onClearCart={() => setCart([])}
+          onUpdateQuantity={updateQuantity}
+          onUpdateNotes={updateNotes}
+          onRemoveFromCart={removeFromCart}
+          onSendToKitchen={handleSendToKitchen}
+          onCheckout={() => setShowCheckoutModal(true)}
+        />
       </div>
 
       {/* DISH DETAIL INSPECTOR MODAL (Matching Behance Right Screen View) */}
