@@ -14,6 +14,8 @@ import com.restaurant.pos_backend.repository.DishRatingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.util.HashSet;
 import java.util.List;
@@ -39,11 +41,13 @@ public class MenuService {
 
     // --- CATEGORY OPERATIONS ---
 
+    @Cacheable(value = "menuCategories", key = "#branchId")
     public List<MenuCategory> getCategoriesByBranch(Long branchId) {
         return categoryRepository.findByBranchIdOrderBySortOrderAsc(branchId);
     }
 
     @Transactional
+    @CacheEvict(value = {"menuCategories", "menuItems"}, allEntries = true)
     public MenuCategory createCategory(MenuCategoryRequest request) {
         Branch branch = branchRepository.findById(request.getBranchId())
                 .orElseThrow(() -> new RuntimeException("Branch not found with ID: " + request.getBranchId()));
@@ -59,6 +63,7 @@ public class MenuService {
 
     // --- MENU ITEM OPERATIONS ---
 
+    @Cacheable(value = "menuItems", key = "#branchId + '-' + #categoryId + '-' + #availableOnly")
     public List<MenuItem> getMenuItems(Long branchId, Long categoryId, Boolean availableOnly) {
         List<MenuItem> items;
         if (categoryId != null) {
@@ -92,6 +97,7 @@ public class MenuService {
     }
 
     @Transactional
+    @CacheEvict(value = "menuItems", allEntries = true)
     public MenuItem createMenuItem(MenuItemRequest request) {
         MenuCategory category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found with ID: " + request.getCategoryId()));
@@ -117,6 +123,7 @@ public class MenuService {
     }
 
     @Transactional
+    @CacheEvict(value = "menuItems", allEntries = true)
     public MenuItem updateMenuItem(Long id, MenuItemRequest request) {
         MenuItem menuItem = getMenuItemById(id);
 
@@ -143,6 +150,7 @@ public class MenuService {
     }
 
     @Transactional
+    @CacheEvict(value = "menuItems", allEntries = true)
     public MenuItem toggleAvailability(Long id, Boolean isAvailable) {
         MenuItem menuItem = getMenuItemById(id);
         menuItem.setIsAvailable(isAvailable);

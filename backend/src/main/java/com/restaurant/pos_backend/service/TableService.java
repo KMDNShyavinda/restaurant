@@ -8,6 +8,8 @@ import com.restaurant.pos_backend.repository.TableRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.util.List;
 
@@ -20,6 +22,7 @@ public class TableService {
     @Autowired
     private BranchRepository branchRepository;
 
+    @Cacheable(value = "tables", key = "#branchId + '-' + #status + '-' + #zone")
     public List<TableEntity> getTables(Long branchId, String status, String zone) {
         if (status != null) {
             return tableRepository.findByBranchIdAndStatus(branchId, status);
@@ -36,6 +39,7 @@ public class TableService {
     }
 
     @Transactional
+    @CacheEvict(value = "tables", allEntries = true)
     public TableEntity createTable(TableRequest request) {
         Branch branch = branchRepository.findById(request.getBranchId())
                 .orElseThrow(() -> new RuntimeException("Branch not found with ID: " + request.getBranchId()));
@@ -52,6 +56,7 @@ public class TableService {
     }
 
     @Transactional
+    @CacheEvict(value = "tables", allEntries = true)
     public TableEntity updateStatus(Long id, String status) {
         TableEntity table = getTableById(id);
         table.setStatus(status.toUpperCase());
