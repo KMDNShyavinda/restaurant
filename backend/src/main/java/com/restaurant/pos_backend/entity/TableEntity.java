@@ -34,4 +34,10 @@ public class TableEntity {
     @Column(length = 20)
     @Builder.Default
     private String status = "FREE"; // FREE, OCCUPIED, RESERVED
+
+    @Column(name = "position_x")
+    private Double positionX;
+
+    @Column(name = "position_y")
+    private Double positionY;
 }

@@ -50,4 +50,14 @@ public class TableController {
         TableEntity table = tableService.updateStatus(id, status);
         return ResponseEntity.ok(table);
     }
+
+    @PatchMapping("/{id}/position")
+    @PreAuthorize("hasRole('MANAGER') or hasRole('OWNER')")
+    public ResponseEntity<TableEntity> updatePosition(
+            @PathVariable Long id,
+            @RequestParam Double x,
+            @RequestParam Double y) {
+        TableEntity table = tableService.updatePosition(id, x, y);
+        return ResponseEntity.ok(table);
+    }
 }

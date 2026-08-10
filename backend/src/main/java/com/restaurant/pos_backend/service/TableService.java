@@ -50,6 +50,8 @@ public class TableService {
                 .capacity(request.getCapacity())
                 .zone(request.getZone() != null ? request.getZone() : "Main Dining")
                 .status(request.getStatus() != null ? request.getStatus() : "FREE")
+                .positionX(request.getPositionX())
+                .positionY(request.getPositionY())
                 .build();
 
         return tableRepository.save(table);
@@ -60,6 +62,15 @@ public class TableService {
     public TableEntity updateStatus(Long id, String status) {
         TableEntity table = getTableById(id);
         table.setStatus(status.toUpperCase());
+        return tableRepository.save(table);
+    }
+
+    @Transactional
+    @CacheEvict(value = "tables", allEntries = true)
+    public TableEntity updatePosition(Long id, Double x, Double y) {
+        TableEntity table = getTableById(id);
+        table.setPositionX(x);
+        table.setPositionY(y);
         return tableRepository.save(table);
     }
 }

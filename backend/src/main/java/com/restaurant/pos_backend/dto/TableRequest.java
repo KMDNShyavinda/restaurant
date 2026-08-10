@@ -26,4 +26,7 @@ public class TableRequest {
 
     @Builder.Default
     private String status = "FREE";
+
+    private Double positionX;
+    private Double positionY;
 }
