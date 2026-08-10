@@ -25,6 +25,18 @@ spec:
         # Container එක K8s ඇතුලේ රන් වෙන port එක
         ports:
         - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
 ---
 # Service එකක් හදන්න පාවිච්චි කරන API version එක
 apiVersion: v1
