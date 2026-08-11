@@ -13,6 +13,7 @@ import { RestaurantHomePage } from '../pages/public/RestaurantHomePage';
 import { RoleWelcomePage } from '../pages/auth/RoleWelcomePage';
 import { WaiterDashboardPage } from '../pages/dashboard/WaiterDashboardPage';
 import { AdminDashboardPage } from '../pages/dashboard/AdminDashboardPage';
+import { AdminUsersPage } from '../pages/dashboard/AdminUsersPage';
 import { ProtectedRoute } from './ProtectedRoute';
 
 export const AppRoutes = () => {
@@ -43,6 +44,7 @@ export const AppRoutes = () => {
 
       <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'SUPER_ADMIN', 'OWNER']} />}>
         <Route path="/admin" element={<AdminDashboardPage />} />
+        <Route path="/admin/users" element={<AdminUsersPage />} />
       </Route>
 
       <Route element={<ProtectedRoute allowedRoles={['OWNER', 'ADMIN', 'MANAGER', 'WAITER', 'WAITSTAFF', 'CASHIER']} />}>
