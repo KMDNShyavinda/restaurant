@@ -11,6 +11,7 @@ import {
 import { PosCategoryTabs } from '../../components/pos/PosCategoryTabs';
 import { PosMenuGrid } from '../../components/pos/PosMenuGrid';
 import { PosCartPanel } from '../../components/pos/PosCartPanel';
+import { toast } from 'sonner';
 
 export const PosTerminalPage = () => {
   const [categories, setCategories] = useState([]);
@@ -121,7 +122,7 @@ export const PosTerminalPage = () => {
 
   const handleSendToKitchen = async () => {
     if (isPending) {
-      alert("Not yet approved user role. Please wait for an Admin to approve your account.");
+      toast.error("Not yet approved user role. Please wait for an Admin to approve your account.");
       return;
     }
     if (cart.length === 0) return;
@@ -144,10 +145,10 @@ export const PosTerminalPage = () => {
 
       const sentOrder = await ordersApi.sendToKitchen(newOrder.id);
       setActiveOrder(sentOrder);
-      alert(`Order #${newOrder.id} successfully sent to Kitchen Display System!`);
+      toast.success(`Order #${newOrder.id} successfully sent to Kitchen Display System!`);
     } catch (err) {
       console.error("Failed to send order to kitchen", err);
-      alert("Error sending order to kitchen. Please check server status.");
+      toast.error("Error sending order to kitchen. Please check server status.");
     } finally {
       setIsSendingToKitchen(false);
     }
@@ -155,7 +156,7 @@ export const PosTerminalPage = () => {
 
   const handleProcessPayment = async () => {
     if (isPending) {
-      alert("Not yet approved user role. Please wait for an Admin to approve your account.");
+      toast.error("Not yet approved user role. Please wait for an Admin to approve your account.");
       return;
     }
     if (!activeOrder && cart.length === 0) return;
@@ -191,9 +192,10 @@ export const PosTerminalPage = () => {
       setShowCheckoutModal(false);
       setCart([]);
       setActiveOrder(null);
+      toast.success("Payment processed successfully!");
     } catch (err) {
       console.error("Failed to process payment", err);
-      alert("Payment processing error. Please try again.");
+      toast.error("Payment processing error. Please try again.");
     } finally {
       setIsProcessingPayment(false);
     }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ordersApi } from '../../api/ordersApi';
 import { CheckCircle2, Clock, CheckCircle, ChefHat, BellRing } from 'lucide-react';
+import { toast } from 'sonner';
 
 export const WaiterDashboardPage = () => {
   const [orders, setOrders] = useState([]);
@@ -28,9 +29,11 @@ export const WaiterDashboardPage = () => {
   const handleMarkAsServed = async (orderId) => {
     try {
       await ordersApi.updateOrderStatus(orderId, 'SERVED');
+      toast.success(`Order #${orderId} marked as served!`);
       fetchOrders(); // refresh
     } catch (error) {
       console.error("Failed to update status", error);
+      toast.error("Failed to update order status");
     }
   };
 

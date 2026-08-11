@@ -17,15 +17,21 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER') or hasRole('SUPER_ADMIN') or hasRole('MANAGER')")
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userRepository.findAll());
+    }
+
     @GetMapping("/pending")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER') or hasRole('SUPER_ADMIN') or hasRole('MANAGER')")
     public ResponseEntity<List<User>> getPendingUsers() {
         List<User> pendingUsers = userRepository.findByStatus("PENDING");
         return ResponseEntity.ok(pendingUsers);
     }
 
     @PutMapping("/{id}/approve")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('OWNER') or hasRole('SUPER_ADMIN') or hasRole('MANAGER')")
     public ResponseEntity<?> approveUser(@PathVariable Long id) {
         User user = userRepository.findById(id).orElse(null);
         if (user == null) {

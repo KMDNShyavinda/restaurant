@@ -6,8 +6,10 @@ import { useActionGuard } from '../../hooks/useActionGuard';
 import { Client } from '@stomp/stompjs';
 import { 
   ArrowLeft, Tv, Clock, CheckCircle2, Flame, 
-  RefreshCw, Wifi, WifiOff, UtensilsCrossed 
+  RefreshCw, Wifi, WifiOff, UtensilsCrossed, Volume2 
 } from 'lucide-react';
+import { toast } from 'sonner';
+import { initAudio, playDingSound } from '../../utils/audioUtils';
 
 export const KdsPage = () => {
   const [tickets, setTickets] = useState([]);
@@ -57,6 +59,9 @@ export const KdsPage = () => {
                   newTickets[existingIdx] = updatedTicket;
                   return newTickets;
                 } else {
+                  // It's a new ticket!
+                  playDingSound();
+                  toast.success(`New Ticket #${updatedTicket.id} received!`);
                   return [updatedTicket, ...prev];
                 }
               });
@@ -229,6 +234,14 @@ export const KdsPage = () => {
               </button>
             ))}
           </div>
+
+          <button
+            onClick={() => { initAudio(); toast.success('Audio enabled for new tickets'); }}
+            className="p-2.5 bg-[#0d1217] hover:bg-slate-900 border border-slate-800 rounded-2xl text-slate-300 transition cursor-pointer"
+            title="Enable Audio Notifications"
+          >
+            <Volume2 className="w-4 h-4 text-emerald-400" />
+          </button>
 
           <button
             onClick={fetchTickets}

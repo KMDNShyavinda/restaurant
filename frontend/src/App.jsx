@@ -1,16 +1,28 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
 import { AppRoutes } from './routes/AppRoutes';
+import { AuthProvider } from './context/AuthContext';
+import { Toaster } from 'sonner';
 
-function App() {
+export const App = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
         <AppRoutes />
+        <Toaster 
+          position="bottom-right"
+          theme="dark"
+          toastOptions={{
+            style: {
+              background: '#141a22',
+              border: '1px solid #1e293b',
+              color: '#fff',
+            },
+          }}
+        />
       </AuthProvider>
     </BrowserRouter>
   );
-}
+};
 
 export default App;

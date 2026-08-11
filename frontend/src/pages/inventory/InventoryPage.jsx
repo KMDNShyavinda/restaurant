@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { inventoryApi } from '../../api/inventoryApi';
 import { useAuth } from '../../context/AuthContext';
+import { toast } from 'sonner';
 import { 
   ArrowLeft, Package, Plus, AlertTriangle, RefreshCw, 
   Search, SlidersHorizontal, ArrowUpRight, ArrowDownRight, Edit3, X 
@@ -46,6 +47,7 @@ export const InventoryPage = () => {
       setLowStockList(lowIngs);
     } catch (err) {
       console.error("Failed to fetch inventory", err);
+      toast.error("Failed to load inventory data");
     } finally {
       setLoading(false);
     }
@@ -66,11 +68,13 @@ export const InventoryPage = () => {
         currentStock: parseFloat(currentStock),
         reorderLevel: parseFloat(reorderLevel)
       });
+      toast.success(`${name} added to inventory!`);
       setShowAddModal(false);
       setName('');
       fetchData();
     } catch (err) {
       console.error("Failed to create ingredient", err);
+      toast.error("Failed to add ingredient");
     } finally {
       setIsSubmitting(false);
     }
@@ -89,12 +93,14 @@ export const InventoryPage = () => {
         reason: adjReason || `Manual ${adjType} adjustment`,
         recordedById: user?.id || 1
       });
+      toast.success(`Stock adjusted for ${selectedIngredientForAdj.name}`);
       setShowAdjModal(false);
       setSelectedIngredientForAdj(null);
       setAdjReason('');
       fetchData();
     } catch (err) {
       console.error("Failed to record adjustment", err);
+      toast.error("Failed to adjust stock");
     } finally {
       setIsSubmitting(false);
     }

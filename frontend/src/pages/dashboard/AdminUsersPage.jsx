@@ -41,22 +41,29 @@ export const AdminUsersPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const [allRes, pendingRes] = await Promise.allSettled([
-        adminApi.getAllUsers(),
-        adminApi.getPendingUsers()
-      ]);
+      let fetchedUsers = [];
+      let fetchedPending = [];
 
-      if (allRes.status === 'fulfilled' && Array.isArray(allRes.value.data)) {
-        setUsers(allRes.value.data);
-      } else {
-        setUsers([]);
+      try {
+        const res = await adminApi.getAllUsers();
+        if (Array.isArray(res?.data)) {
+          fetchedUsers = res.data;
+        }
+      } catch (e) {
+        console.warn('getAllUsers fallback trigger:', e);
       }
 
-      if (pendingRes.status === 'fulfilled' && Array.isArray(pendingRes.value.data)) {
-        setPendingUsers(pendingRes.value.data);
-      } else {
-        setPendingUsers([]);
+      try {
+        const resP = await adminApi.getPendingUsers();
+        if (Array.isArray(resP?.data)) {
+          fetchedPending = resP.data;
+        }
+      } catch (e) {
+        console.warn('getPendingUsers fallback trigger:', e);
       }
+
+      setUsers(fetchedUsers);
+      setPendingUsers(fetchedPending);
     } catch (err) {
       console.error(err);
       setError('Failed to load user management data.');
