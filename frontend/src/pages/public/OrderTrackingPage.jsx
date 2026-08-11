@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ordersApi } from '../../api/ordersApi';
 import { Client } from '@stomp/stompjs';
+import { getWsUrl } from '../../config/apiConfig';
 import { 
   Clock, CheckCircle2, Flame, Truck, Utensils, 
   ShoppingBag, ArrowLeft, RefreshCw, ShieldCheck 
@@ -30,7 +31,7 @@ export const OrderTrackingPage = () => {
 
     // STOMP Client Setup for Order Live Updates
     const client = new Client({
-      brokerURL: 'ws://localhost:8080/ws/kitchen/websocket',
+      brokerURL: getWsUrl('/ws/kitchen/websocket'),
       reconnectDelay: 5000,
       onConnect: () => {
         if (id) {

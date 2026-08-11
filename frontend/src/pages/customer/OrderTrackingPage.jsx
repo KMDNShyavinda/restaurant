@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { ordersApi } from '../../api/ordersApi';
 import { Client } from '@stomp/stompjs';
+import { getWsUrl } from '../../config/apiConfig';
 
 export const OrderTrackingPage = () => {
   const { orderId: pathOrderId } = useParams();
@@ -88,7 +89,7 @@ export const OrderTrackingPage = () => {
   const setupWebSocket = (targetOrderId) => {
     try {
       const client = new Client({
-        brokerURL: 'ws://localhost:8080/ws',
+        brokerURL: getWsUrl('/ws'),
         reconnectDelay: 5000,
         onConnect: () => {
           console.log("WebSocket connected for Order Tracking:", targetOrderId);

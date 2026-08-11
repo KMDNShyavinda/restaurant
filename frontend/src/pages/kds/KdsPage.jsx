@@ -4,6 +4,7 @@ import { kitchenApi } from '../../api/kitchenApi';
 import { useAuth } from '../../context/AuthContext';
 import { useActionGuard } from '../../hooks/useActionGuard';
 import { Client } from '@stomp/stompjs';
+import { getWsUrl } from '../../config/apiConfig';
 import { 
   ArrowLeft, Tv, Clock, CheckCircle2, Flame, 
   RefreshCw, Wifi, WifiOff, UtensilsCrossed, Volume2 
@@ -44,7 +45,7 @@ export const KdsPage = () => {
 
     // STOMP Client Setup using native WebSocket
     const client = new Client({
-      brokerURL: 'ws://localhost:8080/ws/kitchen/websocket',
+      brokerURL: getWsUrl('/ws/kitchen/websocket'),
       reconnectDelay: 5000,
       onConnect: () => {
         setWsConnected(true);

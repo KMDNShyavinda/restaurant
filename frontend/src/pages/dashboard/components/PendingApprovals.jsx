@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosClient from '../../../api/axiosClient';
 import { UserPlus, CheckCircle, XCircle } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 
 export const PendingApprovals = () => {
-  const { token, user } = useAuth();
+  const { user } = useAuth();
   const [pendingUsers, setPendingUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -13,9 +13,7 @@ export const PendingApprovals = () => {
 
   const fetchPendingUsers = async () => {
     try {
-      const res = await axios.get('http://localhost:8080/api/users/pending', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await axiosClient.get('/users/pending');
       setPendingUsers(res.data);
     } catch (err) {
       console.error("Failed to fetch pending users", err);
@@ -31,9 +29,7 @@ export const PendingApprovals = () => {
 
   const handleApprove = async (id) => {
     try {
-      await axios.put(`http://localhost:8080/api/users/${id}/approve`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axiosClient.put(`/users/${id}/approve`);
       setPendingUsers(pendingUsers.filter(u => u.id !== id));
       alert("User approved successfully!");
     } catch (err) {
