@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { inventoryApi } from '../../api/inventoryApi';
 import { useAuth } from '../../context/AuthContext';
@@ -168,9 +169,20 @@ export const InventoryPage = () => {
       </header>
 
       {/* Low Stock Warning Alert Banner */}
+      <AnimatePresence>
       {lowStockList.length > 0 && (
-        <div className="bg-rose-500/10 border border-rose-500/30 p-4 rounded-3xl mb-6 flex items-start space-x-3 text-rose-300 shrink-0">
-          <AlertTriangle className="w-5 h-5 shrink-0 text-rose-400 mt-0.5" />
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          className="bg-rose-500/10 border border-rose-500/30 p-4 rounded-3xl mb-6 flex items-start space-x-3 text-rose-300 shrink-0 shadow-lg shadow-rose-500/10"
+        >
+          <motion.div 
+            animate={{ scale: [1, 1.2, 1] }} 
+            transition={{ repeat: Infinity, duration: 2 }}
+          >
+            <AlertTriangle className="w-5 h-5 shrink-0 text-rose-400 mt-0.5" />
+          </motion.div>
           <div className="flex-1">
             <h3 className="font-extrabold text-sm text-rose-200">Attention: Low Stock Threshold Warning ({lowStockList.length} Items)</h3>
             <p className="text-xs text-rose-300/80 mt-0.5">The following ingredients have reached or fallen below their reorder level thresholds:</p>
@@ -182,24 +194,34 @@ export const InventoryPage = () => {
               ))}
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
 
       {/* Metric Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 shrink-0">
-        <div className="bg-[#141a22] border border-slate-800/80 p-4 rounded-3xl shadow-lg">
+      <motion.div 
+        initial="hidden"
+        animate="show"
+        variants={{
+          hidden: { opacity: 0 },
+          show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+        }}
+        className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 shrink-0"
+      >
+        <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }} className="bg-[#141a22] border border-slate-800/80 p-4 rounded-3xl shadow-lg">
           <div className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Total Ingredients Tracked</div>
           <div className="text-2xl font-black text-white">{ingredients.length} <span className="text-xs font-normal text-slate-400">Items</span></div>
-        </div>
-        <div className="bg-[#141a22] border border-emerald-500/20 p-4 rounded-3xl shadow-lg bg-gradient-to-b from-emerald-500/5 to-transparent">
+        </motion.div>
+        <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }} className="bg-[#141a22] border border-emerald-500/20 p-4 rounded-3xl shadow-lg bg-gradient-to-b from-emerald-500/5 to-transparent">
           <div className="text-emerald-400 text-xs font-bold uppercase tracking-wider mb-1">Healthy Stock Items</div>
           <div className="text-2xl font-black text-emerald-400">{ingredients.length - lowStockList.length}</div>
-        </div>
-        <div className="bg-[#141a22] border border-rose-500/20 p-4 rounded-3xl shadow-lg bg-gradient-to-b from-rose-500/5 to-transparent">
-          <div className="text-rose-400 text-xs font-bold uppercase tracking-wider mb-1">Low Stock Alerts</div>
-          <div className="text-2xl font-black text-rose-400">{lowStockList.length}</div>
-        </div>
-      </div>
+        </motion.div>
+        <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }} className="bg-[#141a22] border border-rose-500/20 p-4 rounded-3xl shadow-lg bg-gradient-to-b from-rose-500/5 to-transparent relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-16 h-16 bg-rose-500/10 blur-2xl rounded-full" />
+          <div className="text-rose-400 text-xs font-bold uppercase tracking-wider mb-1 relative z-10">Low Stock Alerts</div>
+          <div className="text-2xl font-black text-rose-400 relative z-10">{lowStockList.length}</div>
+        </motion.div>
+      </motion.div>
 
       {/* Filter Controls */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4 shrink-0">
@@ -251,14 +273,26 @@ export const InventoryPage = () => {
                   <th className="p-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
-                {filteredIngredients.map(ing => {
+              <motion.tbody 
+                initial="hidden"
+                animate="show"
+                variants={{
+                  hidden: { opacity: 0 },
+                  show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+                }}
+                className="divide-y divide-slate-800/60"
+              >
+                {filteredIngredients.map((ing, idx) => {
                   const isLow = ing.currentStock <= ing.reorderLevel;
                   const ratio = ing.reorderLevel > 0 ? (ing.currentStock / (ing.reorderLevel * 2)) * 100 : 100;
                   const clampedRatio = Math.min(Math.max(ratio, 5), 100);
 
                   return (
-                    <tr key={ing.id} className="hover:bg-slate-900/60 transition">
+                    <motion.tr 
+                      variants={{ hidden: { opacity: 0, x: -20 }, show: { opacity: 1, x: 0 } }}
+                      key={ing.id} 
+                      className="hover:bg-slate-900/60 transition"
+                    >
                       <td className="p-4 font-black text-white text-sm">{ing.name}</td>
                       <td className="p-4 font-mono font-black text-slate-200">
                         {ing.currentStock} <span className="text-slate-400 font-normal text-xs">{ing.unit}</span>
@@ -267,12 +301,14 @@ export const InventoryPage = () => {
                         {ing.reorderLevel} <span className="text-slate-500 text-xs">{ing.unit}</span>
                       </td>
                       <td className="p-4 w-44">
-                        <div className="w-full bg-[#0d1217] h-2 rounded-full overflow-hidden border border-slate-800">
-                          <div 
-                            className={`h-full rounded-full transition-all ${
+                        <div className="w-full bg-[#0d1217] h-2 rounded-full overflow-hidden border border-slate-800 relative">
+                          <motion.div 
+                            initial={{ width: 0 }}
+                            animate={{ width: `${clampedRatio}%` }}
+                            transition={{ duration: 1, ease: "easeOut", delay: idx * 0.05 }}
+                            className={`h-full rounded-full transition-colors ${
                               isLow ? 'bg-rose-500' : 'bg-emerald-500'
                             }`}
-                            style={{ width: `${clampedRatio}%` }}
                           />
                         </div>
                       </td>
@@ -292,19 +328,25 @@ export const InventoryPage = () => {
                           Adjust Stock
                         </button>
                       </td>
-                    </tr>
+                    </motion.tr>
                   );
                 })}
-              </tbody>
+              </motion.tbody>
             </table>
           </div>
         </div>
       )}
 
       {/* Stock Adjustment Modal */}
+      <AnimatePresence>
       {showAdjModal && selectedIngredientForAdj && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-[#141a22] border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="bg-[#141a22] border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative"
+          >
             <button 
               onClick={() => setShowAdjModal(false)}
               className="absolute top-5 right-5 text-slate-400 hover:text-white transition cursor-pointer"
@@ -373,14 +415,21 @@ export const InventoryPage = () => {
                 {isSubmitting ? 'Recording...' : 'Confirm Stock Adjustment'}
               </button>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
+      </AnimatePresence>
 
       {/* Add Ingredient Modal */}
+      <AnimatePresence>
       {showAddModal && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-[#141a22] border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="bg-[#141a22] border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative"
+          >
             <button 
               onClick={() => setShowAddModal(false)}
               className="absolute top-5 right-5 text-slate-400 hover:text-white transition cursor-pointer"
@@ -449,9 +498,10 @@ export const InventoryPage = () => {
                 {isSubmitting ? 'Saving...' : 'Create Ingredient'}
               </button>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
+      </AnimatePresence>
     </div>
   );
 };

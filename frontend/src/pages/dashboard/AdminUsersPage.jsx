@@ -18,7 +18,12 @@ export const AdminUsersPage = () => {
     try {
       setLoading(true);
       const res = await adminApi.getPendingUsers();
-      setUsers(res.data);
+      if (Array.isArray(res.data)) {
+        setUsers(res.data);
+      } else {
+        setUsers([]);
+        console.warn('API did not return an array:', res.data);
+      }
       setError(null);
     } catch (err) {
       setError('Failed to fetch pending users.');
@@ -106,19 +111,19 @@ export const AdminUsersPage = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800/50">
-                    {users.map(user => (
+                    {Array.isArray(users) && users.map(user => (
                       <tr key={user.id} className="hover:bg-slate-800/20 transition-colors">
                         <td className="px-6 py-4">
-                          <div className="font-bold text-white">{user.name}</div>
-                          <div className="text-slate-500 text-xs">{user.email}</div>
+                          <div className="font-bold text-white">{user?.name || 'Unknown'}</div>
+                          <div className="text-slate-500 text-xs">{user?.email || 'No email'}</div>
                         </td>
                         <td className="px-6 py-4">
                           <span className="bg-slate-800 text-slate-300 py-1 px-3 rounded-xl text-xs font-bold border border-slate-700">
-                            {user.role}
+                            {user?.role || 'USER'}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-slate-400">
-                          {user.phone || '-'}
+                          {user?.phone || '-'}
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-2">
