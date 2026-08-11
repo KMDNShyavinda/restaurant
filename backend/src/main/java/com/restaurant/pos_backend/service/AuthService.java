@@ -113,6 +113,11 @@ public class AuthService {
         return login(new LoginRequest(request.getEmail(), request.getPassword()));
     }
     @Transactional(readOnly = true)
+    public java.util.List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
     public java.util.List<User> getPendingUsers() {
         return userRepository.findAll().stream()
                 .filter(u -> "PENDING".equalsIgnoreCase(u.getStatus()))
@@ -125,5 +130,50 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         user.setStatus(status.toUpperCase());
         return userRepository.save(user);
+    }
+
+    @Transactional
+    public User updateUserRole(Long userId, String roleName) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        String targetRoleName = roleName != null ? roleName.toUpperCase() : "CASHIER";
+        Role role = roleRepository.findByName(targetRoleName)
+                .orElseGet(() -> roleRepository.save(Role.builder().name(targetRoleName).description(targetRoleName + " role").build()));
+        user.setRole(role);
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public User createUserByAdmin(RegisterRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email address is already in use.");
+        }
+
+        String targetRoleName = request.getRoleName() != null ? request.getRoleName().toUpperCase() : "CASHIER";
+        Role role = roleRepository.findByName(targetRoleName)
+                .orElseGet(() -> roleRepository.save(Role.builder().name(targetRoleName).description(targetRoleName + " role").build()));
+
+        Long branchId = request.getBranchId() != null ? request.getBranchId() : 1L;
+        Branch branch = branchRepository.findById(branchId).orElse(null);
+
+        User newUser = User.builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .passwordHash(passwordEncoder.encode(request.getPassword() != null ? request.getPassword() : "123456"))
+                .phone(request.getPhone())
+                .role(role)
+                .branch(branch)
+                .status("ACTIVE")
+                .build();
+
+        return userRepository.save(newUser);
+    }
+
+    @Transactional
+    public void deleteUser(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new RuntimeException("User not found");
+        }
+        userRepository.deleteById(userId);
     }
 }

@@ -35,6 +35,7 @@ public class User {
     private String phone;
 
     @Column(name = "password_hash", nullable = false, length = 255)
+    @com.fasterxml.jackson.annotation.JsonProperty(access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
     private String passwordHash;
 
     @Column(length = 20)
