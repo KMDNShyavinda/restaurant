@@ -43,7 +43,7 @@ apiVersion: v1
 # රිසෝස් වර්ගය Service එකක්
 kind: Service
 metadata:
-  name: pos-backend-service
+  name: backend
 spec:
   # app: pos-backend තියෙන Pods වලට තමයි මේ සර්විස් එක ට්‍රැෆික් එක යවන්නේ
   selector:
