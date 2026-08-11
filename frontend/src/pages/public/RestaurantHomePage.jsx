@@ -249,6 +249,7 @@ export const RestaurantHomePage = () => {
                 <img 
                   src={dish.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500'} 
                   alt={dish.name}
+                  onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500'; }}
                   className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#11161d] via-transparent to-transparent" />

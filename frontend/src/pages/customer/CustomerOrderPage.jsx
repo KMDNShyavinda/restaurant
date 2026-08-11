@@ -10,6 +10,24 @@ import {
   Smartphone, MapPin, Check, ChefHat, RefreshCw, Tag, Leaf, Wheat, ShieldCheck, Activity, Eye, User, Star
 } from 'lucide-react';
 
+const FALLBACK_DISH_IMAGE = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500';
+
+const DEFAULT_SAMPLE_CATEGORIES = [
+  { id: 1, name: 'Wood-Fired Pizza', sortOrder: 1 },
+  { id: 2, name: 'Gourmet Burgers', sortOrder: 2 },
+  { id: 3, name: 'Desserts', sortOrder: 3 },
+  { id: 4, name: 'Beverages', sortOrder: 4 }
+];
+
+const DEFAULT_SAMPLE_DISHES = [
+  { id: 101, name: 'Margherita Pizza', description: 'San Marzano tomato sauce, fresh mozzarella, basil leaves, and extra virgin olive oil.', price: 14.99, imageUrl: 'https://images.unsplash.com/photo-1604382355076-af4b0eb60143?w=500', category: { id: 1, name: 'Wood-Fired Pizza' } },
+  { id: 102, name: 'Pepperoni Feast Pizza', description: 'Loaded with Italian pepperoni, spicy sausage, mozzarella, and house pizza sauce.', price: 17.50, imageUrl: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500', category: { id: 1, name: 'Wood-Fired Pizza' } },
+  { id: 103, name: 'Smokey Bacon Cheeseburger', description: 'Angus beef patty, smoked bacon, cheddar cheese, crispy onions & house BBQ sauce.', price: 15.99, imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500', category: { id: 2, name: 'Gourmet Burgers' } },
+  { id: 104, name: 'Double Angus Smash Burger', description: 'Two seared Angus beef patties, double American cheese, pickles & special sauce.', price: 17.50, imageUrl: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500', category: { id: 2, name: 'Gourmet Burgers' } },
+  { id: 105, name: 'Classic Tiramisu', description: 'Traditional Italian espresso-soaked ladyfingers with mascarpone cream and cocoa dusting.', price: 7.99, imageUrl: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=500', category: { id: 3, name: 'Desserts' } },
+  { id: 106, name: 'Iced Passion Fruit Tea', description: 'Refreshing black tea infused with passion fruit and fresh mint.', price: 4.50, imageUrl: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=500', category: { id: 4, name: 'Beverages' } }
+];
+
 export const CustomerOrderPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -48,6 +66,11 @@ export const CustomerOrderPage = () => {
   const [activeOrder, setActiveOrder] = useState(null);
   const [orderStatus, setOrderStatus] = useState(null);
 
+  const handleImageError = (e) => {
+    e.target.onerror = null;
+    e.target.src = FALLBACK_DISH_IMAGE;
+  };
+
   useEffect(() => {
     fetchMenuAndTables();
   }, []);
@@ -56,26 +79,41 @@ export const CustomerOrderPage = () => {
     try {
       setLoading(true);
       const [catsRes, itemsRes, tablesRes] = await Promise.all([
-        ordersApi.getCategories(1),
-        ordersApi.getMenuItems(1),
-        tablesApi.getTables(1)
+        ordersApi.getCategories(1).catch(() => []),
+        ordersApi.getMenuItems(1).catch(() => []),
+        tablesApi.getTables(1).catch(() => [])
       ]);
-      setCategories(catsRes);
+      
+      const finalCategories = (catsRes && catsRes.length > 0) ? catsRes : DEFAULT_SAMPLE_CATEGORIES;
+      const rawItems = (itemsRes && itemsRes.length > 0) ? itemsRes : DEFAULT_SAMPLE_DISHES;
+
+      setCategories(finalCategories);
       
       // Enrich menu items with dietary attributes
-      const enrichedItems = itemsRes.map((item, idx) => ({
+      const enrichedItems = rawItems.map((item, idx) => ({
         ...item,
-        isVegan: idx % 3 === 0 || item.name.toLowerCase().includes('salad') || item.name.toLowerCase().includes('veggie'),
-        isGlutenFree: idx % 4 === 0 || item.name.toLowerCase().includes('soup') || item.name.toLowerCase().includes('grill'),
-        isHalal: idx % 2 === 0 || item.name.toLowerCase().includes('chicken') || item.name.toLowerCase().includes('curry'),
+        imageUrl: item.imageUrl || FALLBACK_DISH_IMAGE,
+        isVegan: idx % 3 === 0 || (item.name && (item.name.toLowerCase().includes('salad') || item.name.toLowerCase().includes('veggie'))),
+        isGlutenFree: idx % 4 === 0 || (item.name && (item.name.toLowerCase().includes('soup') || item.name.toLowerCase().includes('grill'))),
+        isHalal: idx % 2 === 0 || (item.name && (item.name.toLowerCase().includes('chicken') || item.name.toLowerCase().includes('curry'))),
         spicyLevel: idx % 5 === 0 ? 3 : idx % 3 === 0 ? 2 : idx % 2 === 0 ? 1 : 0,
         calories: 250 + (idx * 65) % 400
       }));
 
       setMenuItems(enrichedItems);
-      setTables(tablesRes);
+      setTables(tablesRes || []);
     } catch (err) {
       console.error("Failed to load customer menu data", err);
+      setCategories(DEFAULT_SAMPLE_CATEGORIES);
+      setMenuItems(DEFAULT_SAMPLE_DISHES.map((item, idx) => ({
+        ...item,
+        imageUrl: item.imageUrl || FALLBACK_DISH_IMAGE,
+        isVegan: idx % 3 === 0,
+        isGlutenFree: idx % 4 === 0,
+        isHalal: idx % 2 === 0,
+        spicyLevel: idx % 3 === 0 ? 1 : 0,
+        calories: 350
+      })));
     } finally {
       setLoading(false);
     }
@@ -469,8 +507,9 @@ export const CustomerOrderPage = () => {
                 {/* Dish Header & Image */}
                 <div className="h-48 relative overflow-hidden bg-slate-900">
                   <img 
-                    src={dish.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500'} 
+                    src={dish.imageUrl || FALLBACK_DISH_IMAGE} 
                     alt={dish.name}
+                    onError={handleImageError}
                     className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#141a22] via-transparent to-black/30" />
@@ -811,8 +850,9 @@ export const CustomerOrderPage = () => {
 
             <div className="h-64 relative bg-slate-900">
               <img 
-                src={selectedDish.imageUrl} 
+                src={selectedDish.imageUrl || FALLBACK_DISH_IMAGE} 
                 alt={selectedDish.name} 
+                onError={handleImageError}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#141a22] via-transparent to-transparent" />
