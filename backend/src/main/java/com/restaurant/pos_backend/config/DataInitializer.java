@@ -270,7 +270,7 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void createCustomerIfNotExists(String name, String phone, String email, String address, int points) {
-        if (customerRepository.findByEmail(email).isPresent()) return;
+        if (customerRepository.findByEmail(email).isPresent() || customerRepository.findByPhone(phone).isPresent()) return;
 
         Customer customer = Customer.builder()
                 .name(name)
