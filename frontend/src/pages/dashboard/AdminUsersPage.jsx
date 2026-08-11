@@ -5,6 +5,7 @@ import {
   AlertCircle, ShieldCheck, UserPlus, Filter,
   Trash2, Edit3, Lock, RefreshCw, ChevronRight, UserCheck
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export const AdminUsersPage = () => {
   const [activeTab, setActiveTab] = useState('all'); // 'all' or 'pending'
@@ -88,7 +89,7 @@ export const AdminUsersPage = () => {
       setUsers(prev => prev.map(u => u.id === userId ? { ...u, status: nextStatus } : u));
     } catch (err) {
       console.error(err);
-      alert('Failed to update status.');
+      toast.error('Failed to update status.');
     }
   };
 
@@ -102,7 +103,7 @@ export const AdminUsersPage = () => {
       if (Array.isArray(res.data)) setUsers(res.data);
     } catch (err) {
       console.error(err);
-      alert('Failed to approve user.');
+      toast.error('Failed to approve user.');
     }
   };
 
@@ -114,7 +115,7 @@ export const AdminUsersPage = () => {
       setUsers(prev => prev.map(u => u.id === id ? { ...u, status: 'REJECTED' } : u));
     } catch (err) {
       console.error(err);
-      alert('Failed to reject user.');
+      toast.error('Failed to reject user.');
     }
   };
 
@@ -134,7 +135,7 @@ export const AdminUsersPage = () => {
       setUsers(prev => prev.map(u => u.id === selectedUser.id ? (res.data || { ...u, role: newRole }) : u));
     } catch (err) {
       console.error(err);
-      alert('Failed to update role.');
+      toast.error('Failed to update role.');
     }
   };
 
@@ -147,7 +148,7 @@ export const AdminUsersPage = () => {
       setPendingUsers(prev => prev.filter(u => u.id !== userId));
     } catch (err) {
       console.error(err);
-      alert('Failed to delete user.');
+      toast.error('Failed to delete user.');
     }
   };
 
@@ -163,8 +164,10 @@ export const AdminUsersPage = () => {
       // Add new user to list
       if (res.data) {
         setUsers(prev => [res.data, ...prev]);
+        toast.success(`User ${res.data.name} created successfully.`);
       } else {
         fetchAllData();
+        toast.success(`User created successfully.`);
       }
     } catch (err) {
       console.error(err);
