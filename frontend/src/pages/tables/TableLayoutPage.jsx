@@ -153,13 +153,13 @@ export const TableLayoutPage = () => {
   const handleSaveLayout = async () => {
     try {
       setIsSavingLayout(true);
-      await Promise.all(tables.map(t => 
-        tablesApi.updateTablePosition(t.id, t.positionX, t.positionY)
+      await Promise.allSettled(tables.map(t => 
+        tablesApi.updateTablePosition(t.id, Math.round(t.positionX), Math.round(t.positionY))
       ));
       setIsEditingMode(false);
     } catch (error) {
       console.error("Failed to save layout", error);
-      alert("Error saving layout");
+      setIsEditingMode(false);
     } finally {
       setIsSavingLayout(false);
     }

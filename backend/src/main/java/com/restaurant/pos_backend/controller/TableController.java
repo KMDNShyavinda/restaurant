@@ -36,14 +36,14 @@ public class TableController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('OWNER') or hasRole('MANAGER')")
+    @PreAuthorize("hasRole('OWNER') or hasRole('MANAGER') or hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<TableEntity> createTable(@Valid @RequestBody TableRequest request) {
         TableEntity table = tableService.createTable(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(table);
     }
 
     @PatchMapping("/{id}/status")
-    @PreAuthorize("hasAuthority('orders:create') or hasRole('WAITER') or hasRole('CASHIER') or hasRole('MANAGER') or hasRole('OWNER')")
+    @PreAuthorize("hasAuthority('orders:create') or hasRole('WAITER') or hasRole('CASHIER') or hasRole('MANAGER') or hasRole('OWNER') or hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<TableEntity> updateStatus(
             @PathVariable Long id,
             @RequestParam String status) {
@@ -52,7 +52,7 @@ public class TableController {
     }
 
     @PatchMapping("/{id}/position")
-    @PreAuthorize("hasRole('MANAGER') or hasRole('OWNER')")
+    @PreAuthorize("hasRole('MANAGER') or hasRole('OWNER') or hasRole('ADMIN') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<TableEntity> updatePosition(
             @PathVariable Long id,
             @RequestParam Double x,
