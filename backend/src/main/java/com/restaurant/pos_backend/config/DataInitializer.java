@@ -136,6 +136,8 @@ public class DataInitializer implements CommandLineRunner {
         getOrCreateMenuItem(catStarters, "Garlic Butter Bruschetta", "Toasted artisan sourdough topped with diced tomatoes, garlic, basil, and balsamic glaze.", 9.50, "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=500", 8, "COLD_PREP");
         getOrCreateMenuItem(catStarters, "Buffalo Chicken Wings", "Crispy fried wings tossed in classic spicy buffalo sauce, served with blue cheese dip.", 13.50, "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=500", 12, "KITCHEN");
         getOrCreateMenuItem(catStarters, "Loaded Mozzarella Sticks", "Golden fried mozzarella cheese sticks served with warm herb marinara sauce.", 9.99, "https://images.unsplash.com/photo-1531749668029-2db88e4276c7?w=500", 8, "KITCHEN");
+        getOrCreateMenuItem(catStarters, "Spicy Tuna Sushi Roll", "Fresh yellowfin tuna, spicy mayo, cucumber, topped with sesame seeds and sriracha.", 14.50, "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=500", 10, "COLD_PREP");
+        getOrCreateMenuItem(catStarters, "Dynamite Shrimp", "Crispy tempura shrimp tossed in a sweet and spicy dynamite sauce over mixed greens.", 16.00, "https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?w=500", 12, "KITCHEN");
 
         // Main Courses
         getOrCreateMenuItem(catMains, "Grilled Ribeye Steak", "12oz Prime Angus ribeye cooked to perfection, served with garlic herb butter and roasted asparagus.", 34.99, "https://images.unsplash.com/photo-1544025162-d76694265947?w=500", 20, "GRILL");
@@ -143,6 +145,8 @@ public class DataInitializer implements CommandLineRunner {
         getOrCreateMenuItem(catMains, "Fettuccine Chicken Alfredo", "Creamy parmesan alfredo sauce tossed with grilled chicken breast and fresh fettuccine.", 18.99, "https://images.unsplash.com/photo-1645112411341-6c4fd023714a?w=500", 15, "KITCHEN");
         getOrCreateMenuItem(catMains, "Spaghetti Italian Bolognese", "Classic slow-simmered beef ragu sauce over aldente spaghetti with fresh parmesan.", 16.99, "https://images.unsplash.com/photo-1621996346565-e3d5d6281290?w=500", 14, "KITCHEN");
         getOrCreateMenuItem(catMains, "Grilled Chicken Teriyaki Bowl", "Tender chicken thighs glazed in teriyaki sauce with steamed jasmine rice & vegetables.", 19.50, "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=500", 15, "GRILL");
+        getOrCreateMenuItem(catMains, "Signature Lobster Ravioli", "Handmade ravioli stuffed with Maine lobster in a rich creamy vodka sauce.", 28.50, "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=500", 20, "KITCHEN");
+        getOrCreateMenuItem(catMains, "Slow-Cooked BBQ Ribs", "Fall-off-the-bone pork ribs glazed in our house smokey BBQ sauce with rustic fries.", 32.00, "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=500", 25, "GRILL");
 
         // Wood-Fired Pizza
         getOrCreateMenuItem(catPizza, "Margherita Pizza", "San Marzano tomato sauce, fresh mozzarella, basil leaves, and extra virgin olive oil.", 14.99, "https://images.unsplash.com/photo-1604382355076-af4b0eb60143?w=500", 12, "PIZZA_OVEN");
@@ -157,12 +161,15 @@ public class DataInitializer implements CommandLineRunner {
         getOrCreateMenuItem(catBurgers, "Double Angus Smash Burger", "Two seared Angus beef patties, double American cheese, pickles & special sauce.", 17.50, "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500", 12, "GRILL");
         getOrCreateMenuItem(catBurgers, "Crispy Spicy Chicken Burger", "Buttermilk fried chicken breast, spicy mayo, coleslaw & pickles on brioche bun.", 14.99, "https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=500", 12, "KITCHEN");
         getOrCreateMenuItem(catBurgers, "Truffle Mushroom Swiss Burger", "Angus patty topped with sautéed wild mushrooms, Swiss cheese & truffle aioli.", 16.99, "https://images.unsplash.com/photo-1550547660-d9450f859349?w=500", 14, "GRILL");
+        getOrCreateMenuItem(catBurgers, "Premium Wagyu Gold Burger", "8oz Wagyu beef patty, caramelized onions, aged gruyere cheese, and black garlic mayo.", 24.50, "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=500", 15, "GRILL");
 
         // Desserts
         getOrCreateMenuItem(catDesserts, "Classic Tiramisu", "Traditional Italian espresso-soaked ladyfingers with mascarpone cream and cocoa dusting.", 7.99, "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=500", 5, "COLD_PREP");
         getOrCreateMenuItem(catDesserts, "Chocolate Lava Cake", "Warm chocolate molten cake served with a scoop of vanilla bean ice cream.", 8.99, "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=500", 10, "KITCHEN");
         getOrCreateMenuItem(catDesserts, "New York Strawberry Cheesecake", "Rich creamy cheesecake topped with fresh strawberry compote and graham crust.", 8.50, "https://images.unsplash.com/photo-1524351199678-941a58a3df50?w=500", 5, "COLD_PREP");
         getOrCreateMenuItem(catDesserts, "Vanilla Bean Ice Cream Sundae", "Three scoops of Madagascar vanilla bean ice cream with hot fudge & maraschino cherry.", 6.50, "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=500", 5, "COLD_PREP");
+        getOrCreateMenuItem(catDesserts, "Matcha Green Tea Mochi", "Soft and chewy Japanese mochi filled with premium matcha green tea ice cream.", 7.50, "https://images.unsplash.com/photo-1551024506-0bccd828d307?w=500", 5, "COLD_PREP");
+        getOrCreateMenuItem(catDesserts, "Artisan French Macarons", "Selection of 5 colorful French macarons including pistachio, raspberry, and lemon.", 9.50, "https://images.unsplash.com/photo-1569864358642-9d1684040f43?w=500", 5, "COLD_PREP");
 
         // Beverages
         getOrCreateMenuItem(catDrinks, "Iced Passion Fruit Tea", "Refreshing black tea infused with passion fruit and fresh mint.", 4.50, "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=500", 3, "BAR");

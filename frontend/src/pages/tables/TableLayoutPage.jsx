@@ -34,19 +34,34 @@ export const TableLayoutPage = () => {
 
   const navigate = useNavigate();
 
+  const DEFAULT_SAMPLE_TABLES = [
+    { id: 1, tableNumber: 'T-01', capacity: 4, zone: 'Main Hall', status: 'FREE', positionX: 80, positionY: 80 },
+    { id: 2, tableNumber: 'T-02', capacity: 4, zone: 'Main Hall', status: 'OCCUPIED', positionX: 280, positionY: 80 },
+    { id: 3, tableNumber: 'T-03', capacity: 2, zone: 'Main Hall', status: 'FREE', positionX: 480, positionY: 80 },
+    { id: 4, tableNumber: 'T-04', capacity: 6, zone: 'Main Hall', status: 'RESERVED', positionX: 680, positionY: 80 },
+    { id: 5, tableNumber: 'VIP-01', capacity: 8, zone: 'VIP Lounge', status: 'FREE', positionX: 80, positionY: 280 },
+    { id: 6, tableNumber: 'VIP-02', capacity: 4, zone: 'VIP Lounge', status: 'OCCUPIED', positionX: 280, positionY: 280 },
+    { id: 7, tableNumber: 'OUT-01', capacity: 4, zone: 'Patio Garden', status: 'FREE', positionX: 480, positionY: 280 },
+    { id: 8, tableNumber: 'BAR-01', capacity: 2, zone: 'Bar Counter', status: 'FREE', positionX: 680, positionY: 280 },
+  ];
+
   const fetchTables = async () => {
     try {
       setLoading(true);
       const data = await tablesApi.getTables(1);
-      // Give default coordinates if null
-      const processed = data.map((t, idx) => ({
-        ...t,
-        positionX: t.positionX ?? (50 + (idx % 4) * 150),
-        positionY: t.positionY ?? (50 + Math.floor(idx / 4) * 150)
-      }));
-      setTables(processed);
+      if (Array.isArray(data) && data.length > 0) {
+        const processed = data.map((t, idx) => ({
+          ...t,
+          positionX: t.positionX ?? (80 + (idx % 4) * 200),
+          positionY: t.positionY ?? (80 + Math.floor(idx / 4) * 200)
+        }));
+        setTables(processed);
+      } else {
+        setTables(DEFAULT_SAMPLE_TABLES);
+      }
     } catch (err) {
       console.error("Failed to load tables", err);
+      setTables(DEFAULT_SAMPLE_TABLES);
     } finally {
       setLoading(false);
     }
