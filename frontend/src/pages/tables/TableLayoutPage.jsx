@@ -39,10 +39,10 @@ export const TableLayoutPage = () => {
     { id: 2, tableNumber: 'T-02', capacity: 4, zone: 'Main Hall', status: 'OCCUPIED', positionX: 280, positionY: 80 },
     { id: 3, tableNumber: 'T-03', capacity: 2, zone: 'Main Hall', status: 'FREE', positionX: 480, positionY: 80 },
     { id: 4, tableNumber: 'T-04', capacity: 6, zone: 'Main Hall', status: 'RESERVED', positionX: 680, positionY: 80 },
-    { id: 5, tableNumber: 'VIP-01', capacity: 8, zone: 'VIP Lounge', status: 'FREE', positionX: 80, positionY: 280 },
-    { id: 6, tableNumber: 'VIP-02', capacity: 4, zone: 'VIP Lounge', status: 'OCCUPIED', positionX: 280, positionY: 280 },
-    { id: 7, tableNumber: 'OUT-01', capacity: 4, zone: 'Patio Garden', status: 'FREE', positionX: 480, positionY: 280 },
-    { id: 8, tableNumber: 'BAR-01', capacity: 2, zone: 'Bar Counter', status: 'FREE', positionX: 680, positionY: 280 },
+    { id: 5, tableNumber: 'VIP-01', capacity: 8, zone: 'VIP Lounge', status: 'FREE', positionX: 80, positionY: 340 },
+    { id: 6, tableNumber: 'VIP-02', capacity: 4, zone: 'VIP Lounge', status: 'OCCUPIED', positionX: 280, positionY: 340 },
+    { id: 7, tableNumber: 'OUT-01', capacity: 4, zone: 'Patio Garden', status: 'FREE', positionX: 480, positionY: 340 },
+    { id: 8, tableNumber: 'BAR-01', capacity: 2, zone: 'Bar Counter', status: 'FREE', positionX: 680, positionY: 340 },
   ];
 
   const fetchTables = async () => {
@@ -52,8 +52,8 @@ export const TableLayoutPage = () => {
       if (Array.isArray(data) && data.length > 0) {
         const processed = data.map((t, idx) => ({
           ...t,
-          positionX: t.positionX ?? (80 + (idx % 4) * 200),
-          positionY: t.positionY ?? (80 + Math.floor(idx / 4) * 200)
+          positionX: (t.positionX && t.positionX > 0) ? t.positionX : (80 + (idx % 4) * 200),
+          positionY: (t.positionY && t.positionY > 0) ? t.positionY : (80 + Math.floor(idx / 4) * 260)
         }));
         setTables(processed);
       } else {
@@ -335,7 +335,7 @@ export const TableLayoutPage = () => {
                   initial={{ x: t.positionX, y: t.positionY }}
                   animate={{ x: t.positionX, y: t.positionY }}
                   whileHover={!isEditingMode ? { scale: 1.05 } : {}}
-                  className={`absolute flex flex-col items-center justify-center border-2 backdrop-blur-md cursor-${isEditingMode ? 'move' : 'pointer'} ${getShapeClass(t.capacity)} ${statusColors} group`}
+                  className={`absolute flex flex-col items-center justify-center border-2 backdrop-blur-md cursor-${isEditingMode ? 'move' : 'pointer'} ${getShapeClass(t.capacity)} ${statusColors} group z-10 group-hover:z-50`}
                 >
                   <span className="text-xl font-black">{t.tableNumber}</span>
                   <div className="flex items-center space-x-1 mt-1 opacity-70">
@@ -345,7 +345,7 @@ export const TableLayoutPage = () => {
 
                   {/* Actions Popover (Hover only in View Mode) */}
                   {!isEditingMode && (
-                    <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-48 bg-[#11161d] border border-slate-700 rounded-2xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200 z-30 p-2 grid gap-2">
+                    <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-48 bg-[#11161d] border border-slate-700 rounded-2xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200 z-50 p-2 grid gap-2">
                       {isFree && (
                         <>
                           <button onClick={() => handleStatusChange(t.id, 'OCCUPIED')} className="w-full py-1.5 bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 text-xs font-bold rounded-xl">Seat Guest</button>
