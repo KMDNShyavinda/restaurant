@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { ordersApi } from '../../api/ordersApi';
 import { tablesApi } from '../../api/tablesApi';
@@ -432,18 +433,38 @@ export const CustomerOrderPage = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
           </div>
         ) : filteredItems.length === 0 ? (
-          <div className="text-center py-16 bg-[#141a22] border border-slate-800/80 rounded-3xl p-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            className="text-center py-16 bg-[#141a22] border border-slate-800/80 rounded-3xl p-8"
+          >
             <Utensils className="w-12 h-12 text-slate-600 mx-auto mb-3" />
             <h3 className="text-lg font-bold text-slate-300">No matching dishes found</h3>
             <p className="text-xs text-slate-500 mt-1">Try clearing dietary filters or searching for another term.</p>
-          </div>
+          </motion.div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <motion.div 
+            initial="hidden"
+            animate="show"
+            variants={{
+              hidden: { opacity: 0 },
+              show: {
+                opacity: 1,
+                transition: { staggerChildren: 0.1 }
+              }
+            }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          >
             {filteredItems.map(dish => (
-              <div 
+              <motion.div 
+                variants={{
+                  hidden: { opacity: 0, y: 30 },
+                  show: { opacity: 1, y: 0 }
+                }}
                 key={dish.id}
                 onClick={() => setSelectedDish(dish)}
-                className="bg-[#141a22] border border-slate-800/80 rounded-3xl overflow-hidden shadow-xl hover:border-orange-500/40 transition transform hover:-translate-y-1 cursor-pointer flex flex-col justify-between group"
+                whileHover={{ y: -5 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-[#141a22] border border-slate-800/80 rounded-3xl overflow-hidden shadow-xl hover:shadow-orange-500/10 hover:border-orange-500/40 transition-colors cursor-pointer flex flex-col justify-between group"
               >
                 {/* Dish Header & Image */}
                 <div className="h-48 relative overflow-hidden bg-slate-900">
@@ -498,7 +519,8 @@ export const CustomerOrderPage = () => {
                     </div>
                   </div>
 
-                  <button
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
                     onClick={(e) => {
                       e.stopPropagation();
                       addToCart(dish);
@@ -507,42 +529,62 @@ export const CustomerOrderPage = () => {
                   >
                     <Plus className="w-4 h-4" />
                     <span>Add to Order</span>
-                  </button>
+                  </motion.button>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </main>
 
       {/* Floating Bottom Cart Bar */}
-      {totalCartCount > 0 && !showCartDrawer && (
-        <div className="fixed bottom-4 left-4 right-4 z-40 max-w-xl mx-auto">
-          <button
-            onClick={() => setShowCartDrawer(true)}
-            className="w-full py-4 px-6 bg-gradient-to-r from-orange-500 via-amber-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-white font-extrabold rounded-3xl shadow-2xl shadow-orange-500/40 flex justify-between items-center transition transform active:scale-98 cursor-pointer border border-orange-400/30"
+      <AnimatePresence>
+        {totalCartCount > 0 && !showCartDrawer && (
+          <motion.div 
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            className="fixed bottom-4 left-4 right-4 z-40 max-w-xl mx-auto"
           >
-            <div className="flex items-center space-x-3">
-              <span className="w-8 h-8 rounded-xl bg-black/20 font-black text-sm flex items-center justify-center">
-                {totalCartCount}
-              </span>
-              <span className="text-sm tracking-wide">
-                View Order Cart {appliedPromo && <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full ml-1">Promo Active!</span>}
-              </span>
-            </div>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowCartDrawer(true)}
+              className="w-full py-4 px-6 bg-gradient-to-r from-orange-500 via-amber-500 to-amber-600 text-white font-extrabold rounded-3xl shadow-2xl shadow-orange-500/40 flex justify-between items-center border border-orange-400/30 cursor-pointer"
+            >
+              <div className="flex items-center space-x-3">
+                <span className="w-8 h-8 rounded-xl bg-black/20 font-black text-sm flex items-center justify-center">
+                  {totalCartCount}
+                </span>
+                <span className="text-sm tracking-wide">
+                  View Order Cart {appliedPromo && <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full ml-1">Promo Active!</span>}
+                </span>
+              </div>
 
-            <div className="flex items-center space-x-2">
-              <span className="text-lg font-black">${grandTotal.toFixed(2)}</span>
-              <ChevronRight className="w-5 h-5" />
-            </div>
-          </button>
-        </div>
-      )}
+              <div className="flex items-center space-x-2">
+                <span className="text-lg font-black">${grandTotal.toFixed(2)}</span>
+                <ChevronRight className="w-5 h-5" />
+              </div>
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Slide-over Cart Drawer Modal */}
-      {showCartDrawer && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex justify-end">
-          <div className="bg-[#141a22] border-l border-slate-800 w-full max-w-md h-full flex flex-col justify-between shadow-2xl p-6 overflow-y-auto">
+      <AnimatePresence>
+        {showCartDrawer && (
+          <div className="fixed inset-0 z-50 flex justify-end">
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-slate-950/80 backdrop-blur-md cursor-pointer"
+              onClick={() => setShowCartDrawer(false)}
+            />
+            <motion.div 
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+              className="bg-[#141a22] border-l border-slate-800 w-full max-w-md h-full flex flex-col justify-between shadow-2xl p-6 overflow-y-auto relative z-10"
+            >
             
             <div>
               <div className="flex justify-between items-center mb-6 pb-4 border-b border-slate-800">
@@ -740,14 +782,26 @@ export const CustomerOrderPage = () => {
                 </button>
               </div>
             )}
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
 
       {/* Dish Detail Inspection Modal */}
+      <AnimatePresence>
       {selectedDish && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-[#141a22] border border-slate-800 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-slate-950/80 backdrop-blur-md cursor-pointer"
+            onClick={() => setSelectedDish(null)}
+          />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="bg-[#141a22] border border-slate-800 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden relative z-10"
+          >
             <button 
               onClick={() => setSelectedDish(null)}
               className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 backdrop-blur-md text-white flex items-center justify-center hover:bg-black transition cursor-pointer"
@@ -823,7 +877,7 @@ export const CustomerOrderPage = () => {
                 <span>Add to Order Cart</span>
               </button>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
 
@@ -866,6 +920,7 @@ export const CustomerOrderPage = () => {
           </div>
         </div>
       )}
+      </AnimatePresence>
     </div>
   );
 };

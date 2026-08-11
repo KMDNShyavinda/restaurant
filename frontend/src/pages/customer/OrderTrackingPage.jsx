@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   Utensils, ChefHat, Clock, CheckCircle2, Flame, Bike, 
@@ -246,14 +247,29 @@ export const OrderTrackingPage = () => {
 
               {/* Progress Steps Timeline */}
               <div className="py-4">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 relative">
+                <motion.div 
+                  initial="hidden"
+                  animate="show"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    show: {
+                      opacity: 1,
+                      transition: { staggerChildren: 0.1 }
+                    }
+                  }}
+                  className="grid grid-cols-2 md:grid-cols-4 gap-4 relative"
+                >
                   {stages.map((st, idx) => {
                     const isDone = idx <= currentStageIndex;
                     const isCurrent = idx === currentStageIndex;
                     const IconComp = st.icon;
 
                     return (
-                      <div 
+                      <motion.div 
+                        variants={{
+                          hidden: { opacity: 0, y: 20 },
+                          show: { opacity: 1, y: 0 }
+                        }}
                         key={st.key}
                         className={`p-4 rounded-2xl border transition-all duration-500 relative flex flex-col items-center text-center space-y-2 ${
                           isCurrent 
@@ -263,15 +279,19 @@ export const OrderTrackingPage = () => {
                               : 'bg-[#0d1217] border-slate-800 text-slate-500 opacity-60'
                         }`}
                       >
-                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-white transition duration-500 ${
+                        <motion.div 
+                          initial={isCurrent ? { scale: 0.8 } : false}
+                          animate={isCurrent ? { scale: [0.8, 1.1, 1] } : false}
+                          transition={{ repeat: isCurrent ? Infinity : 0, repeatDelay: 2 }}
+                          className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-white transition duration-500 ${
                           isCurrent 
-                            ? 'bg-gradient-to-r from-orange-500 to-amber-600 shadow-lg shadow-orange-500/40 animate-pulse' 
+                            ? 'bg-gradient-to-r from-orange-500 to-amber-600 shadow-lg shadow-orange-500/40' 
                             : isDone 
                               ? 'bg-emerald-500 shadow-md shadow-emerald-500/20' 
                               : 'bg-slate-800 text-slate-400'
                         }`}>
                           <IconComp className="w-6 h-6" />
-                        </div>
+                        </motion.div>
 
                         <div>
                           <div className={`text-xs font-black tracking-tight ${isCurrent ? 'text-orange-400' : isDone ? 'text-white' : 'text-slate-400'}`}>
@@ -285,10 +305,10 @@ export const OrderTrackingPage = () => {
                             Active Step
                           </span>
                         )}
-                      </div>
+                      </motion.div>
                     );
                   })}
-                </div>
+                </motion.div>
               </div>
 
               {/* Status Banner Message */}
