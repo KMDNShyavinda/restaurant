@@ -48,19 +48,58 @@ export const TableLayoutPage = () => {
   const fetchTables = async () => {
     try {
       setLoading(true);
+      const savedLayoutRaw = localStorage.getItem('pos_tables_layout');
+      const savedLayoutMap = {};
+      if (savedLayoutRaw) {
+        try {
+          const parsed = JSON.parse(savedLayoutRaw);
+          if (Array.isArray(parsed)) {
+            parsed.forEach(t => {
+              if (t.id || t.tableNumber) {
+                savedLayoutMap[t.id] = { x: t.positionX, y: t.positionY };
+                savedLayoutMap[t.tableNumber] = { x: t.positionX, y: t.positionY };
+              }
+            });
+          }
+        } catch (e) {
+          console.warn('Failed to parse local saved layout', e);
+        }
+      }
+
       const data = await tablesApi.getTables(1);
       if (Array.isArray(data) && data.length > 0) {
-        const processed = data.map((t, idx) => ({
-          ...t,
-          positionX: (t.positionX && t.positionX > 0) ? t.positionX : (80 + (idx % 4) * 200),
-          positionY: (t.positionY && t.positionY > 0) ? t.positionY : (80 + Math.floor(idx / 4) * 260)
-        }));
+        const processed = data.map((t, idx) => {
+          const saved = savedLayoutMap[t.id] || savedLayoutMap[t.tableNumber];
+          return {
+            ...t,
+            positionX: saved?.x ?? ((t.positionX && t.positionX > 0) ? t.positionX : (80 + (idx % 4) * 200)),
+            positionY: saved?.y ?? ((t.positionY && t.positionY > 0) ? t.positionY : (80 + Math.floor(idx / 4) * 260))
+          };
+        });
         setTables(processed);
       } else {
-        setTables(DEFAULT_SAMPLE_TABLES);
+        const processedSample = DEFAULT_SAMPLE_TABLES.map(t => {
+          const saved = savedLayoutMap[t.id] || savedLayoutMap[t.tableNumber];
+          return {
+            ...t,
+            positionX: saved?.x ?? t.positionX,
+            positionY: saved?.y ?? t.positionY
+          };
+        });
+        setTables(processedSample);
       }
     } catch (err) {
       console.error("Failed to load tables", err);
+      const savedLayoutRaw = localStorage.getItem('pos_tables_layout');
+      if (savedLayoutRaw) {
+        try {
+          const parsed = JSON.parse(savedLayoutRaw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setTables(parsed);
+            return;
+          }
+        } catch (e) {}
+      }
       setTables(DEFAULT_SAMPLE_TABLES);
     } finally {
       setLoading(false);
@@ -142,8 +181,8 @@ export const TableLayoutPage = () => {
       if (t.id === tableId) {
         return {
           ...t,
-          positionX: t.positionX + info.offset.x,
-          positionY: t.positionY + info.offset.y
+          positionX: Math.round(t.positionX + info.offset.x),
+          positionY: Math.round(t.positionY + info.offset.y)
         };
       }
       return t;
@@ -153,6 +192,10 @@ export const TableLayoutPage = () => {
   const handleSaveLayout = async () => {
     try {
       setIsSavingLayout(true);
+      // 1. Immediately persist to LocalStorage for instant refresh persistence
+      localStorage.setItem('pos_tables_layout', JSON.stringify(tables));
+
+      // 2. Also send patch requests to backend API
       await Promise.allSettled(tables.map(t => 
         tablesApi.updateTablePosition(t.id, Math.round(t.positionX), Math.round(t.positionY))
       ));
