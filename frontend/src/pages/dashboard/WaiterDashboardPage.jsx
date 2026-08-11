@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 export const WaiterDashboardPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('READY'); // Mobile tab state: PREPARING, READY, SERVED
 
   const fetchOrders = async () => {
     try {
@@ -71,11 +72,33 @@ export const WaiterDashboardPage = () => {
           </div>
         </header>
 
+        {/* Mobile Tab Navigation */}
+        <div className="lg:hidden flex bg-[#11161d] p-1.5 rounded-2xl border border-slate-800">
+          <button 
+            onClick={() => setActiveTab('PREPARING')}
+            className={`flex-1 py-2.5 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition ${activeTab === 'PREPARING' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'text-slate-400'}`}
+          >
+            <ChefHat className="w-4 h-4" /> Kitchen
+          </button>
+          <button 
+            onClick={() => setActiveTab('READY')}
+            className={`flex-1 py-2.5 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition ${activeTab === 'READY' ? 'bg-sky-500/20 text-sky-400 border border-sky-500/30' : 'text-slate-400'}`}
+          >
+            <BellRing className="w-4 h-4" /> Ready
+          </button>
+          <button 
+            onClick={() => setActiveTab('SERVED')}
+            className={`flex-1 py-2.5 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition ${activeTab === 'SERVED' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'text-slate-400'}`}
+          >
+            <CheckCircle className="w-4 h-4" /> Served
+          </button>
+        </div>
+
         {/* Dashboard Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           {/* PREPARING */}
-          <div className="bg-[#11161d] rounded-3xl border border-slate-800 p-6 flex flex-col h-[75vh]">
+          <div className={`${activeTab === 'PREPARING' ? 'flex' : 'hidden'} lg:flex bg-[#11161d] rounded-3xl border border-slate-800 p-6 flex-col h-[75vh]`}>
             <h2 className="text-lg font-bold text-slate-300 flex items-center gap-2 mb-4 uppercase tracking-wider">
               <ChefHat className="text-amber-500 w-5 h-5" /> In Kitchen ({preparingOrders.length})
             </h2>
@@ -103,7 +126,7 @@ export const WaiterDashboardPage = () => {
           </div>
 
           {/* READY TO SERVE (Focus) */}
-          <div className="bg-[#11161d] rounded-3xl border border-sky-500/50 p-6 flex flex-col h-[75vh] shadow-2xl shadow-sky-500/10 ring-1 ring-sky-500/20 relative overflow-hidden">
+          <div className={`${activeTab === 'READY' ? 'flex' : 'hidden'} lg:flex bg-[#11161d] rounded-3xl border border-sky-500/50 p-6 flex-col h-[75vh] shadow-2xl shadow-sky-500/10 ring-1 ring-sky-500/20 relative overflow-hidden`}>
             <div className="absolute top-0 right-0 w-32 h-32 bg-sky-500/10 blur-3xl rounded-full"></div>
             <h2 className="text-xl font-black text-sky-400 flex items-center gap-2 mb-4 uppercase tracking-wider relative z-10">
               <BellRing className="w-6 h-6 animate-pulse" /> Ready to Serve ({readyOrders.length})
@@ -143,7 +166,7 @@ export const WaiterDashboardPage = () => {
           </div>
 
           {/* SERVED */}
-          <div className="bg-[#11161d] rounded-3xl border border-slate-800 p-6 flex flex-col h-[75vh]">
+          <div className={`${activeTab === 'SERVED' ? 'flex' : 'hidden'} lg:flex bg-[#11161d] rounded-3xl border border-slate-800 p-6 flex-col h-[75vh]`}>
             <h2 className="text-lg font-bold text-slate-400 flex items-center gap-2 mb-4 uppercase tracking-wider">
               <CheckCircle className="w-5 h-5" /> Recently Served ({servedOrders.length})
             </h2>

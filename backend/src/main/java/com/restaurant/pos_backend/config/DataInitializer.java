@@ -1,9 +1,7 @@
 package com.restaurant.pos_backend.config;
 
 import com.restaurant.pos_backend.entity.*;
-import com.restaurant.pos_backend.repository.MenuCategoryRepository;
-import com.restaurant.pos_backend.repository.MenuItemRepository;
-import com.restaurant.pos_backend.repository.UserRepository;
+import com.restaurant.pos_backend.repository.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +24,18 @@ public class DataInitializer implements CommandLineRunner {
 
     @Autowired
     private MenuItemRepository menuItemRepository;
+
+    @Autowired
+    private TableRepository tableRepository;
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private IngredientRepository ingredientRepository;
+
+    @Autowired
+    private BranchRepository branchRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -55,8 +65,11 @@ public class DataInitializer implements CommandLineRunner {
 
         System.out.println(">>> Demo account passwords initialized successfully for: admin, manager, cashier, waiter, kitchen, customer (password: password123)");
 
-        // Seed / Ensure expanded Menu Categories & Menu Items
+        // Seed sample data for all modules
         seedMenuData();
+        seedTablesData();
+        seedCustomersData();
+        seedIngredientsData();
     }
 
     private void syncSequences() {
@@ -105,7 +118,7 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void seedMenuData() {
-        Branch branch1 = entityManager.find(Branch.class, 1L);
+        Branch branch1 = branchRepository.findById(1L).orElse(null);
         if (branch1 == null) return;
 
         // Categories
@@ -158,34 +171,50 @@ public class DataInitializer implements CommandLineRunner {
         getOrCreateMenuItem(catDrinks, "Fresh Lemon Mint Mojito", "Sparkling muddled lemon juice, fresh mint leaves, cane sugar and crushed ice.", 5.50, "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=500", 4, "BAR");
         getOrCreateMenuItem(catDrinks, "Fresh Mango Passion Smoothie", "Blended fresh Alphonso mangoes, passion fruit juice, and Greek yogurt.", 6.00, "https://images.unsplash.com/photo-1546173159-315724a31696?w=500", 4, "BAR");
 
-        // Generate 100+ dynamic dishes to ensure a massive menu
-        String[] adjectives = {"Spicy", "Garlic", "Roasted", "Crispy", "Smoked", "Truffle", "Herb-Crusted", "Grilled", "Glazed", "Signature"};
-        String[] proteins = {"Chicken", "Beef", "Pork", "Salmon", "Shrimp", "Tofu", "Lamb", "Duck", "Halibut", "Wagyu"};
-        String[] styles = {"Tacos", "Pasta", "Bowl", "Salad", "Sandwich", "Curry", "Stir-Fry", "Risotto", "Platter", "Bites"};
-        
-        int count = 0;
-        for(String adj : adjectives) {
-            for(String prot : proteins) {
-                // Generate 100 items (10x10)
-                String name = adj + " " + prot + " " + styles[count % styles.length];
-                String desc = "Our chef's special " + name.toLowerCase() + " prepared with premium ingredients and seasonal spices.";
-                double price = 12.00 + (count % 15) + (count % 3 == 0 ? 0.99 : 0.50);
-                String imageUrl = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500";
-                
-                // Distribute across categories
-                MenuCategory targetCat = (count % 2 == 0) ? catMains : catStarters;
-                if (count % 5 == 0) targetCat = catBurgers;
-                if (count % 7 == 0) targetCat = catPizza;
-                
-                String station = (count % 2 == 0) ? "KITCHEN" : "GRILL";
-                
-                getOrCreateMenuItem(targetCat, name, desc, price, imageUrl, 10 + (count % 10), station);
-                count++;
-            }
-        }
+        System.out.println(">>> Menu categories & menu items initialized successfully!");
+    }
 
+    private void seedTablesData() {
+        Branch branch1 = branchRepository.findById(1L).orElse(null);
+        if (branch1 == null) return;
 
-        System.out.println(">>> Menu categories & menu items initialized successfully with 30+ items!");
+        createTableIfNotExists(branch1, "T-01", 4, "Main Dining Hall", "FREE", 100.0, 100.0);
+        createTableIfNotExists(branch1, "T-02", 4, "Main Dining Hall", "OCCUPIED", 300.0, 100.0);
+        createTableIfNotExists(branch1, "T-03", 2, "Main Dining Hall", "FREE", 500.0, 100.0);
+        createTableIfNotExists(branch1, "T-04", 6, "Main Dining Hall", "RESERVED", 100.0, 300.0);
+        createTableIfNotExists(branch1, "VIP-01", 8, "VIP Lounge", "FREE", 300.0, 300.0);
+        createTableIfNotExists(branch1, "VIP-02", 4, "VIP Lounge", "OCCUPIED", 500.0, 300.0);
+        createTableIfNotExists(branch1, "OUT-01", 4, "Patio Garden", "FREE", 100.0, 500.0);
+        createTableIfNotExists(branch1, "BAR-01", 2, "Bar Counter", "FREE", 300.0, 500.0);
+
+        System.out.println(">>> Dining tables initialized successfully!");
+    }
+
+    private void seedCustomersData() {
+        createCustomerIfNotExists("Charlie Customer", "0771234567", "customer@pos.com", "123 Main St, Colombo", 150);
+        createCustomerIfNotExists("Nimal Perera", "0712345678", "nimal@gmail.com", "45 Galle Rd, Dehiwala", 240);
+        createCustomerIfNotExists("Sunethra Silva", "0723456789", "sunethra@yahoo.com", "88 Kandy Rd, Kiribathgoda", 90);
+        createCustomerIfNotExists("Kasun Jayawardena", "0754567890", "kasun@pos.com", "12 Highlevel Rd, Maharagama", 420);
+        createCustomerIfNotExists("Dilini Fernando", "0765678901", "dilini@gmail.com", "77 Negombo Rd, Ja-Ela", 180);
+
+        System.out.println(">>> Sample customers initialized successfully!");
+    }
+
+    private void seedIngredientsData() {
+        Branch branch1 = branchRepository.findById(1L).orElse(null);
+        if (branch1 == null) return;
+
+        createIngredientIfNotExists(branch1, "Boneless Chicken Breast", "kg", 18.5, 5.0);
+        createIngredientIfNotExists(branch1, "Prime Angus Beef Patty", "kg", 25.0, 8.0);
+        createIngredientIfNotExists(branch1, "Fresh Mozzarella Cheese", "kg", 14.0, 4.0);
+        createIngredientIfNotExists(branch1, "Roma Tomatoes", "kg", 30.0, 10.0);
+        createIngredientIfNotExists(branch1, "White Truffle Oil", "l", 4.5, 1.0);
+        createIngredientIfNotExists(branch1, "Espresso Coffee Beans", "kg", 12.0, 3.0);
+        createIngredientIfNotExists(branch1, "Italian Wheat Flour", "kg", 45.0, 15.0);
+        createIngredientIfNotExists(branch1, "Idaho Russet Potatoes", "kg", 40.0, 10.0);
+        createIngredientIfNotExists(branch1, "Fettuccine Pasta", "kg", 22.0, 5.0);
+
+        System.out.println(">>> Inventory ingredients initialized successfully!");
     }
 
     private MenuCategory getOrCreateCategory(Branch branch, String name, int sortOrder) {
@@ -220,5 +249,53 @@ public class DataInitializer implements CommandLineRunner {
         item.setIsAvailable(true);
         menuItemRepository.save(item);
     }
-}
 
+    private void createTableIfNotExists(Branch branch, String tableNum, int capacity, String zone, String status, double posX, double posY) {
+        List<TableEntity> existing = tableRepository.findByBranchId(branch.getId());
+        for (TableEntity t : existing) {
+            if (t.getTableNumber().equalsIgnoreCase(tableNum)) {
+                return;
+            }
+        }
+        TableEntity table = TableEntity.builder()
+                .branch(branch)
+                .tableNumber(tableNum)
+                .capacity(capacity)
+                .zone(zone)
+                .status(status)
+                .positionX(posX)
+                .positionY(posY)
+                .build();
+        tableRepository.save(table);
+    }
+
+    private void createCustomerIfNotExists(String name, String phone, String email, String address, int points) {
+        if (customerRepository.findByEmail(email).isPresent()) return;
+
+        Customer customer = Customer.builder()
+                .name(name)
+                .phone(phone)
+                .email(email)
+                .address(address)
+                .loyaltyPoints(points)
+                .build();
+        customerRepository.save(customer);
+    }
+
+    private void createIngredientIfNotExists(Branch branch, String name, String unit, double currentStock, double reorderLevel) {
+        List<Ingredient> existing = ingredientRepository.findByBranchId(branch.getId());
+        for (Ingredient ing : existing) {
+            if (ing.getName().equalsIgnoreCase(name)) {
+                return;
+            }
+        }
+        Ingredient ing = Ingredient.builder()
+                .branch(branch)
+                .name(name)
+                .unit(unit)
+                .currentStock(BigDecimal.valueOf(currentStock))
+                .reorderLevel(BigDecimal.valueOf(reorderLevel))
+                .build();
+        ingredientRepository.save(ing);
+    }
+}

@@ -202,6 +202,17 @@ export const TableLayoutPage = () => {
           >
             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
           </button>
+
+          {/* Mobile Zone Filter (hidden on desktop) */}
+          <select 
+            value={selectedZone}
+            onChange={(e) => setSelectedZone(e.target.value)}
+            className="md:hidden bg-[#0d1217] border border-slate-800 text-amber-400 text-xs font-bold px-3 py-2.5 rounded-2xl focus:outline-none focus:border-amber-500 shadow-inner"
+          >
+            {zones.map(z => (
+              <option key={z} value={z}>{z === 'ALL' ? 'All Zones' : z}</option>
+            ))}
+          </select>
           
           {isEditingMode ? (
             <button
@@ -235,8 +246,8 @@ export const TableLayoutPage = () => {
       {/* Main Workspace */}
       <div className="flex-1 flex overflow-hidden">
         
-        {/* Left Sidebar: Filters & Stats */}
-        <div className="w-64 bg-[#11161d] border-r border-slate-800 p-5 shrink-0 overflow-y-auto z-10 flex flex-col space-y-6">
+        {/* Left Sidebar: Filters & Stats (Hidden on mobile) */}
+        <div className="hidden md:flex w-64 bg-[#11161d] border-r border-slate-800 p-5 shrink-0 overflow-y-auto z-10 flex-col space-y-6">
           <div>
             <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Occupancy Status</h3>
             <div className="space-y-3">
