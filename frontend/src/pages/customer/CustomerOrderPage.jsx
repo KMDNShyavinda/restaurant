@@ -84,8 +84,8 @@ export const CustomerOrderPage = () => {
         tablesApi.getTables(1).catch(() => [])
       ]);
       
-      const finalCategories = (catsRes && catsRes.length > 0) ? catsRes : DEFAULT_SAMPLE_CATEGORIES;
-      const rawItems = (itemsRes && itemsRes.length > 0) ? itemsRes : DEFAULT_SAMPLE_DISHES;
+      const finalCategories = (Array.isArray(catsRes) && catsRes.length > 0) ? catsRes : DEFAULT_SAMPLE_CATEGORIES;
+      const rawItems = (Array.isArray(itemsRes) && itemsRes.length > 0) ? itemsRes : DEFAULT_SAMPLE_DISHES;
 
       setCategories(finalCategories);
       
@@ -100,8 +100,20 @@ export const CustomerOrderPage = () => {
         calories: 250 + (idx * 65) % 400
       }));
 
-      setMenuItems(enrichedItems);
-      setTables(tablesRes || []);
+      if (enrichedItems.length === 0) {
+        setMenuItems(DEFAULT_SAMPLE_DISHES.map((item, idx) => ({
+          ...item,
+          imageUrl: item.imageUrl || FALLBACK_DISH_IMAGE,
+          isVegan: idx % 3 === 0,
+          isGlutenFree: idx % 4 === 0,
+          isHalal: idx % 2 === 0,
+          spicyLevel: idx % 3 === 0 ? 1 : 0,
+          calories: 350
+        })));
+      } else {
+        setMenuItems(enrichedItems);
+      }
+      setTables(Array.isArray(tablesRes) ? tablesRes : []);
     } catch (err) {
       console.error("Failed to load customer menu data", err);
       setCategories(DEFAULT_SAMPLE_CATEGORIES);
