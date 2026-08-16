@@ -43,39 +43,56 @@ public class NotificationService {
             return;
         }
 
-        String toPhoneNumber = order.getCustomer().getPhone();
+        String toPhoneNumber = "whatsapp:" + order.getCustomer().getPhone();
+        String fromPhoneNumber = "whatsapp:" + twilioPhoneNumber;
         String messageBody = buildMessageBody(order, alertType);
 
         if (isTwilioEnabled) {
             try {
                 Message message = Message.creator(
                         new PhoneNumber(toPhoneNumber),
-                        new PhoneNumber(twilioPhoneNumber),
+                        new PhoneNumber(fromPhoneNumber),
                         messageBody
                 ).create();
-                logger.info("Sent SMS via Twilio to {} - Message SID: {}", toPhoneNumber, message.getSid());
+                logger.info("Sent WhatsApp via Twilio to {} - Message SID: {}", toPhoneNumber, message.getSid());
             } catch (Exception e) {
-                logger.error("Failed to send SMS via Twilio to {}: {}", toPhoneNumber, e.getMessage());
+                logger.error("Failed to send WhatsApp via Twilio to {}: {}", toPhoneNumber, e.getMessage());
             }
         } else {
-            // Mock SMS
-            logger.info("=== MOCK SMS ALERT ===");
+            // Mock WhatsApp
+            logger.info("=== MOCK WHATSAPP ALERT ===");
             logger.info("To: {}", toPhoneNumber);
-            logger.info("Body: {}", messageBody);
-            logger.info("======================");
+            logger.info("From: {}", fromPhoneNumber);
+            logger.info("Body: \n{}", messageBody);
+            logger.info("===========================");
         }
     }
 
     private String buildMessageBody(Order order, String alertType) {
         String customerName = order.getCustomer().getName() != null ? order.getCustomer().getName() : "Customer";
         
+        StringBuilder details = new StringBuilder();
+        if (order.getItems() != null && !order.getItems().isEmpty()) {
+            details.append("\n*Order Details:*\n");
+            for (var item : order.getItems()) {
+                details.append("- ").append(item.getMenuItem().getName())
+                       .append(" x").append(item.getQuantity()).append("\n");
+            }
+        }
+        
+        String baseMessage;
         switch (alertType.toUpperCase()) {
             case "CONFIRMED":
-                return String.format("Hello %s, your order #%d from Maison Ceylon has been confirmed and is being prepared!", customerName, order.getId());
+                baseMessage = String.format("Hello %s, your order #%d from *Maison Ceylon* has been confirmed and is being prepared!", customerName, order.getId());
+                break;
             case "READY":
-                return String.format("Hello %s, your order #%d is ready! Enjoy your meal from Maison Ceylon.", customerName, order.getId());
+                baseMessage = String.format("Hello %s, your order #%d is ready! Enjoy your meal.", customerName, order.getId());
+                break;
             default:
-                return String.format("Hello %s, your order #%d status has been updated to %s.", customerName, order.getId(), alertType);
+                baseMessage = String.format("Hello %s, your order #%d status has been updated to %s.", customerName, order.getId(), alertType);
+                break;
         }
+
+        return baseMessage + "\n" + details.toString() + "\nThank you for choosing Maison Ceylon! We hope to serve you again soon. \uD83C\uDF7D\uFE0F";
     }
 }
