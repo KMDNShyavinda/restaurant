@@ -25,6 +25,15 @@ spec:
         # Container එක K8s ඇතුලේ රන් වෙන port එක
         ports:
         - containerPort: 8080
+        env:
+        - name: APP_JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: pos-secrets
+              key: jwt-secret
+              optional: true
+        - name: SPRING_PROFILES_ACTIVE
+          value: "prod"
         livenessProbe:
           httpGet:
             path: /actuator/health/liveness

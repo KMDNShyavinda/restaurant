@@ -9,5 +9,13 @@ export const authApi = {
   register: async (userData) => {
     const response = await axiosClient.post('/auth/register', userData);
     return response.data;
+  },
+
+  logout: async () => {
+    try {
+      await axiosClient.post('/auth/logout');
+    } catch (e) {
+      // Ignore network errors on logout
+    }
   }
 };

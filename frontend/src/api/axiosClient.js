@@ -3,6 +3,7 @@ import { getApiBaseUrl } from '../config/apiConfig';
 
 const axiosClient = axios.create({
   baseURL: getApiBaseUrl(),
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },

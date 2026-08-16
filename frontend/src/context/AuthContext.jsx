@@ -36,11 +36,12 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  const logout = () => {
+  const logout = async () => {
     setToken(null);
     setUser(null);
     localStorage.removeItem('pos_jwt_token');
     localStorage.removeItem('pos_user_data');
+    await authApi.logout();
   };
 
   const hasRole = (...roles) => {
