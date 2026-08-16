@@ -13,6 +13,7 @@ import { PosMenuGrid } from '../../components/pos/PosMenuGrid';
 import { PosCartPanel } from '../../components/pos/PosCartPanel';
 import { PaymentModal } from '../../components/pos/PaymentModal';
 import { ThermalReceiptModal } from '../../components/pos/ThermalReceiptModal';
+import { saveOrderToOfflineQueue, syncOfflineOrdersWithServer, getOfflineQueue } from '../../utils/offlineQueue';
 import { toast } from 'sonner';
 
 export const PosTerminalPage = () => {
@@ -47,10 +48,35 @@ export const PosTerminalPage = () => {
   const [showThermalReceipt, setShowThermalReceipt] = useState(false);
   const [receiptOrderData, setReceiptOrderData] = useState(null);
   const [receiptPaymentData, setReceiptPaymentData] = useState(null);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   const { user } = useAuth();
   const { isPending } = useActionGuard();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      syncOfflineOrdersWithServer(ordersApi);
+    };
+    const handleOffline = () => {
+      setIsOnline(false);
+      toast.warning("Network connection lost. POS operating in Offline Mode.");
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    // Initial check for pending queue on mount if online
+    if (navigator.onLine) {
+      syncOfflineOrdersWithServer(ordersApi);
+    }
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -129,6 +155,19 @@ export const PosTerminalPage = () => {
       return;
     }
     if (cart.length === 0) return;
+
+    if (!navigator.onLine) {
+      saveOrderToOfflineQueue({
+        branchId: 1,
+        tableId: selectedTableId ? parseInt(selectedTableId) : null,
+        waiterId: user?.id || 1,
+        orderType: orderType,
+        items: [...cart]
+      });
+      setCart([]);
+      return;
+    }
+
     try {
       setIsSendingToKitchen(true);
 
@@ -150,8 +189,15 @@ export const PosTerminalPage = () => {
       setActiveOrder(sentOrder);
       toast.success(`Order #${newOrder.id} successfully sent to Kitchen Display System!`);
     } catch (err) {
-      console.error("Failed to send order to kitchen", err);
-      toast.error("Error sending order to kitchen. Please check server status.");
+      console.error("Failed to send order to kitchen, queuing offline", err);
+      saveOrderToOfflineQueue({
+        branchId: 1,
+        tableId: selectedTableId ? parseInt(selectedTableId) : null,
+        waiterId: user?.id || 1,
+        orderType: orderType,
+        items: [...cart]
+      });
+      setCart([]);
     } finally {
       setIsSendingToKitchen(false);
     }
@@ -258,6 +304,13 @@ export const PosTerminalPage = () => {
                 <h1 className="text-sm font-extrabold text-white tracking-wide">{user?.name || 'Kasun Perera'}</h1>
                 <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-black rounded-lg uppercase tracking-wider">
                   💳 Cashier Terminal
+                </span>
+                <span className={`px-2 py-0.5 border text-[10px] font-black rounded-lg uppercase tracking-wider ${
+                  isOnline 
+                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' 
+                    : 'bg-rose-500/20 text-rose-400 border-rose-500/40 animate-pulse'
+                }`}>
+                  {isOnline ? '🟢 Online' : '🔴 Offline Queue'}
                 </span>
               </div>
               <p className="text-[11px] text-slate-400">Maison Ceylon POS • Session #CSH-2026</p>
