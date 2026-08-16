@@ -11,6 +11,8 @@ import {
 import { PosCategoryTabs } from '../../components/pos/PosCategoryTabs';
 import { PosMenuGrid } from '../../components/pos/PosMenuGrid';
 import { PosCartPanel } from '../../components/pos/PosCartPanel';
+import { PaymentModal } from '../../components/pos/PaymentModal';
+import { ThermalReceiptModal } from '../../components/pos/ThermalReceiptModal';
 import { toast } from 'sonner';
 
 export const PosTerminalPage = () => {
@@ -39,11 +41,12 @@ export const PosTerminalPage = () => {
   const [isSendingToKitchen, setIsSendingToKitchen] = useState(false);
   const [activeOrder, setActiveOrder] = useState(null);
 
-  // Checkout Modal states
+  // Checkout & Thermal Receipt Modal states
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('CARD');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-  const [completedInvoice, setCompletedInvoice] = useState(null);
+  const [showThermalReceipt, setShowThermalReceipt] = useState(false);
+  const [receiptOrderData, setReceiptOrderData] = useState(null);
+  const [receiptPaymentData, setReceiptPaymentData] = useState(null);
 
   const { user } = useAuth();
   const { isPending } = useActionGuard();
@@ -154,7 +157,7 @@ export const PosTerminalPage = () => {
     }
   };
 
-  const handleProcessPayment = async () => {
+  const handleConfirmPaymentPayload = async (paymentPayload) => {
     if (isPending) {
       toast.error("Not yet approved user role. Please wait for an Admin to approve your account.");
       return;
@@ -181,18 +184,33 @@ export const PosTerminalPage = () => {
       }
 
       await ordersApi.processPayment(orderToPay.id, {
-        method: paymentMethod,
-        amount: grandTotal,
-        transactionRef: `TXN-${Date.now().toString().slice(-6)}`,
+        method: paymentPayload.method,
+        amount: paymentPayload.amount,
+        cashGiven: paymentPayload.cashGiven,
+        changeAmount: paymentPayload.changeAmount,
+        transactionRef: paymentPayload.transactionRef,
         processedById: user?.id || 1
       });
 
-      const inv = await ordersApi.getInvoice(orderToPay.id);
-      setCompletedInvoice(inv);
       setShowCheckoutModal(false);
+
+      // Prepare Thermal Receipt Preview Data
+      setReceiptOrderData({
+        id: orderToPay.id,
+        items: [...cart],
+        subtotal: subtotal,
+        tax: tax,
+        grandTotal: grandTotal,
+        orderType: orderType,
+        tableId: selectedTableId,
+        serverName: user?.name || 'Cashier'
+      });
+      setReceiptPaymentData(paymentPayload);
+      setShowThermalReceipt(true);
+
       setCart([]);
       setActiveOrder(null);
-      toast.success("Payment processed successfully!");
+      toast.success("Payment processed successfully! Previewing thermal receipt...");
     } catch (err) {
       console.error("Failed to process payment", err);
       toast.error("Payment processing error. Please try again.");
@@ -482,87 +500,23 @@ export const PosTerminalPage = () => {
         </div>
       )}
 
-      {/* Payment Checkout Modal */}
-      {showCheckoutModal && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-[#141a22] border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl relative">
-            <button 
-              onClick={() => setShowCheckoutModal(false)}
-              className="absolute top-5 right-5 text-slate-400 hover:text-white transition cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
+      {/* Cashier Payment Modal */}
+      <PaymentModal
+        isOpen={showCheckoutModal}
+        onClose={() => setShowCheckoutModal(false)}
+        grandTotal={grandTotal}
+        onConfirmPayment={handleConfirmPaymentPayload}
+        isProcessing={isProcessingPayment}
+      />
 
-            <h2 className="text-xl font-black text-white mb-1">Process Payment & Checkout</h2>
-            <p className="text-xs text-slate-400 mb-6">Total Amount Payable: <strong className="text-orange-500 text-base font-black">${grandTotal.toFixed(2)}</strong></p>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold uppercase text-slate-400 mb-2">Select Payment Method</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {['CARD', 'CASH', 'WALLET'].map(m => (
-                    <button
-                      key={m}
-                      onClick={() => setPaymentMethod(m)}
-                      className={`py-3.5 rounded-2xl text-xs font-black transition cursor-pointer ${
-                        paymentMethod === m 
-                          ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-lg shadow-orange-500/25' 
-                          : 'bg-[#0d1217] text-slate-400 border border-slate-800 hover:bg-slate-900'
-                      }`}
-                    >
-                      {m}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <button
-                disabled={isProcessingPayment}
-                onClick={handleProcessPayment}
-                className="w-full py-4 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-white font-black text-sm rounded-2xl shadow-xl shadow-orange-500/30 transition cursor-pointer mt-2 active:scale-95"
-              >
-                {isProcessingPayment ? 'Processing...' : `Confirm $${grandTotal.toFixed(2)} Payment`}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Printable Receipt Invoice Modal */}
-      {completedInvoice && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-[#141a22] border border-slate-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl text-center relative">
-            <div className="w-14 h-14 bg-emerald-500/10 text-emerald-400 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-emerald-500/20">
-              <CheckCircle2 className="w-7 h-7" />
-            </div>
-
-            <h2 className="text-xl font-extrabold text-white mb-1">Payment Successful!</h2>
-            <p className="text-xs text-slate-400 mb-4">Invoice #{completedInvoice.invoiceNumber}</p>
-
-            <div className="bg-[#0d1217] border border-slate-800 p-4 rounded-2xl text-left space-y-2 text-xs mb-6">
-              <div className="flex justify-between text-slate-400">
-                <span>Invoice Date:</span>
-                <span className="text-white font-medium">{new Date().toLocaleDateString()}</span>
-              </div>
-              <div className="flex justify-between text-slate-400">
-                <span>Order Total:</span>
-                <span className="text-white font-medium">${completedInvoice.total?.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-slate-400">
-                <span>Tax Total:</span>
-                <span className="text-white font-medium">${completedInvoice.taxTotal?.toFixed(2)}</span>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setCompletedInvoice(null)}
-              className="w-full py-3.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 text-white font-extrabold rounded-2xl shadow-lg shadow-orange-500/25 transition cursor-pointer"
-            >
-              Done & Close
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Printable Thermal Receipt Modal */}
+      <ThermalReceiptModal
+        isOpen={showThermalReceipt}
+        onClose={() => setShowThermalReceipt(false)}
+        orderData={receiptOrderData}
+        paymentData={receiptPaymentData}
+        type="CUSTOMER_BILL"
+      />
     </div>
   );
 };

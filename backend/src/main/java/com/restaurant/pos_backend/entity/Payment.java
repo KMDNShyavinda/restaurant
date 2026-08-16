@@ -37,6 +37,12 @@ public class Payment {
     @Column(name = "transaction_ref", length = 100)
     private String transactionRef;
 
+    @Column(name = "cash_given", precision = 10, scale = 2)
+    private BigDecimal cashGiven;
+
+    @Column(name = "change_amount", precision = 10, scale = 2)
+    private BigDecimal changeAmount;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "processed_by")
     @JsonIgnoreProperties({"branch", "role", "passwordHash", "hibernateLazyInitializer", "handler"})

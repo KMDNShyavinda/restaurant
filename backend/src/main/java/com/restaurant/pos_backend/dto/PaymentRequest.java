@@ -21,5 +21,7 @@ public class PaymentRequest {
     private BigDecimal amount;
 
     private String transactionRef;
+    private BigDecimal cashGiven;
+    private BigDecimal changeAmount;
     private Long processedById;
 }

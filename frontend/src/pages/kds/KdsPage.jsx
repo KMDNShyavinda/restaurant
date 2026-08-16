@@ -7,10 +7,11 @@ import { Client } from '@stomp/stompjs';
 import { getWsUrl } from '../../config/apiConfig';
 import { 
   ArrowLeft, Tv, Clock, CheckCircle2, Flame, 
-  RefreshCw, Wifi, WifiOff, UtensilsCrossed, Volume2 
+  RefreshCw, Wifi, WifiOff, UtensilsCrossed, Volume2, Printer 
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { initAudio, playDingSound } from '../../utils/audioUtils';
+import { ThermalReceiptModal } from '../../components/pos/ThermalReceiptModal';
 
 export const KdsPage = () => {
   const [tickets, setTickets] = useState([]);
@@ -18,6 +19,8 @@ export const KdsPage = () => {
   const [selectedStation, setSelectedStation] = useState('ALL');
   const [wsConnected, setWsConnected] = useState(false);
   const [time, setTime] = useState(new Date().toLocaleTimeString());
+  const [showKotModal, setShowKotModal] = useState(false);
+  const [selectedKotOrder, setSelectedKotOrder] = useState(null);
 
   const { user } = useAuth();
   const { isPending } = useActionGuard();
@@ -344,40 +347,66 @@ export const KdsPage = () => {
                   </div>
                 </div>
 
-                {/* Status Action Buttons */}
-                <div className="pt-3 border-t border-slate-800">
-                  {isQueued && (
-                    <button
-                      onClick={() => handleUpdateStatus(t.id, 'PREPARING')}
-                      className="w-full py-3.5 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-white font-extrabold rounded-2xl shadow-xl shadow-orange-500/20 text-xs flex items-center justify-center space-x-2 transition cursor-pointer"
-                    >
-                      <Flame className="w-4 h-4" />
-                      <span>Start Preparing</span>
-                    </button>
-                  )}
-
-                  {isPreparing && (
-                    <button
-                      onClick={() => handleUpdateStatus(t.id, 'READY')}
-                      className="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-extrabold rounded-2xl shadow-xl shadow-emerald-500/20 text-xs flex items-center justify-center space-x-2 transition cursor-pointer"
-                    >
-                      <CheckCircle2 className="w-4 h-4" />
-                      <span>Mark Ready</span>
-                    </button>
-                  )}
-
-                  {isReady && (
-                    <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-center text-emerald-400 font-extrabold text-xs flex items-center justify-center space-x-2">
-                      <CheckCircle2 className="w-4 h-4" />
-                      <span>Ready for Service</span>
+                  {/* Status Action Buttons */}
+                  <div className="pt-3 border-t border-slate-800 space-y-2">
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => {
+                          setSelectedKotOrder({
+                            id: t.order?.id || t.id,
+                            items: t.order?.items || [],
+                            orderType: t.order?.orderType,
+                            tableId: t.order?.table?.tableNumber
+                          });
+                          setShowKotModal(true);
+                        }}
+                        className="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-bold rounded-xl flex items-center justify-center space-x-1.5 transition cursor-pointer"
+                      >
+                        <Printer className="w-3.5 h-3.5" />
+                        <span>Print KOT</span>
+                      </button>
                     </div>
-                  )}
+
+                    {isQueued && (
+                      <button
+                        onClick={() => handleUpdateStatus(t.id, 'PREPARING')}
+                        className="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-white font-extrabold rounded-2xl shadow-xl shadow-orange-500/20 text-xs flex items-center justify-center space-x-2 transition cursor-pointer"
+                      >
+                        <Flame className="w-4 h-4" />
+                        <span>Start Preparing</span>
+                      </button>
+                    )}
+
+                    {isPreparing && (
+                      <button
+                        onClick={() => handleUpdateStatus(t.id, 'READY')}
+                        className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-extrabold rounded-2xl shadow-xl shadow-emerald-500/20 text-xs flex items-center justify-center space-x-2 transition cursor-pointer"
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>Mark Ready</span>
+                      </button>
+                    )}
+
+                    {isReady && (
+                      <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-center text-emerald-400 font-extrabold text-xs flex items-center justify-center space-x-2">
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>Ready for Service</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-};
+              );
+            })}
+          </div>
+        )}
+
+        {/* Thermal KOT Print Modal */}
+        <ThermalReceiptModal
+          isOpen={showKotModal}
+          onClose={() => setShowKotModal(false)}
+          orderData={selectedKotOrder}
+          type="KITCHEN_KOT"
+        />
+      </div>
+    );
+  };

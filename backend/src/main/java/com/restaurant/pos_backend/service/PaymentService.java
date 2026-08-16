@@ -71,6 +71,8 @@ public class PaymentService {
                 .amount(request.getAmount())
                 .status("COMPLETED")
                 .transactionRef(request.getTransactionRef())
+                .cashGiven(request.getCashGiven())
+                .changeAmount(request.getChangeAmount())
                 .processedBy(processedBy)
                 .build();
 
