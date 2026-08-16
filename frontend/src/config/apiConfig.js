@@ -3,13 +3,7 @@ export const getApiBaseUrl = () => {
     return import.meta.env.VITE_API_BASE_URL;
   }
   
-  const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-  if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-    // In production, use relative URL so Nginx proxies it via Port 80
-    return '/api';
-  }
-  
-  return 'http://localhost:8080/api';
+  return '/api';
 };
 
 export const getWsUrl = (path = '') => {
@@ -21,10 +15,5 @@ export const getWsUrl = (path = '') => {
   const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
   const port = typeof window !== 'undefined' && window.location?.port ? `:${window.location.port}` : '';
   
-  if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-    // In production, Nginx proxies WebSocket over the same port
-    return `${protocol}//${hostname}${port}${path}`;
-  }
-  
-  return `ws://localhost:8080${path}`;
+  return `${protocol}//${hostname}${port}${path}`;
 };

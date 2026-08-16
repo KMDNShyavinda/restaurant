@@ -105,20 +105,11 @@ export const LoginPage = () => {
             <div className="grid grid-cols-2 gap-1.5">
               {quickRoles.map(({ role, email, icon: Icon, c }) => (
                 <button key={role} type="button"
-                  onClick={async () => {
+                  onClick={() => {
                     setLoginEmail(email);
                     setLoginPassword('password123');
                     setActiveTab('LOGIN');
                     setError(null);
-                    setLoading(true);
-                    try {
-                      await login(email, 'password123');
-                      navigate('/welcome');
-                    } catch (err) {
-                      setError(err.response?.data?.message || 'Invalid email or password.');
-                    } finally {
-                      setLoading(false);
-                    }
                   }}
                   className={`px-2.5 py-2 rounded-xl border text-left transition-all cursor-pointer flex items-center space-x-2 hover:scale-[1.02] ${c}`}>
                   <Icon className="w-3.5 h-3.5 shrink-0" />
