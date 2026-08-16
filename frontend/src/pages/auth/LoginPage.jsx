@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 import {
   Lock, Mail, ArrowRight, AlertCircle, User, Phone,
   Eye, EyeOff, UserPlus, LogIn, CheckCircle2,
@@ -9,6 +10,7 @@ import {
 } from 'lucide-react';
 
 export const LoginPage = () => {
+  const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState('LOGIN');
   const [loginEmail, setLoginEmail]   = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -163,7 +165,7 @@ export const LoginPage = () => {
                 </div>
                 <div>
                   <div className="text-sm font-extrabold text-white">
-                    {activeTab === 'LOGIN' ? 'Welcome back' : 'Create Account'}
+                    {activeTab === 'LOGIN' ? t('Welcome back') : 'Create Account'}
                   </div>
                   <div className="text-[10px] text-slate-500">
                     {activeTab === 'LOGIN' ? 'Sign in to your staff portal' : 'Register a new team member'}
@@ -173,7 +175,7 @@ export const LoginPage = () => {
 
               {/* Segmented pill toggle */}
               <div className="flex bg-[#0b0f16] rounded-xl p-[3px] border border-slate-800 gap-[3px]">
-                {[['LOGIN','Sign In', LogIn], ['REGISTER','Create Account', UserPlus]].map(([id, label, Icon]) => (
+                {[['LOGIN', t('Sign In'), LogIn], ['REGISTER','Create Account', UserPlus]].map(([id, label, Icon]) => (
                   <button key={id} type="button"
                     onClick={() => { setActiveTab(id); setError(null); }}
                     className={`flex-1 py-2 rounded-[10px] text-[11px] font-extrabold flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer ${
@@ -213,7 +215,7 @@ export const LoginPage = () => {
                 <form onSubmit={handleLogin} className="flex flex-col h-full gap-3">
                   <div className="flex-1 space-y-3">
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Email Address</label>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">{t('Email Address')}</label>
                       <div className="relative">
                         <Mail className="w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
                         <input type="email" required value={loginEmail} onChange={e => setLoginEmail(e.target.value)}
@@ -221,7 +223,7 @@ export const LoginPage = () => {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Password</label>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">{t('Password')}</label>
                       <div className="relative">
                         <Lock className="w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
                         <input type={showPass ? 'text' : 'password'} required value={loginPassword}
@@ -237,7 +239,7 @@ export const LoginPage = () => {
                   <button type="submit" disabled={loading}
                     className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-black rounded-xl shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 transition hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-50 cursor-pointer text-sm border border-amber-400/25">
                     {loading ? <div className="animate-spin w-4 h-4 border-t-2 border-b-2 border-white rounded-full" />
-                      : <><span>Sign In &amp; Launch Portal</span><ArrowRight style={{width:'15px',height:'15px'}} /></>}
+                      : <><span>{t('Sign In')} &amp; Launch Portal</span><ArrowRight style={{width:'15px',height:'15px'}} /></>}
                   </button>
                 </form>
               </div>
@@ -317,7 +319,12 @@ export const LoginPage = () => {
             </div>{/* end fixed-height forms container */}
 
             {/* Card footer */}
-            <div className="px-6 pb-5 pt-3 border-t border-slate-800">
+            <div className="px-6 pb-5 pt-3 border-t border-slate-800 space-y-3">
+              <div className="flex justify-center space-x-2">
+                <button onClick={() => i18n.changeLanguage('en')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${i18n.language === 'en' ? 'bg-amber-500 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}>EN</button>
+                <button onClick={() => i18n.changeLanguage('si')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${i18n.language === 'si' ? 'bg-amber-500 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}>SI</button>
+                <button onClick={() => i18n.changeLanguage('ta')} className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${i18n.language === 'ta' ? 'bg-amber-500 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}>TA</button>
+              </div>
               <button onClick={() => navigate('/')}
                 className="w-full py-2.5 bg-[#0b0f16] hover:bg-slate-900 border border-slate-800 hover:border-amber-500/30 text-slate-400 hover:text-amber-400 text-xs font-semibold rounded-xl flex items-center justify-center gap-2 transition cursor-pointer">
                 <UtensilsCrossed style={{width:'13px',height:'13px'}} />

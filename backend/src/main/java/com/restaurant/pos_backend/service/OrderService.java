@@ -47,6 +47,9 @@ public class OrderService {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public List<Order> getOrders(Long branchId, String status) {
         if (status != null) {
             return orderRepository.findByBranchIdAndStatus(branchId, status);
@@ -193,6 +196,13 @@ public class OrderService {
 
         // Push WebSocket update
         messagingTemplate.convertAndSend("/topic/orders/" + orderId, savedOrder);
+        
+        // Trigger SMS Alert
+        if ("CONFIRMED".equalsIgnoreCase(status) || "READY".equalsIgnoreCase(status)) {
+            if (savedOrder.getCustomer() != null) {
+                notificationService.sendOrderAlert(savedOrder, status.toUpperCase());
+            }
+        }
         
         return savedOrder;
     }
