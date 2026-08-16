@@ -95,11 +95,11 @@ public class DataInitializer implements CommandLineRunner {
             User newUser = new User();
             newUser.setEmail(email);
             newUser.setName(defaultName);
-            newUser.setStatus("ACTIVE");
             return newUser;
         });
 
         user.setPasswordHash(encodedPassword);
+        user.setStatus("ACTIVE");
 
         if (user.getRole() == null && roleId != null) {
             Role role = entityManager.find(Role.class, roleId);
