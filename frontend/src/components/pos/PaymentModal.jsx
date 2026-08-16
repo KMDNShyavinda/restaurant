@@ -13,12 +13,18 @@ export const PaymentModal = ({
   const [cashGiven, setCashGiven] = useState('');
   const [transactionRef, setTransactionRef] = useState('');
   const [isSimulatingGateway, setIsSimulatingGateway] = useState(false);
+  const [promoCode, setPromoCode] = useState('');
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [promoError, setPromoError] = useState('');
+  const [promoSuccess, setPromoSuccess] = useState('');
+  const [isApplyingPromo, setIsApplyingPromo] = useState(false);
 
   if (!isOpen) return null;
 
+  const finalTotal = Math.max(0, grandTotal - discountAmount);
   const numericCash = parseFloat(cashGiven) || 0;
-  const changeAmount = Math.max(0, numericCash - grandTotal);
-  const isCashInsufficient = method === 'CASH' && numericCash > 0 && numericCash < grandTotal;
+  const changeAmount = Math.max(0, numericCash - finalTotal);
+  const isCashInsufficient = method === 'CASH' && numericCash > 0 && numericCash < finalTotal;
 
   const handlePresetCash = (amount) => {
     setCashGiven(amount.toString());
@@ -33,13 +39,46 @@ export const PaymentModal = ({
     }, 1200);
   };
 
+  const handleApplyPromo = async () => {
+    if (!promoCode) return;
+    try {
+      setIsApplyingPromo(true);
+      setPromoError('');
+      setPromoSuccess('');
+      
+      const { ordersApi } = await import('../../api/ordersApi');
+      const promo = await ordersApi.getPromotionByCode(promoCode);
+      
+      // Calculate discount locally for preview
+      let discount = 0;
+      if (promo.type === 'FLAT') {
+        discount = Math.min(promo.value, grandTotal);
+      } else if (promo.type === 'PERCENTAGE') {
+        discount = (grandTotal * promo.value) / 100;
+        discount = Math.min(discount, grandTotal);
+      } else if (promo.type === 'BOGO') {
+         // rough estimation for bogo on UI
+         discount = 0; 
+      }
+      setDiscountAmount(discount);
+      setPromoSuccess(`Promo applied: -$${discount.toFixed(2)}`);
+    } catch (err) {
+      setPromoError('Invalid or expired promo code.');
+      setDiscountAmount(0);
+    } finally {
+      setIsApplyingPromo(false);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (method === 'CASH' && numericCash < grandTotal) return;
+    if (method === 'CASH' && numericCash < finalTotal) return;
 
     onConfirmPayment({
       method,
-      amount: grandTotal,
+      amount: finalTotal,
+      discountAmount,
+      promoCode,
       cashGiven: method === 'CASH' ? numericCash : 0,
       changeAmount: method === 'CASH' ? changeAmount : 0,
       transactionRef: transactionRef || (method !== 'CASH' ? 'TXN-' + Date.now() : 'CASH-POS')
@@ -71,14 +110,47 @@ export const PaymentModal = ({
 
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             {/* Amount Due Card */}
-            <div className="bg-[#141a22] border border-slate-800 p-4 rounded-2xl flex justify-between items-center">
-              <div>
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Due</span>
-                <h2 className="text-3xl font-black text-amber-400">${grandTotal.toFixed(2)}</h2>
+            <div className="bg-[#141a22] border border-slate-800 p-4 rounded-2xl flex flex-col justify-between">
+              <div className="flex justify-between items-center w-full mb-2">
+                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Subtotal + Tax</span>
+                <span className="text-sm font-semibold text-slate-300">${grandTotal.toFixed(2)}</span>
               </div>
-              <div className="px-3 py-1 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-400 text-xs font-bold uppercase">
-                Pending Payment
+              
+              {discountAmount > 0 && (
+                <div className="flex justify-between items-center w-full mb-2 text-emerald-400">
+                  <span className="text-xs font-bold uppercase tracking-wider">Discount ({promoCode})</span>
+                  <span className="text-sm font-bold">-${discountAmount.toFixed(2)}</span>
+                </div>
+              )}
+
+              <div className="flex justify-between items-center w-full pt-2 border-t border-slate-800">
+                <span className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Total Due</span>
+                <h2 className="text-3xl font-black text-amber-400">${finalTotal.toFixed(2)}</h2>
               </div>
+            </div>
+
+            {/* Promo Code Section */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">Apply Promo Code</label>
+              <div className="flex space-x-2">
+                <input
+                  type="text"
+                  placeholder="Enter code..."
+                  value={promoCode}
+                  onChange={(e) => { setPromoCode(e.target.value.toUpperCase()); setPromoError(''); setPromoSuccess(''); }}
+                  className="flex-1 bg-[#0d1217] border border-slate-700 px-3 py-2 rounded-xl text-xs font-bold text-white focus:outline-none focus:border-amber-500 uppercase"
+                />
+                <button
+                  type="button"
+                  onClick={handleApplyPromo}
+                  disabled={isApplyingPromo || !promoCode}
+                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded-xl text-xs transition cursor-pointer disabled:opacity-50"
+                >
+                  {isApplyingPromo ? '...' : 'Apply'}
+                </button>
+              </div>
+              {promoError && <p className="text-[10px] text-rose-400 font-bold">{promoError}</p>}
+              {promoSuccess && <p className="text-[10px] text-emerald-400 font-bold">{promoSuccess}</p>}
             </div>
 
             {/* Payment Method Selector */}

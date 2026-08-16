@@ -24,6 +24,9 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+    
+    @Autowired
+    private com.restaurant.pos_backend.service.PromotionService promotionService;
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -91,6 +94,22 @@ public class OrderController {
             @PathVariable Long id,
             @RequestParam String status) {
         Order order = orderService.updateOrderStatus(id, status);
+        return ResponseEntity.ok(order);
+    }
+
+    @PostMapping("/{id}/apply-promotion")
+    @PreAuthorize("hasRole('CUSTOMER') or hasAuthority('orders:create') or hasRole('WAITER') or hasRole('CASHIER') or hasRole('MANAGER') or hasRole('OWNER')")
+    public ResponseEntity<Order> applyPromotion(
+            @PathVariable Long id,
+            @RequestParam String code) {
+        Order order = promotionService.applyPromotionToOrder(id, code);
+        return ResponseEntity.ok(order);
+    }
+
+    @DeleteMapping("/{id}/promotion")
+    @PreAuthorize("hasRole('CUSTOMER') or hasAuthority('orders:create') or hasRole('WAITER') or hasRole('CASHIER') or hasRole('MANAGER') or hasRole('OWNER')")
+    public ResponseEntity<Order> removePromotion(@PathVariable Long id) {
+        Order order = promotionService.removePromotionFromOrder(id);
         return ResponseEntity.ok(order);
     }
 }

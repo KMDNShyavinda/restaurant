@@ -54,4 +54,19 @@ export const ordersApi = {
     const response = await axiosClient.put(`/orders/${orderId}/status?status=${status}`);
     return response.data;
   },
+
+  getPromotionByCode: async (code) => {
+    const response = await axiosClient.get(`/promotions/${code}`);
+    return response.data;
+  },
+
+  applyPromotion: async (orderId, code) => {
+    const response = await axiosClient.post(`/orders/${orderId}/apply-promotion?code=${code}`);
+    return response.data;
+  },
+
+  removePromotion: async (orderId) => {
+    const response = await axiosClient.delete(`/orders/${orderId}/promotion`);
+    return response.data;
+  }
 };

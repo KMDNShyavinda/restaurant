@@ -229,6 +229,10 @@ export const PosTerminalPage = () => {
         orderToPay = newOrder;
       }
 
+      if (paymentPayload.promoCode) {
+        await ordersApi.applyPromotion(orderToPay.id, paymentPayload.promoCode);
+      }
+
       await ordersApi.processPayment(orderToPay.id, {
         method: paymentPayload.method,
         amount: paymentPayload.amount,
@@ -246,7 +250,8 @@ export const PosTerminalPage = () => {
         items: [...cart],
         subtotal: subtotal,
         tax: tax,
-        grandTotal: grandTotal,
+        discountAmount: paymentPayload.discountAmount || 0,
+        grandTotal: paymentPayload.amount,
         orderType: orderType,
         tableId: selectedTableId,
         serverName: user?.name || 'Cashier'
